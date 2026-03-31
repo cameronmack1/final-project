@@ -36,6 +36,14 @@ public class GameScreen extends JFrame {
         g2d = img.createGraphics();
         getContentPane().add(new JLabel(new ImageIcon(img)));
     }
+    
+    public void initGame(boolean isHost){
+        
+    }
+    
+    public void initMenu(){
+        
+    }
 
     public void tick() {
         g2d.setColor(Color.BLACK);
@@ -43,6 +51,10 @@ public class GameScreen extends JFrame {
         
         gameState = 1;
         switch (gameState) {
+            case 0:{//in menu
+                
+                break;
+            }
             case 1: {//in game
                 g2d.setColor(Color.WHITE);
                 for (Player player : playerHandler.getPlayers()) {
