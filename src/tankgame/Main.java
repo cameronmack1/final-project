@@ -4,7 +4,6 @@ import tankgame.server.UDPListener;
 import tankgame.server.ClientHandler;
 import tankgame.game.GameScreen;
 
-
 import java.util.Scanner;
 
 /**
@@ -25,6 +24,7 @@ public class Main {
             System.out.println("Client or Server? (c/s)");
             inp = kb.nextLine().charAt(0);
         }
+        GameScreen gs;
         if (inp == 's') {
             ClientHandler server = new ClientHandler(6767);
             try {
@@ -34,13 +34,12 @@ public class Main {
             }
             UDPListener listener = new UDPListener(port);
             listener.initiate();
-            GameScreen gs = new GameScreen(true);
-            while (true) {
-                gs.tick();
-            }
+            gs = new GameScreen(true);
+        } else {//client
+            gs = new GameScreen(false);
         }
-        if (inp == 'c') {
-
+        while (true) {
+            gs.tick();
         }
     }
 }
