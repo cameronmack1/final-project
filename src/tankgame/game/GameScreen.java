@@ -41,11 +41,16 @@ public class GameScreen extends JFrame {
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, width, height);
         
-        g2d.setColor(Color.WHITE);
-        for(Player player : playerHandler.getPlayers()){
-            g2d.fillOval(player.x, player.y, 10, 10);
+        gameState = 1;
+        switch (gameState) {
+            case 1: {//in game
+                g2d.setColor(Color.WHITE);
+                for (Player player : playerHandler.getPlayers()) {
+                    g2d.fillOval(player.x, player.y, 10, 10);
+                }
+                break;
+            }
         }
-        
         validate();
         repaint();
     }
