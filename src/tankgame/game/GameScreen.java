@@ -37,23 +37,23 @@ public class GameScreen extends JFrame {
         g2d = img.createGraphics();
         getContentPane().add(new JLabel(new ImageIcon(img)));
     }
-    
-    public void initLobby(boolean isHost){
-        
+
+    public void initLobby(boolean isHost) {
+
     }
-    
-    public void initMenu(){
+
+    public void initMenu() {
         MainMenu menu = new MainMenu();
     }
 
     public void tick() {
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, width, height);
-        
+
         gameState = 1;
         switch (gameState) {
-            case 0:{//in menu
-                
+            case 0: {//in menu
+
                 break;
             }
             case 1: {//in game
@@ -63,8 +63,13 @@ public class GameScreen extends JFrame {
                 }
                 break;
             }
+
+            case 10: {//singleplayer debug
+
+                break;
+            }
         }
-        validate();
-        repaint();
+            validate();
+            repaint();
     }
 }
