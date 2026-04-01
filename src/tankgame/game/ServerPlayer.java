@@ -5,13 +5,13 @@ import java.util.UUID;
  *
  * @author Cameron
  */
-public class Player {
+public class ServerPlayer {
 
     public int x;
     public int y;
     public final UUID id;
 
-    public Player(int x, int y, UUID id) {
+    public ServerPlayer(int x, int y, UUID id) {
         this.x = x;
         this.y = y;
         this.id = id;

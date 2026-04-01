@@ -9,12 +9,12 @@ import java.util.UUID;
  */
 public class PlayerHandler {
 
-    final private ArrayList<Player> players = new ArrayList<>();
+    final private ArrayList<ServerPlayer> players = new ArrayList<>();
 
     public PlayerHandler() {
     }
     
-    public ArrayList<Player> getPlayers(){
+    public ArrayList<ServerPlayer> getPlayers(){
         return players;
     }
 
@@ -27,7 +27,7 @@ public class PlayerHandler {
         }
     }
 
-    public void addPlayer(Player player) {
+    public void addPlayer(ServerPlayer player) {
         players.add(player);
     }
 }
