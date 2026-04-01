@@ -38,7 +38,7 @@ public class GameScreen extends JFrame {
         getContentPane().add(new JLabel(new ImageIcon(img)));
     }
     
-    public void initGame(boolean isHost){
+    public void initLobby(boolean isHost){
         
     }
     
