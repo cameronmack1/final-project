@@ -1,7 +1,4 @@
 package tankgame;
-
-import tankgame.server.UDPListener;
-import tankgame.server.ClientHandler;
 import tankgame.game.GameScreen;
 
 import java.util.Scanner;

@@ -2,6 +2,8 @@ package tankgame.game;
 
 import java.util.UUID;
 
+import tankgame.menu.MainMenu;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
@@ -41,7 +43,7 @@ public class GameScreen extends JFrame {
     }
     
     public void initMenu(){
-        
+        MainMenu menu = new MainMenu();
     }
 
     public void tick() {
