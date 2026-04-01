@@ -24,8 +24,7 @@ public class GameScreen extends JFrame {
     public PlayerHandler playerHandler = new PlayerHandler();
     Graphics2D g2d;
 
-    public GameScreen(boolean isHost) {
-        this.isHost = isHost;
+    public GameScreen() {
         setExtendedState(MAXIMIZED_BOTH);
         setUndecorated(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -24,20 +24,7 @@ public class Main {
             System.out.println("Client or Server? (c/s)");
             inp = kb.nextLine().charAt(0);
         }
-        GameScreen gs;
-        if (inp == 's') {
-            ClientHandler server = new ClientHandler(6767);
-            try {
-                server.initiate();
-            } catch (Exception e) {
-                server.setPort(port += 1);
-            }
-            UDPListener listener = new UDPListener(port);
-            listener.initiate();
-            gs = new GameScreen(true);
-        } else {//client
-            gs = new GameScreen(false);
-        }
+        GameScreen gs = new GameScreen();
         while (true) {
             gs.tick();
         }
