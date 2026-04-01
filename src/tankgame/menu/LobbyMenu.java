@@ -1,9 +1,9 @@
 package tankgame.menu;
-
+import javax.swing.JPanel;
 /**
  *
  * @author Koorosh
  */
-public class LobbyMenu {
+public class LobbyMenu extends JPanel {
     
 }
