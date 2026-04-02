@@ -3,6 +3,7 @@ package tankgame.game;
 import tankgame.server.PlayerHandler;
 import tankgame.server.ServerPlayer;
 import java.util.UUID;
+import java.util.ArrayList;
 
 import tankgame.menu.MainMenu;
 
@@ -13,13 +14,15 @@ import javax.swing.ImageIcon;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics2D;
 import java.awt.Color;
+import tankgame.client.ClientPlayer;
 
 /**
  *
  * @author Cameron
  */
-public class GameScreen extends JFrame {
+public final class GameScreen extends JFrame {
 
+    ArrayList<Player> playerList;
     int gameState;
     boolean isHost;
     BufferedImage img;
@@ -39,14 +42,22 @@ public class GameScreen extends JFrame {
         g2d = img.createGraphics();
         getContentPane().add(new JLabel(new ImageIcon(img)));
         setVisible(true);
+
+        gameState = 10;
+        this.initDebug();
     }
-    
+
     public void initLobby(boolean isHost) {
 
     }
 
     public void initMenu() {
         MainMenu menu = new MainMenu();
+    }
+
+    public void initDebug() {
+        playerList = new ArrayList<>();
+        playerList.add(new ClientPlayer());
     }
 
     public void tick() {
@@ -68,9 +79,10 @@ public class GameScreen extends JFrame {
             }
 
             case 10: {//singleplayer debug
-                
                 g2d.setColor(Color.WHITE);
-                
+                for (Player player : playerList) {
+                    g2d.drawOval((int) player.getX(), (int) player.getY(), 25, 25);
+                }
                 break;
             }
         }
