@@ -38,8 +38,9 @@ public class GameScreen extends JFrame {
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         g2d = img.createGraphics();
         getContentPane().add(new JLabel(new ImageIcon(img)));
+        setVisible(true);
     }
-
+    
     public void initLobby(boolean isHost) {
 
     }
@@ -67,11 +68,13 @@ public class GameScreen extends JFrame {
             }
 
             case 10: {//singleplayer debug
-
+                
+                g2d.setColor(Color.WHITE);
+                
                 break;
             }
         }
-            validate();
-            repaint();
+        validate();
+        repaint();
     }
 }

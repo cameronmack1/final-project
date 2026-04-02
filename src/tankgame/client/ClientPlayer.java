@@ -1,9 +1,11 @@
 package tankgame.client;
 
+import tankgame.game.Player;
+
 /**
  *
  * @author Layne
  */
-public class ClientPlayer {
-    
+public class ClientPlayer extends Player {
+
 }

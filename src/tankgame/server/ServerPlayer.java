@@ -1,11 +1,13 @@
 package tankgame.server;
 
+import tankgame.game.Player;
+
 import java.util.UUID;
 /**
  *
  * @author Cameron
  */
-public class ServerPlayer {
+public class ServerPlayer extends Player{
 
     public int x;
     public int y;
