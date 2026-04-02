@@ -1,4 +1,4 @@
-package tankgame.game;
+package tankgame.server;
 
 import java.util.UUID;
 /**

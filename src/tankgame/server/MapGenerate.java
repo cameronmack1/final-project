@@ -1,4 +1,4 @@
-package tankgame.game;
+package tankgame.server;
 /**
  *
  * @author Colin

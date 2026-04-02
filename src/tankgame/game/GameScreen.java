@@ -1,5 +1,7 @@
 package tankgame.game;
 
+import tankgame.server.PlayerHandler;
+import tankgame.server.ServerPlayer;
 import java.util.UUID;
 
 import tankgame.menu.MainMenu;
@@ -58,7 +60,7 @@ public class GameScreen extends JFrame {
             }
             case 1: {//in game
                 g2d.setColor(Color.WHITE);
-                for (Player player : playerHandler.getPlayers()) {
+                for (ServerPlayer player : playerHandler.getPlayers()) {
                     g2d.fillOval(player.x, player.y, 10, 10);
                 }
                 break;
