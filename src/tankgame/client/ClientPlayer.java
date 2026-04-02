@@ -1,12 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package tankgame.game;
+package tankgame.client;
 
 /**
  *
- * @author Cameron
+ * @author Layne
  */
 public class ClientPlayer {
     
