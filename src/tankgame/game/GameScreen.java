@@ -14,8 +14,12 @@ import javax.swing.ImageIcon;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics2D;
 import java.awt.Color;
-import tankgame.client.ClientPlayer;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import tankgame.client.ClientPlayer;
 /**
  *
  * @author Cameron
@@ -42,9 +46,16 @@ public final class GameScreen extends JFrame {
         g2d = img.createGraphics();
         getContentPane().add(new JLabel(new ImageIcon(img)));
         setVisible(true);
-
+        KeyHandler kb = new KeyHandler();
+        addKeyListener(kb);
+        
         gameState = 10;
         this.initDebug();
+
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.scheduleAtFixedRate(() -> {
+            this.tick();
+        }, 0, 1000 / 60, TimeUnit.MILLISECONDS);
     }
 
     public void initLobby(boolean isHost) {
