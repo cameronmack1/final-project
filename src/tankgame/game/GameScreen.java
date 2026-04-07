@@ -14,6 +14,11 @@ import javax.swing.ImageIcon;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics2D;
 import java.awt.Color;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import tankgame.client.ClientPlayer;
 
 /**
@@ -22,6 +27,7 @@ import tankgame.client.ClientPlayer;
  */
 public final class GameScreen extends JFrame {
 
+    KeyHandler kb = new KeyHandler();
     ArrayList<Player> playerList;
     int gameState;
     boolean isHost;
@@ -42,9 +48,15 @@ public final class GameScreen extends JFrame {
         g2d = img.createGraphics();
         getContentPane().add(new JLabel(new ImageIcon(img)));
         setVisible(true);
+        addKeyListener(kb);
 
         gameState = 10;
         this.initDebug();
+
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.scheduleAtFixedRate(() -> {
+            this.tick();
+        }, 0, 1000 / 60, TimeUnit.MILLISECONDS);
     }
 
     public void initLobby(boolean isHost) {
@@ -63,18 +75,20 @@ public final class GameScreen extends JFrame {
     public void tick() {
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, width, height);
-
-        gameState = 1;
         switch (gameState) {
             case 0: {//in menu
 
                 break;
             }
-            case 1: {//in game
+            case 1: {//client in game
                 g2d.setColor(Color.WHITE);
                 for (ServerPlayer player : playerHandler.getPlayers()) {
                     g2d.fillOval(player.x, player.y, 10, 10);
                 }
+                break;
+            }
+            case 2: {//server in game
+                
                 break;
             }
 
