@@ -38,7 +38,7 @@ public final class GameScreen extends JFrame {
     Graphics2D g2d;
 
     public GameScreen() {
-        setExtendedState(MAXIMIZED_BOTH);
+        setExtendedState(MAXIMIZED_BOTH);//initialize the screen
         setUndecorated(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
@@ -88,13 +88,14 @@ public final class GameScreen extends JFrame {
                 break;
             }
             case 2: {//server in game
-                
+
                 break;
             }
 
             case 10: {//singleplayer debug
                 g2d.setColor(Color.WHITE);
                 for (Player player : playerList) {
+                    player.move(kb.getKeys());
                     g2d.drawOval((int) player.getX(), (int) player.getY(), 25, 25);
                 }
                 break;
