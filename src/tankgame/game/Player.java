@@ -15,18 +15,18 @@ public abstract class Player {
       return y;
   }
   
-  public void move(boolean up, boolean left, boolean down, boolean right){
+  public void move(boolean[] arr){ //up[0], left[1], down[2], right[3] message by Layne Ripley
   
-      if (up && !down){
+      if (arr[0] && !arr[2]){
           y -= 5;
       }
-       if (down && !up){
+       if (arr[2] && !arr[0]){
           y += 5;
       }
-       if (left && !right){
+       if (arr[1] && !arr[3]){
           x -= 5;
       }
-        if (right && !left){
+        if (arr[3] && !arr[1]){
           y += 5;
       }
       
