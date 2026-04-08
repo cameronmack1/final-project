@@ -14,5 +14,22 @@ public abstract class Player {
   public double getY(){
       return y;
   }
+  
+  public void move(boolean up, boolean left, boolean down, boolean right){
+  
+      if (up && !down){
+          y -= 5;
+      }
+       if (down && !up){
+          y += 5;
+      }
+       if (left && !right){
+          x -= 5;
+      }
+        if (right && !left){
+          y += 5;
+      }
+      
+  }   
 }
 
