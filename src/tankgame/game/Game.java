@@ -11,12 +11,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
 import javax.imageio.ImageIO;
+import java.io.IOException;
 
 import java.awt.image.BufferedImage;
 import java.awt.Image;
 import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.geom.AffineTransform;
+import java.awt.Toolkit;
 
 import java.io.File;
 
@@ -45,19 +47,23 @@ public final class Game extends JFrame {
         setUndecorated(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
-        width = getWidth();
-        height = getHeight();
+        width = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+        height = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         g2d = img.createGraphics();
         getContentPane().add(new JLabel(new ImageIcon(img)));
+        revalidate();
+
         setAlwaysOnTop(true);
         setVisible(true);
         addKeyListener(kb);
 
         try {
-            tank = resizeImage(60, 80, ImageIO.read(new File(".\\src\\images\\tank.png")));
-        } catch (Exception e) {
+            tank = resizeImage(60, 80, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "tank.png")));
+        } catch (IOException e) {
             System.out.println("error loading file");
+        } catch (NullPointerException e) {
+            System.out.println("error file doesnt exist");
         }
 
         gameState = 10;
@@ -78,7 +84,7 @@ public final class Game extends JFrame {
     }
 
     public void tick() {
-        g2d.setColor(Color.GRAY);
+        g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, width, height);
         switch (gameState) {
             case 0: {//in menu
@@ -86,7 +92,6 @@ public final class Game extends JFrame {
                 break;
             }
             case 1: {//client in game
-                g2d.setColor(Color.WHITE);
                 for (ServerPlayer player : playerHandler.getPlayers()) {
                     g2d.fillOval(player.x, player.y, 10, 10);
                 }
@@ -104,9 +109,9 @@ public final class Game extends JFrame {
                 }
                 break;
             }
-            
+
             case 11: {//multiplayer debug
-                
+
                 break;
             }
         }
@@ -134,7 +139,7 @@ public final class Game extends JFrame {
         AffineTransform old = g2d.getTransform();
         g2d.translate(x, y);
         g2d.rotate(angle);
-        g2d.drawImage(img, -img.getWidth(null) / 2, -img.getHeight(null)/2, null);
+        g2d.drawImage(img, -img.getWidth(null) / 2, -img.getHeight(null) / 2, null);
         g2d.setTransform(old);
     }
 }
