@@ -100,8 +100,13 @@ public final class GameScreen extends JFrame {
             case 10: {//singleplayer debug
                 for (Player player : playerList) {
                     player.move(kb.getKeys());
-                    drawImageAtRot(tank, player.getX(), player.getY(), player.getX());
+                    drawImageAtRot(tank, player.getX(), player.getY(), player.getAngle());
                 }
+                break;
+            }
+            
+            case 11: {//multiplayer debug
+                
                 break;
             }
         }
