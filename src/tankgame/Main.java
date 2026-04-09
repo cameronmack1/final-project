@@ -1,7 +1,12 @@
 package tankgame;
+
 import tankgame.game.GameScreen;
 
 import java.util.Scanner;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -22,8 +27,9 @@ public class Main {
             inp = kb.nextLine().charAt(0);
         }
         GameScreen gs = new GameScreen();
-        while (true) {
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.scheduleAtFixedRate(() -> {
             gs.tick();
-        }
+        }, 0, 1000/60, TimeUnit.MILLISECONDS);
     }
 }
