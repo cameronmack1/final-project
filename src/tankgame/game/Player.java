@@ -15,6 +15,10 @@ public abstract class Player {
       return y;
   }
   
+  public double getAngle(){
+      return angle;
+  }
+  
   public void move(boolean[] arr){ //up[0], left[1], down[2], right[3] message by Layne Ripley
   
       if (arr[0] && !arr[2]){
@@ -27,7 +31,7 @@ public abstract class Player {
           x -= 5;
       }
         if (arr[3] && !arr[1]){
-          y += 5;
+          x += 5;
       }
       
   }   

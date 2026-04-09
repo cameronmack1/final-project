@@ -55,7 +55,6 @@ public final class GameScreen extends JFrame {
         addKeyListener(kb);
 
         try {
-            System.out.println(new File(".").getAbsolutePath());
             tank = resizeImage(60, 80, ImageIO.read(new File(".\\src\\images\\tank.png")));
         } catch (Exception e) {
             System.out.println("error loading file");
