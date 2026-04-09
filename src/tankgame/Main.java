@@ -1,6 +1,6 @@
 package tankgame;
 
-import tankgame.game.GameScreen;
+import tankgame.game.Game;
 
 import java.util.Scanner;
 
@@ -26,10 +26,10 @@ public class Main {
             System.out.println("Client or Server? (c/s)");
             inp = kb.nextLine().charAt(0);
         }
-        GameScreen gs = new GameScreen();
+        Game g = new Game();
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
-            gs.tick();
-        }, 0, 1000/60, TimeUnit.MILLISECONDS);
+            g.tick();
+        }, 0, 1000/30, TimeUnit.MILLISECONDS);
     }
 }

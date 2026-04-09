@@ -26,7 +26,7 @@ import tankgame.client.ClientPlayer;
  *
  * @author Cameron
  */
-public final class GameScreen extends JFrame {
+public final class Game extends JFrame {
 
     KeyHandler kb = new KeyHandler();
     ArrayList<Player> playerList;
@@ -39,7 +39,7 @@ public final class GameScreen extends JFrame {
     Graphics2D g2d;
     BufferedImage tank;
 
-    public GameScreen() {
+    public Game() {
         //initialize the JFrame
         setExtendedState(MAXIMIZED_BOTH);
         setUndecorated(true);
