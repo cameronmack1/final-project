@@ -28,7 +28,7 @@ import tankgame.client.ClientPlayer;
  *
  * @author Cameron
  */
-public final class Game extends JFrame {
+public final class GameScreen extends JFrame {
 
     KeyHandler kb = new KeyHandler();
     ArrayList<Player> playerList;
@@ -41,14 +41,14 @@ public final class Game extends JFrame {
     Graphics2D g2d;
     BufferedImage tank;
 
-    public Game() {
+    public GameScreen() {
         //initialize the JFrame
         setExtendedState(MAXIMIZED_BOTH);
         setUndecorated(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
-        width = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
-        height = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+        width = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+        height = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         g2d = img.createGraphics();
         getContentPane().add(new JLabel(new ImageIcon(img)));
@@ -105,7 +105,7 @@ public final class Game extends JFrame {
             case 10: {//singleplayer debug
                 for (Player player : playerList) {
                     player.move(kb.getKeys());
-                    drawImageAtRot(tank, player.getX(), player.getY(), player.getAngle());
+                    drawImageAtRot(tank, player.getX(), player.getY(), player.getAngle() + Math.PI / 2);
                 }
                 break;
             }

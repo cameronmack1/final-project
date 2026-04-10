@@ -1,4 +1,4 @@
-package tankgame.client;
+package tankgame.game;
 
 /**
  *
