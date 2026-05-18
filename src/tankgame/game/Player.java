@@ -12,7 +12,21 @@ public abstract class Player {
     private double velocity = 0;
     public static final double BRAKING_POWER = 0.25;
     public static final double ACCELERATION = 0.5;
-
+    
+    public Player(){}
+    
+    public Player(Player toBeCopied){
+        this.id = toBeCopied.getID();
+        this.x = toBeCopied.getX();
+        this.y = toBeCopied.getY();
+        this.angle = toBeCopied.getAngle();
+        this.velocity = toBeCopied.getVel();
+    }
+    
+    public int getID(){
+        return id;
+    }
+    
     public double getVel(){
         return velocity;
     }
@@ -30,7 +44,6 @@ public abstract class Player {
     }
 
     public void move(boolean[] keys) { //up[0], left[1], down[2], right[3] message by Layne Ripley
-
         if (keys[0] ^ keys[2]) {//if only one of forwards or backwards pressed
             if (keys[0]) {
                 velocity += ACCELERATION;

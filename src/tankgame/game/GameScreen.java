@@ -106,11 +106,13 @@ public final class GameScreen extends JFrame {
     }
 
     public static double lerp(double val1, double val2, double alpha) {
+        //val 1 is old, val2 is new
         return (val2 - val1) * alpha + val1;
     }
 
     public void render(Snapshot s1, Snapshot s2, double time) {
         //drawImageAtRot(tank, x,y,angle+Math.PI/2);
+        //s1 is old, s2 is new
         double x1;
         double x2;
         double y1;
@@ -124,7 +126,7 @@ public final class GameScreen extends JFrame {
             y2 = s2.getPlayerArray()[i].getY();
             a1 = s1.getPlayerArray()[i].getAngle();
             a2 = s2.getPlayerArray()[i].getAngle();
-            drawImageAtRot(tank, lerp(x1, x2, time), lerp(y1, y2, time), lerp(a1, a2, time));
+            drawImageAtRot(tank, lerp(x1, x2, time), lerp(y1, y2, time), lerp(a1, a2, time)+Math.PI/2);
         }
     }
 
@@ -152,7 +154,8 @@ public final class GameScreen extends JFrame {
                 long t2 = localSnapshots.get(1).getTime();
                 long t3 = System.currentTimeMillis();
                 double time = (double) (t3 - t2) / (double) (t1 - t2);
-                render(localSnapshots.get(1), localSnapshots.get(0), time);
+                time = Math.max(0.0, Math.min(1.0, time));
+                render(localSnapshots.get(0), localSnapshots.get(1), time);
                 break;
             }
 
@@ -169,6 +172,7 @@ public final class GameScreen extends JFrame {
     public void tick() {
         //DO NOT PUT ANY RENDERING IN HERE OR I WILL KILL YOU
         //THIS IS SIMULATION **ONLY**
+        System.out.println(self.getVel());
         switch (gameState) {
             case 0: {//in menu
 
@@ -186,7 +190,8 @@ public final class GameScreen extends JFrame {
                 //DEBUG USING SERVER SIMULATE
                 //add new snapshot to index 0, remove from end
                 self.move(kb.getKeys());
-                localSnapshots.add(0, new Snapshot(new ClientPlayer[]{self}, localProj, System.currentTimeMillis() + 33));
+                ClientPlayer[] pArr = new ClientPlayer[]{new ClientPlayer(self, 0)};
+                localSnapshots.add(0, new Snapshot(pArr, localProj, System.currentTimeMillis() + 33));
                 if (localSnapshots.size() > 5) {
                     localSnapshots.remove(localSnapshots.size() - 1);
                 }

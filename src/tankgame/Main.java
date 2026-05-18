@@ -25,7 +25,6 @@ public class Main {
         //30 tps simulate
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
-            gs.initDebug();
             gs.tick();
         }, 0, 1000 / 30, TimeUnit.MILLISECONDS);
         //144 fps render
