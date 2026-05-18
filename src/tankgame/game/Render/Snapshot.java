@@ -19,6 +19,10 @@ public class Snapshot {
         this.time = time;
     }
 
+    public long getTime(){
+        return this.time;
+    }
+    
     public Projectile[] getProjectileArray() {
         return this.projectileArray;
     }

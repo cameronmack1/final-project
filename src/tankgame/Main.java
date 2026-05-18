@@ -20,16 +20,18 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Scanner kb = new Scanner(System.in);
-        char inp = 'a';
-        while (inp != 'c' && inp != 's') {
-            System.out.println("Client or Server? (c/s)");
-            inp = kb.nextLine().charAt(0);
-        }
-        GameScreen g = new GameScreen();
+        GameScreen gs = new GameScreen();
+        
+        //30 tps simulate
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
-            g.tick();
-        }, 0, 1000/30, TimeUnit.MILLISECONDS);
+            gs.initDebug();
+            gs.tick();
+        }, 0, 1000 / 30, TimeUnit.MILLISECONDS);
+        //144 fps render
+        ScheduledExecutorService renderScheduler = Executors.newSingleThreadScheduledExecutor();
+        renderScheduler.scheduleAtFixedRate(() -> {
+            gs.renderLoop();
+        }, 0, 1000 / 144, TimeUnit.MILLISECONDS);
     }
 }

@@ -5,14 +5,18 @@ package tankgame.game;
  * @author Layne
  */
 public abstract class Player {
-
+    private int id;
     private double x = 500;
     private double y = 500;
     private double angle;
-    public double velocity = 0;
+    private double velocity = 0;
     public static final double BRAKING_POWER = 0.25;
     public static final double ACCELERATION = 0.5;
 
+    public double getVel(){
+        return velocity;
+    }
+    
     public double getX() {
         return x;
     }
@@ -49,12 +53,6 @@ public abstract class Player {
         }
         if (keys[3]) {//pressing right
             angle += velocity / 50;
-        }
-        if (angle < 0) {
-            angle += 2 * Math.PI;
-        }
-        if (angle > 2 * Math.PI) {
-            angle -= 2 * Math.PI;
         }
         y += Math.sin(angle) * velocity;
         x += Math.cos(angle) * velocity;

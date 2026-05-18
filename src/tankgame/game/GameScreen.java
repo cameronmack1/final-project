@@ -4,8 +4,13 @@ import tankgame.server.PlayerHandler;
 import tankgame.server.ServerPlayer;
 import java.util.UUID;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.ArrayDeque;
 
 import tankgame.menu.MainMenu;
+
+import tankgame.game.Render.*;
+import tankgame.game.projectile.Projectile;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -31,7 +36,6 @@ import tankgame.client.ClientPlayer;
 public final class GameScreen extends JFrame {
 
     KeyHandler kb = new KeyHandler();
-    ArrayList<Player> playerList;
     int gameState;
     boolean isHost;
     BufferedImage img;
@@ -40,6 +44,21 @@ public final class GameScreen extends JFrame {
     public PlayerHandler playerHandler = new PlayerHandler();
     Graphics2D g2d;
     BufferedImage tank;
+
+    ClientPlayer self;
+    Projectile[] localProj;
+
+    //this should only contain the local player and local projectiles
+    //so they can be predicted
+    //only save 3 snapshots at a time cuz we dont care abt past
+    ArrayList<Snapshot> localSnapshots = new ArrayList<>();
+
+    //this will contain snapshots sent by the server
+    //it will have ALL players and projectils
+    //local renderer must figure out which ones are local from their rid
+    //so they arent double rendered in the past
+    //once a snapshot gets old enough we throw it out
+    Deque<Snapshot> serverSnapshots = new ArrayDeque<>();
 
     public GameScreen() {
         //initialize the JFrame
@@ -63,7 +82,7 @@ public final class GameScreen extends JFrame {
         } catch (IOException e) {
             System.out.println("error loading file");
         } catch (NullPointerException e) {
-            System.out.println("error file doesnt exist");
+            System.out.println("error file missing wtf did u do");
         }
 
         gameState = 10;
@@ -79,11 +98,40 @@ public final class GameScreen extends JFrame {
     }
 
     public void initDebug() {
-        playerList = new ArrayList<>();
-        playerList.add(new ClientPlayer());
+        //create snapshot with only 1 player and 0 projectiles as the default snapshot to base the simulation on
+        self = new ClientPlayer(0);
+        localProj = new Projectile[]{};
+        Snapshot defaultSnapshot = new Snapshot(new ClientPlayer[]{self}, localProj, System.currentTimeMillis());
+        localSnapshots.add(defaultSnapshot);
     }
 
-    public void tick() {
+    public static double lerp(double val1, double val2, double alpha) {
+        return (val2 - val1) * alpha + val1;
+    }
+
+    public void render(Snapshot s1, Snapshot s2, double time) {
+        //drawImageAtRot(tank, x,y,angle+Math.PI/2);
+        double x1;
+        double x2;
+        double y1;
+        double y2;
+        double a1;
+        double a2;
+        for (int i = 0; i < s1.getPlayerArray().length; i++) {
+            x1 = s1.getPlayerArray()[i].getX();
+            x2 = s2.getPlayerArray()[i].getX();
+            y1 = s1.getPlayerArray()[i].getY();
+            y2 = s2.getPlayerArray()[i].getY();
+            a1 = s1.getPlayerArray()[i].getAngle();
+            a2 = s2.getPlayerArray()[i].getAngle();
+            drawImageAtRot(tank, lerp(x1, x2, time), lerp(y1, y2, time), lerp(a1, a2, time));
+        }
+    }
+
+    public void renderLoop() {
+        //NO SIMULATION
+        //RENDER ONLY
+        //MUST KEEP SIM SEPERATE FROM RENDER
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, width, height);
         switch (gameState) {
@@ -92,9 +140,6 @@ public final class GameScreen extends JFrame {
                 break;
             }
             case 1: {//client in game
-                for (ServerPlayer player : playerHandler.getPlayers()) {
-                    g2d.fillOval(player.x, player.y, 10, 10);
-                }
                 break;
             }
             case 2: {//server in game
@@ -103,9 +148,47 @@ public final class GameScreen extends JFrame {
             }
 
             case 10: {//singleplayer debug
-                for (Player player : playerList) {
-                    player.move(kb.getKeys());
-                    drawImageAtRot(tank, player.getX(), player.getY(), player.getAngle() + Math.PI / 2);
+                long t1 = localSnapshots.get(0).getTime();
+                long t2 = localSnapshots.get(1).getTime();
+                long t3 = System.currentTimeMillis();
+                double time = (double) (t3 - t2) / (double) (t1 - t2);
+                render(localSnapshots.get(1), localSnapshots.get(0), time);
+                break;
+            }
+
+            case 11: {//multiplayer debug
+
+                break;
+            }
+        }
+
+        validate();
+        repaint();
+    }
+
+    public void tick() {
+        //DO NOT PUT ANY RENDERING IN HERE OR I WILL KILL YOU
+        //THIS IS SIMULATION **ONLY**
+        switch (gameState) {
+            case 0: {//in menu
+
+                break;
+            }
+            case 1: {//client in game
+                break;
+            }
+            case 2: {//server in game
+
+                break;
+            }
+
+            case 10: {//singleplayer debug
+                //DEBUG USING SERVER SIMULATE
+                //add new snapshot to index 0, remove from end
+                self.move(kb.getKeys());
+                localSnapshots.add(0, new Snapshot(new ClientPlayer[]{self}, localProj, System.currentTimeMillis() + 33));
+                if (localSnapshots.size() > 5) {
+                    localSnapshots.remove(localSnapshots.size() - 1);
                 }
                 break;
             }
@@ -115,8 +198,6 @@ public final class GameScreen extends JFrame {
                 break;
             }
         }
-        validate();
-        repaint();
     }
 
     public BufferedImage resizeImage(int newWidth, int newHeight, BufferedImage img) {
