@@ -12,12 +12,12 @@ import tankgame.menu.MainMenu;
 import tankgame.game.Render.*;
 import tankgame.game.projectile.Projectile;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.Image;
 import java.awt.Graphics2D;
@@ -33,9 +33,8 @@ import tankgame.client.ClientPlayer;
  *
  * @author Cameron
  */
-public final class GameScreen extends JFrame {
-
-    KeyHandler kb = new KeyHandler();
+public final class GamePanel extends JPanel {
+    GameFrame gf;
     int gameState;
     boolean isHost;
     BufferedImage img;
@@ -60,22 +59,14 @@ public final class GameScreen extends JFrame {
     //once a snapshot gets old enough we throw it out
     Deque<Snapshot> serverSnapshots = new ArrayDeque<>();
 
-    public GameScreen() {
-        //initialize the JFrame
-        setExtendedState(MAXIMIZED_BOTH);
-        setUndecorated(true);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
+    public GamePanel(GameFrame gf) {
         width = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
         height = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+        setPreferredSize(new Dimension(width, height));
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         g2d = img.createGraphics();
-        getContentPane().add(new JLabel(new ImageIcon(img)));
         revalidate();
-
-        setAlwaysOnTop(true);
-        setVisible(true);
-        addKeyListener(kb);
+        this.gf = gf;
 
         try {
             tank = resizeImage(60, 80, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "tank.png")));
@@ -87,6 +78,12 @@ public final class GameScreen extends JFrame {
 
         gameState = 10;
         this.initDebug();
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawImage(img, 0, 0, null);
     }
 
     public void initLobby(boolean isHost) {
@@ -126,7 +123,12 @@ public final class GameScreen extends JFrame {
             y2 = s2.getPlayerArray()[i].getY();
             a1 = s1.getPlayerArray()[i].getAngle();
             a2 = s2.getPlayerArray()[i].getAngle();
-            drawImageAtRot(tank, lerp(x1, x2, time), lerp(y1, y2, time), lerp(a1, a2, time)+Math.PI/2);
+            drawImageAtRot(tank, lerp(x1, x2, time), lerp(y1, y2, time), lerp(a1, a2, time) + Math.PI / 2);
+        }
+        for(int i = 0; i< s2.getProjectileArray().length; i++){
+            //if s2 proj array>s1 proj array then theres a new projectile
+            //if s1 proj array[0] has a different rid than s2 proj array[0]
+            //then projectile went bye bye
         }
     }
 
@@ -152,7 +154,7 @@ public final class GameScreen extends JFrame {
             case 10: {//singleplayer debug
                 long t1 = localSnapshots.get(0).getTime();
                 long t2 = localSnapshots.get(1).getTime();
-                long t3 = System.currentTimeMillis();
+                long t3 = System.currentTimeMillis()-33;
                 double time = (double) (t3 - t2) / (double) (t1 - t2);
                 time = Math.max(0.0, Math.min(1.0, time));
                 render(localSnapshots.get(0), localSnapshots.get(1), time);
@@ -164,7 +166,6 @@ public final class GameScreen extends JFrame {
                 break;
             }
         }
-
         validate();
         repaint();
     }
@@ -172,7 +173,6 @@ public final class GameScreen extends JFrame {
     public void tick() {
         //DO NOT PUT ANY RENDERING IN HERE OR I WILL KILL YOU
         //THIS IS SIMULATION **ONLY**
-        System.out.println(self.getVel());
         switch (gameState) {
             case 0: {//in menu
 
@@ -189,9 +189,9 @@ public final class GameScreen extends JFrame {
             case 10: {//singleplayer debug
                 //DEBUG USING SERVER SIMULATE
                 //add new snapshot to index 0, remove from end
-                self.move(kb.getKeys());
+                self.move(gf.kb.getKeys());
                 ClientPlayer[] pArr = new ClientPlayer[]{new ClientPlayer(self, 0)};
-                localSnapshots.add(0, new Snapshot(pArr, localProj, System.currentTimeMillis() + 33));
+                localSnapshots.add(0, new Snapshot(pArr, localProj, System.currentTimeMillis()));
                 if (localSnapshots.size() > 5) {
                     localSnapshots.remove(localSnapshots.size() - 1);
                 }
