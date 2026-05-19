@@ -77,7 +77,7 @@ public final class GamePanel extends JPanel {
 
         try {
             tank = resizeImage(60, 80, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "tank.png")));
-            bullet = resizeImage(20, 40, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "bullet.png")));
+            bullet = resizeImage(20, 20, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "bullet.png")));
         } catch (IOException e) {
             System.out.println("error loading file");
         } catch (NullPointerException e) {
