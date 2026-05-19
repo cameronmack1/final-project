@@ -24,6 +24,7 @@ import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.awt.Toolkit;
+import java.awt.RenderingHints;
 
 import java.io.File;
 
@@ -34,6 +35,7 @@ import tankgame.client.ClientPlayer;
  * @author Cameron
  */
 public final class GamePanel extends JPanel {
+
     GameFrame gf;
     int gameState;
     boolean isHost;
@@ -44,27 +46,31 @@ public final class GamePanel extends JPanel {
     Graphics2D g2d;
     BufferedImage tank;
 
-    ClientPlayer self;
-    Projectile[] localProj;
+    private volatile ClientPlayer self;
+    private volatile Projectile[] localProj;
 
     //this should only contain the local player and local projectiles
     //so they can be predicted
     //only save 3 snapshots at a time cuz we dont care abt past
-    ArrayList<Snapshot> localSnapshots = new ArrayList<>();
+    private volatile ArrayList<Snapshot> localSnapshots = new ArrayList<>();
 
     //this will contain snapshots sent by the server
     //it will have ALL players and projectils
     //local renderer must figure out which ones are local from their rid
     //so they arent double rendered in the past
     //once a snapshot gets old enough we throw it out
-    Deque<Snapshot> serverSnapshots = new ArrayDeque<>();
+    private volatile Deque<Snapshot> serverSnapshots = new ArrayDeque<>();
 
     public GamePanel(GameFrame gf) {
         width = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
         height = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+        System.out.println(width + " " + height);
         setPreferredSize(new Dimension(width, height));
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         g2d = img.createGraphics();
+
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         revalidate();
         this.gf = gf;
 
@@ -109,7 +115,7 @@ public final class GamePanel extends JPanel {
 
     public void render(Snapshot s1, Snapshot s2, double time) {
         //drawImageAtRot(tank, x,y,angle+Math.PI/2);
-        //s1 is old, s2 is new
+        //s1 is new, s2 is old
         double x1;
         double x2;
         double y1;
@@ -123,9 +129,9 @@ public final class GamePanel extends JPanel {
             y2 = s2.getPlayerArray()[i].getY();
             a1 = s1.getPlayerArray()[i].getAngle();
             a2 = s2.getPlayerArray()[i].getAngle();
-            drawImageAtRot(tank, lerp(x1, x2, time), lerp(y1, y2, time), lerp(a1, a2, time) + Math.PI / 2);
+            drawImageAtRot(tank, lerp(x2, x1, time), lerp(y2, y1, time), lerp(a2, a1, time) + Math.PI / 2);
         }
-        for(int i = 0; i< s2.getProjectileArray().length; i++){
+        for (int i = 0; i < s2.getProjectileArray().length; i++) {
             //if s2 proj array>s1 proj array then theres a new projectile
             //if s1 proj array[0] has a different rid than s2 proj array[0]
             //then projectile went bye bye
@@ -154,7 +160,7 @@ public final class GamePanel extends JPanel {
             case 10: {//singleplayer debug
                 long t1 = localSnapshots.get(0).getTime();
                 long t2 = localSnapshots.get(1).getTime();
-                long t3 = System.currentTimeMillis()-33;
+                long t3 = System.currentTimeMillis() - 33;
                 double time = (double) (t3 - t2) / (double) (t1 - t2);
                 time = Math.max(0.0, Math.min(1.0, time));
                 render(localSnapshots.get(0), localSnapshots.get(1), time);
@@ -220,10 +226,10 @@ public final class GamePanel extends JPanel {
         return rsImage;
     }
 
-    public void drawImageAtRot(Image img, double x, double y, double angle) {
+    public void drawImageAtRot(BufferedImage img, double x, double y, double angle) {
         //transforms the entire base image, renders new image, and rotates it back
         AffineTransform old = g2d.getTransform();
-        g2d.translate(x, y);
+        g2d.translate(Math.round(x), Math.round(y));
         g2d.rotate(angle);
         g2d.drawImage(img, -img.getWidth(null) / 2, -img.getHeight(null) / 2, null);
         g2d.setTransform(old);
