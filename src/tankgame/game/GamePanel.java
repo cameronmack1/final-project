@@ -4,8 +4,6 @@ import tankgame.server.PlayerHandler;
 import tankgame.server.ServerPlayer;
 import java.util.UUID;
 import java.util.ArrayList;
-import java.util.Deque;
-import java.util.ArrayDeque;
 
 import tankgame.menu.MainMenu;
 
@@ -46,8 +44,10 @@ public final class GamePanel extends JPanel {
     Graphics2D g2d;
     BufferedImage tank;
 
+    private int projCooldown = 0;
+
     private volatile ClientPlayer self;
-    private volatile Projectile[] localProj;
+    private volatile ArrayList<Projectile> localProj = new ArrayList<>();
 
     //this should only contain the local player and local projectiles
     //so they can be predicted
@@ -59,7 +59,7 @@ public final class GamePanel extends JPanel {
     //local renderer must figure out which ones are local from their rid
     //so they arent double rendered in the past
     //once a snapshot gets old enough we throw it out
-    private volatile Deque<Snapshot> serverSnapshots = new ArrayDeque<>();
+    private volatile ArrayList<Snapshot> serverSnapshots = new ArrayList<>();
 
     public GamePanel(GameFrame gf) {
         width = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
@@ -83,7 +83,6 @@ public final class GamePanel extends JPanel {
         }
 
         gameState = 10;
-        this.initDebug();
     }
 
     @Override
@@ -103,8 +102,7 @@ public final class GamePanel extends JPanel {
     public void initDebug() {
         //create snapshot with only 1 player and 0 projectiles as the default snapshot to base the simulation on
         self = new ClientPlayer(0);
-        localProj = new Projectile[]{};
-        Snapshot defaultSnapshot = new Snapshot(new ClientPlayer[]{self}, localProj, System.currentTimeMillis());
+        Snapshot defaultSnapshot = new Snapshot(new ClientPlayer[]{self}, localProj.toArray(Projectile[]::new), System.currentTimeMillis());
         localSnapshots.add(defaultSnapshot);
     }
 
@@ -122,19 +120,31 @@ public final class GamePanel extends JPanel {
         double y2;
         double a1;
         double a2;
-        for (int i = 0; i < s1.getPlayerArray().length; i++) {
-            x1 = s1.getPlayerArray()[i].getX();
-            x2 = s2.getPlayerArray()[i].getX();
-            y1 = s1.getPlayerArray()[i].getY();
-            y2 = s2.getPlayerArray()[i].getY();
-            a1 = s1.getPlayerArray()[i].getAngle();
-            a2 = s2.getPlayerArray()[i].getAngle();
+        Player[] playerArray1 = s1.getPlayerArray();
+        Player[] playerArray2 = s2.getPlayerArray();
+        for (int i = 0; i < playerArray1.length; i++) {
+            x1 = playerArray1[i].getX();
+            x2 = playerArray2[i].getX();
+            y1 = playerArray1[i].getY();
+            y2 = playerArray2[i].getY();
+            a1 = playerArray1[i].getAngle();
+            a2 = playerArray2[i].getAngle();
             drawImageAtRot(tank, lerp(x2, x1, time), lerp(y2, y1, time), lerp(a2, a1, time) + Math.PI / 2);
         }
+        Projectile[] projArray1 = s1.getProjectileArray();
+        Projectile[] projArray2 = s2.getProjectileArray();
         for (int i = 0; i < s2.getProjectileArray().length; i++) {
-            //if s2 proj array>s1 proj array then theres a new projectile
-            //if s1 proj array[0] has a different rid than s2 proj array[0]
-            //then projectile went bye bye
+            if (projArray2[i].getIsNew()) {
+                drawImageAtRot(tank, projArray2[i].getX(), projArray2[i].getY(), projArray2[i].getAngle() + Math.PI / 2);
+            } else {
+                x1 = projArray1[i].getX();
+                x2 = projArray2[i].getX();
+                y1 = projArray1[i].getY();
+                y2 = projArray2[i].getY();
+                a1 = projArray1[i].getAngle();
+                a2 = projArray2[i].getAngle();
+                drawImageAtRot(tank, lerp(x2, x1, time), lerp(y2, y1, time), lerp(a2, a1, time) + Math.PI / 2);
+            }
         }
     }
 
@@ -195,9 +205,20 @@ public final class GamePanel extends JPanel {
             case 10: {//singleplayer debug
                 //DEBUG USING SERVER SIMULATE
                 //add new snapshot to index 0, remove from end
-                self.move(gf.kb.getKeys());
+                boolean[] keys = gf.kb.getKeys();
+                self.move(keys);
+                for(Projectile proj : localProj){
+                    proj.move();
+                }
+                if (projCooldown > 0) {
+                    projCooldown--;
+                }
+                if (keys[4] && projCooldown == 0) {
+                    localProj.add(new Projectile(self.getX(), self.getY(), self.getAngle(), self.getVel(), self.getRID()));
+                    projCooldown+=Projectile.COOLDOWN;
+                }
                 ClientPlayer[] pArr = new ClientPlayer[]{new ClientPlayer(self, 0)};
-                localSnapshots.add(0, new Snapshot(pArr, localProj, System.currentTimeMillis()));
+                localSnapshots.add(0, new Snapshot(pArr, localProj.toArray(Projectile[]::new), System.currentTimeMillis()));
                 if (localSnapshots.size() > 5) {
                     localSnapshots.remove(localSnapshots.size() - 1);
                 }

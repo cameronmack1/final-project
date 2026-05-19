@@ -5,7 +5,7 @@ package tankgame.game;
  * @author Layne
  */
 public abstract class Player {
-    private int id;
+    private int rid;
     private double x = 500;
     private double y = 500;
     private double angle;
@@ -16,15 +16,15 @@ public abstract class Player {
     public Player(){}
     
     public Player(Player toBeCopied){
-        this.id = toBeCopied.getID();
+        this.rid = toBeCopied.getRID();
         this.x = toBeCopied.getX();
         this.y = toBeCopied.getY();
         this.angle = toBeCopied.getAngle();
         this.velocity = toBeCopied.getVel();
     }
     
-    public int getID(){
-        return id;
+    public int getRID(){
+        return rid;
     }
     
     public double getVel(){

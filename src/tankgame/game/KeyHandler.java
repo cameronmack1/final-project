@@ -47,7 +47,6 @@ public class KeyHandler extends KeyAdapter {
     @Override
     public void keyReleased(KeyEvent e){
         switch(e.getKeyCode()){
-            
             case KeyEvent.VK_UP:
             case KeyEvent.VK_W:{
                 keys[0] = false;
@@ -72,8 +71,6 @@ public class KeyHandler extends KeyAdapter {
                 keys[4] = false;
                 break;
             }
-            
-           
         }
     }
 }
