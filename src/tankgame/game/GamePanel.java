@@ -43,6 +43,7 @@ public final class GamePanel extends JPanel {
     public PlayerHandler playerHandler = new PlayerHandler();
     Graphics2D g2d;
     BufferedImage tank;
+    BufferedImage bullet;
 
     private int projCooldown = 0;
 
@@ -76,10 +77,12 @@ public final class GamePanel extends JPanel {
 
         try {
             tank = resizeImage(60, 80, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "tank.png")));
+            bullet = resizeImage(20, 40, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "bullet.png")));
         } catch (IOException e) {
             System.out.println("error loading file");
         } catch (NullPointerException e) {
             System.out.println("error file missing wtf did u do");
+            e.printStackTrace();
         }
 
         gameState = 10;
@@ -135,7 +138,7 @@ public final class GamePanel extends JPanel {
         Projectile[] projArray2 = s2.getProjectileArray();
         for (int i = 0; i < s2.getProjectileArray().length; i++) {
             if (projArray2[i].getIsNew()) {
-                drawImageAtRot(tank, projArray2[i].getX(), projArray2[i].getY(), projArray2[i].getAngle() + Math.PI / 2);
+                drawImageAtRot(bullet, projArray2[i].getX(), projArray2[i].getY(), projArray2[i].getAngle());
             } else {
                 x1 = projArray1[i].getX();
                 x2 = projArray2[i].getX();
@@ -143,7 +146,7 @@ public final class GamePanel extends JPanel {
                 y2 = projArray2[i].getY();
                 a1 = projArray1[i].getAngle();
                 a2 = projArray2[i].getAngle();
-                drawImageAtRot(tank, lerp(x2, x1, time), lerp(y2, y1, time), lerp(a2, a1, time) + Math.PI / 2);
+                drawImageAtRot(bullet, lerp(x2, x1, time), lerp(y2, y1, time), lerp(a2, a1, time));
             }
         }
     }
