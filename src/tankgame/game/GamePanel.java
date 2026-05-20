@@ -14,6 +14,12 @@ import javax.swing.JPanel;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.DisplayMode;
+import java.awt.Canvas;
+import java.awt.image.BufferStrategy;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -32,7 +38,7 @@ import tankgame.client.ClientPlayer;
  *
  * @author Cameron
  */
-public final class GamePanel extends JPanel {
+public final class GamePanel extends Canvas {
 
     GameFrame gf;
     int gameState;
@@ -45,7 +51,13 @@ public final class GamePanel extends JPanel {
     BufferedImage tank;
     BufferedImage bullet;
 
+    BufferStrategy buffer;
+
     private int projCooldown = 0;
+
+    GraphicsEnvironment ge;
+    GraphicsDevice gd;
+    GraphicsConfiguration gc;
 
     private volatile ClientPlayer self;
     private volatile ArrayList<Projectile> localProj = new ArrayList<>();
@@ -63,18 +75,27 @@ public final class GamePanel extends JPanel {
     private volatile ArrayList<Snapshot> serverSnapshots = new ArrayList<>();
 
     public GamePanel(GameFrame gf) {
+        this.gf = gf;
+
+        //init a ton of stuff
+        setIgnoreRepaint(true);
         width = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
         height = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
-        System.out.println(width + " " + height);
         setPreferredSize(new Dimension(width, height));
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         g2d = img.createGraphics();
 
+        //graphics stuff
+        ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        gd = ge.getDefaultScreenDevice();
+        gc = gd.getDefaultConfiguration();
+        gd.setFullScreenWindow(gf);
+
+        //set rendering hints
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        revalidate();
-        this.gf = gf;
 
+        //load images
         try {
             tank = resizeImage(60, 80, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "tank.png")));
             bullet = resizeImage(20, 20, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "bullet.png")));
@@ -85,13 +106,14 @@ public final class GamePanel extends JPanel {
             e.printStackTrace();
         }
 
+        //intialize canvas buffering shit
+        setVisible(true);
         gameState = 10;
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        g.drawImage(img, 0, 0, null);
+    public void initBuffer() {
+        createBufferStrategy(2);
+        buffer = getBufferStrategy();
     }
 
     public void initLobby(boolean isHost) {
@@ -155,6 +177,7 @@ public final class GamePanel extends JPanel {
         //NO SIMULATION
         //RENDER ONLY
         //MUST KEEP SIM SEPERATE FROM RENDER
+        g2d = img.createGraphics();
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, width, height);
         switch (gameState) {
@@ -185,8 +208,10 @@ public final class GamePanel extends JPanel {
                 break;
             }
         }
-        validate();
-        repaint();
+        Graphics graphics = buffer.getDrawGraphics();
+        graphics.drawImage(img, 0, 0, null);
+        g2d.dispose();
+        if(!buffer.contentsLost()) buffer.show();
     }
 
     public void tick() {
@@ -210,7 +235,7 @@ public final class GamePanel extends JPanel {
                 //add new snapshot to index 0, remove from end
                 boolean[] keys = gf.kb.getKeys();
                 self.move(keys);
-                for(Projectile proj : localProj){
+                for (Projectile proj : localProj) {
                     proj.move();
                 }
                 if (projCooldown > 0) {
@@ -218,7 +243,7 @@ public final class GamePanel extends JPanel {
                 }
                 if (keys[4] && projCooldown == 0) {
                     localProj.add(new Projectile(self.getX(), self.getY(), self.getAngle(), self.getVel(), self.getRID()));
-                    projCooldown+=Projectile.COOLDOWN;
+                    projCooldown += Projectile.COOLDOWN;
                 }
                 ClientPlayer[] pArr = new ClientPlayer[]{new ClientPlayer(self, 0)};
                 localSnapshots.add(0, new Snapshot(pArr, localProj.toArray(Projectile[]::new), System.currentTimeMillis()));

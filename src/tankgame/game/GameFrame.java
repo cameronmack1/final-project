@@ -17,16 +17,17 @@ public class GameFrame extends JFrame {
     public GameFrame() {
         //initialize the JFrame
         setExtendedState(MAXIMIZED_BOTH);
-        setUndecorated(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setUndecorated(true);
         setVisible(true);
         addKeyListener(kb);
         GamePanel gp = new GamePanel(this);
         add(gp);
+        gp.initBuffer();
         pack();
 
         gp.initDebug();
-        
+
         //30 tps simulate
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
@@ -41,9 +42,9 @@ public class GameFrame extends JFrame {
         renderScheduler.scheduleAtFixedRate(() -> {
             try {
                 gp.renderLoop();
-            } catch (Exception e) {
+            } catch(Exception e){
                 e.printStackTrace();
             }
-        }, 0, 1000 / 60, TimeUnit.MILLISECONDS);
+        }, 0, 1000 / 144, TimeUnit.MILLISECONDS);
     }
 }
