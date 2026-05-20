@@ -13,7 +13,7 @@ public class Projectile {
     private double y;
     private double angle;
     private double velocity;
-    private int rid;
+    private final int rid;
 
     public Projectile(double x, double y, double angle, double velocity, int rid) {
         this.x = x + Math.cos(angle) * 50;

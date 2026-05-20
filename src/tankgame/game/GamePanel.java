@@ -74,8 +74,11 @@ public final class GamePanel extends Canvas {
     //once a snapshot gets old enough we throw it out
     private volatile ArrayList<Snapshot> serverSnapshots = new ArrayList<>();
 
+    KeyHandler kb = new KeyHandler(); 
+    
     public GamePanel(GameFrame gf) {
         this.gf = gf;
+        addKeyListener(kb);
 
         //init a ton of stuff
         setIgnoreRepaint(true);
@@ -114,14 +117,12 @@ public final class GamePanel extends Canvas {
     public void initBuffer() {
         createBufferStrategy(2);
         buffer = getBufferStrategy();
+        
+        requestFocusInWindow();
     }
 
     public void initLobby(boolean isHost) {
 
-    }
-
-    public void initMenu() {
-        MainMenu menu = new MainMenu();
     }
 
     public void initDebug() {
@@ -233,7 +234,7 @@ public final class GamePanel extends Canvas {
             case 10: {//singleplayer debug
                 //DEBUG USING SERVER SIMULATE
                 //add new snapshot to index 0, remove from end
-                boolean[] keys = gf.kb.getKeys();
+                boolean[] keys = kb.getKeys();
                 self.move(keys);
                 for (Projectile proj : localProj) {
                     proj.move();
