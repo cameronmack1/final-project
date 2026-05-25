@@ -92,7 +92,6 @@ public final class GamePanel extends Canvas {
         ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         gd = ge.getDefaultScreenDevice();
         gc = gd.getDefaultConfiguration();
-        gd.setFullScreenWindow(gf);
 
         //set rendering hints
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
@@ -109,9 +108,7 @@ public final class GamePanel extends Canvas {
             e.printStackTrace();
         }
 
-        //intialize canvas buffering shit
         setVisible(true);
-        gameState = 10;
     }
 
     public void initBuffer() {
@@ -130,6 +127,8 @@ public final class GamePanel extends Canvas {
         self = new ClientPlayer(0);
         Snapshot defaultSnapshot = new Snapshot(new ClientPlayer[]{self}, localProj.toArray(Projectile[]::new), System.currentTimeMillis());
         localSnapshots.add(defaultSnapshot);
+        localSnapshots.add(defaultSnapshot);
+        gameState = 10;
     }
 
     public static double lerp(double val1, double val2, double alpha) {

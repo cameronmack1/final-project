@@ -1,7 +1,5 @@
 package tankgame.game;
-
-import java.util.HashSet;
-import java.util.Set;
+    
 import javax.swing.JFrame;
 import tankgame.menu.MainMenu;
 import java.util.concurrent.Executors;
