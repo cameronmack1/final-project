@@ -30,17 +30,19 @@ public class GameFrame extends JFrame {
     
     public void startGame(){
         remove(mm);
-        GamePanel gp = new GamePanel(this);
-        add(gp);
-        gp.initBuffer();
-        gp.initDebug();
+        GameHandler gh = new GameHandler();
+        GameCanvas gc = new GameCanvas(this, gh);
+        gh.setCanvas(gc);
+        add(gc);
+        gc.initBuffer();
+        gh.initLocal();
         pack();
         
         //30 tps simulate
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
             try {
-                gp.tick();
+                gh.localTick();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -49,7 +51,7 @@ public class GameFrame extends JFrame {
         ScheduledExecutorService renderScheduler = Executors.newSingleThreadScheduledExecutor();
         renderScheduler.scheduleAtFixedRate(() -> {
             try {
-                gp.renderLoop();
+                gc.renderLoop();
             } catch(Exception e){
                 e.printStackTrace();
             }

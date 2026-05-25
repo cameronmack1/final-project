@@ -5,6 +5,7 @@ package tankgame.game;
  * @author Layne
  */
 public abstract class Player {
+
     private int rid;
     private double x = 500;
     private double y = 500;
@@ -12,25 +13,27 @@ public abstract class Player {
     private double velocity = 0;
     public static final double BRAKING_POWER = 0.25;
     public static final double ACCELERATION = 0.5;
-    
-    public Player(){}
-    
-    public Player(Player toBeCopied){
+    public static final double TURN_SPEED = 1.0 / 67.0;
+
+    public Player() {
+    }
+
+    public Player(Player toBeCopied) {
         this.rid = toBeCopied.getRID();
         this.x = toBeCopied.getX();
         this.y = toBeCopied.getY();
         this.angle = toBeCopied.getAngle();
         this.velocity = toBeCopied.getVel();
     }
-    
-    public int getRID(){
+
+    public int getRID() {
         return rid;
     }
-    
-    public double getVel(){
+
+    public double getVel() {
         return velocity;
     }
-    
+
     public double getX() {
         return x;
     }
@@ -62,10 +65,10 @@ public abstract class Player {
             velocity = -5;
         }
         if (keys[1]) {//pressing left
-            angle -= velocity / 50;
+            angle -= velocity * TURN_SPEED;
         }
         if (keys[3]) {//pressing right
-            angle += velocity / 50;
+            angle += velocity * TURN_SPEED;
         }
         y += Math.sin(angle) * velocity;
         x += Math.cos(angle) * velocity;
