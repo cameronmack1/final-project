@@ -1,5 +1,6 @@
 package tankgame.game;
     
+import tankgame.game.Render.GameCanvas;
 import javax.swing.JFrame;
 import tankgame.menu.MainMenu;
 import java.util.concurrent.Executors;

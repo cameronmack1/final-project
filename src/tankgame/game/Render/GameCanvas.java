@@ -1,4 +1,4 @@
-package tankgame.game;
+package tankgame.game.Render;
 
 import tankgame.server.PlayerHandler;
 import java.util.ArrayList;
@@ -27,6 +27,10 @@ import java.awt.RenderingHints;
 import java.io.File;
 
 import tankgame.client.ClientPlayer;
+import tankgame.game.GameFrame;
+import tankgame.game.GameHandler;
+import tankgame.game.KeyHandler;
+import tankgame.game.Player;
 
 /**
  *
@@ -79,7 +83,7 @@ public final class GameCanvas extends Canvas {
         width = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
         height = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
         setPreferredSize(new Dimension(width, height));
-        img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        img = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
         g2d = img.createGraphics();
 
         //graphics stuff
@@ -170,7 +174,7 @@ public final class GameCanvas extends Canvas {
         //MUST KEEP SIM SEPERATE FROM RENDER
         g2d = img.createGraphics();
         g2d.setColor(Color.BLACK);
-        g2d.fillRect(0, 0, width, height);
+        g2d.fillRect(0, 0, 1920, 1080);
         if(local){
                 long t1 = localSnapshots.get(0).getTime();
                 long t2 = localSnapshots.get(1).getTime();
@@ -180,7 +184,7 @@ public final class GameCanvas extends Canvas {
                 render(localSnapshots.get(0), localSnapshots.get(1), time);
         }
         Graphics graphics = buffer.getDrawGraphics();
-        graphics.drawImage(img, 0, 0, null);
+        graphics.drawImage(img.getScaledInstance(width, height, Image.SCALE_DEFAULT), 0, 0, null);
         g2d.dispose();
         if (!buffer.contentsLost()) {
             buffer.show();

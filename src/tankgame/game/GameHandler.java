@@ -1,5 +1,6 @@
 package tankgame.game;
 
+import tankgame.game.Render.GameCanvas;
 import java.util.ArrayList;
 import tankgame.game.Render.Snapshot;
 import tankgame.game.projectile.Projectile;
