@@ -3,32 +3,16 @@ package tankgame.server;
 import tankgame.game.Player;
 
 import java.util.UUID;
+
 /**
  *
  * @author Cameron
  */
-public class ServerPlayer extends Player{
-
-    public int x;
-    public int y;
+public class ServerPlayer extends Player {
     public final UUID id;
 
-    public ServerPlayer(int x, int y, UUID id) {
-        this.x = x;
-        this.y = y;
+    public ServerPlayer(double x, double y, UUID id) {
+        super(x, y);
         this.id = id;
-    }
-
-    public void move(int xMove, int yMove) {
-        if (xMove > 0) {
-            x += 5;
-        } else if (xMove < 0) {
-            x -= 5;
-        }
-        if (yMove > 0) {
-            y += 5;
-        } else if (yMove < 0) {
-            y -= 5;
-        }
     }
 }

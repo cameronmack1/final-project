@@ -20,7 +20,6 @@ public class GameFrame extends JFrame {
         setExtendedState(MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setUndecorated(true);
-        
         setVisible(true);
         width = getWidth();
         height = getHeight();

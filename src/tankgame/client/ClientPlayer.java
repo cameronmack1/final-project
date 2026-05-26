@@ -14,7 +14,8 @@ public class ClientPlayer extends Player {
         this.rid = id;
     }
     
-    public ClientPlayer(int id){
+    public ClientPlayer(int x, int y, int id){
+        super(x, y);
         this.rid = id;
     }
 }

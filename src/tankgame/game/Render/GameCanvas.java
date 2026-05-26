@@ -80,8 +80,8 @@ public final class GameCanvas extends Canvas {
 
         //init a ton of stuff
         setIgnoreRepaint(true);
-        width = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
-        height = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+        width = gf.getWidth();
+        height = gf.getHeight();
         setPreferredSize(new Dimension(width, height));
         img = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
         g2d = img.createGraphics();

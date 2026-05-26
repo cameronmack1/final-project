@@ -1,10 +1,12 @@
 package tankgame.game;
 
-import tankgame.game.Render.GameCanvas;
 import java.util.ArrayList;
+
+import tankgame.game.Render.GameCanvas;
 import tankgame.game.Render.Snapshot;
 import tankgame.game.projectile.Projectile;
 import tankgame.client.ClientPlayer;
+import tankgame.server.*;
 
 /**
  *
@@ -13,6 +15,9 @@ import tankgame.client.ClientPlayer;
 public class GameHandler {
 
     private GameCanvas gc;
+
+    //server stuff
+    ArrayList<Player> players = new ArrayList<>();
 
     //local stuff
     int projCooldown;
@@ -24,12 +29,16 @@ public class GameHandler {
         gc = canvas;
     }
 
+    public void initServer() {
+        players.add(new ServerPlayer(0, 0, null));
+    }
+
     public void serverTick() {
 
     }
-    
-    public void initLocal(){
-        self = new ClientPlayer(0);
+
+    public void initLocal() {
+        self = new ClientPlayer(500, 500, 0);
         Snapshot defaultSnapshot = new Snapshot(new ClientPlayer[]{self}, localProj.toArray(Projectile[]::new), System.currentTimeMillis());
         gc.addSnapshot(defaultSnapshot);
         gc.addSnapshot(defaultSnapshot);
