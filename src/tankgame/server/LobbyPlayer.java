@@ -8,6 +8,11 @@ package tankgame.server;
  *
  * @author layne
  */
-public class LobbyPlayer {
+public class LobbyPlayer  {
+    private String name;
+   public LobbyPlayer (String name){
+       
+       this.name = name;
+   }
     
 }

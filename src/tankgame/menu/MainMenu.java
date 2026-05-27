@@ -12,8 +12,7 @@ import tankgame.game.GameFrame;
 /**
  * vvvvv that guys a poopyhead
  *
- * @author Layne
- */
+ * @author Layne */
 public class MainMenu extends JPanel {
 
     private Image bg;
