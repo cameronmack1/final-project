@@ -24,7 +24,7 @@ import java.awt.event.ActionListener;
  */
 public class ClientHandler {
 
-    private ArrayList<ClientObj> clients = new ArrayList<>();
+    private final ArrayList<ClientObj> clients = new ArrayList<>();
     public Queue<String> recieveQueue = new LinkedList<>();
     private int port;
     private ServerSocket ss;
@@ -41,6 +41,13 @@ public class ClientHandler {
 
     public ClientObj[] getClients() {
         return this.clients.toArray(ClientObj[]::new);
+    }
+    
+    public ClientObj getClient(UUID userID){
+        for(ClientObj client : clients){
+            if(client.id == userID) return client;
+        }
+        return null;
     }
 
     public ClientHandler(int port) {
@@ -124,6 +131,10 @@ public class ClientHandler {
             String message;
 
             //loops and receieves messages, ends when null message is recieved
+            //MESSAGE FORMAT
+            //messagetype:userid:message
+            //message types are 0 for new connection, 1 to tell reset your timeout timer, and 2 to send your inputs every tick
+            //new connection message has just name
             while ((message = in.readLine()) != null) {
                 recieveQueue.add(message);
                 notifyListeners();

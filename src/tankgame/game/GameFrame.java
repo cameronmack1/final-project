@@ -22,7 +22,7 @@ import java.util.UUID;
  */
 public class GameFrame extends JFrame {
 
-    private MainMenu mm;
+    private final MainMenu mm;
     private UDPListener udpListener;
     private ClientHandler ch;
     private boolean gameStarted = false;
@@ -75,14 +75,36 @@ public class GameFrame extends JFrame {
         ch.addActionListener(al -> {
             String message = ch.recieveQueue.poll();
             UUID messageUUID;
-            messageUUID = UUID.fromString(message.substring(0, 36));
-            message = message.substring(37);
-            if (gameStarted) {
-                //during game, all messages should be players sending their inputs
-                
-            } else {
-                //in lobby, all messages should be either new connections or saying that the client is still connected
-                
+            //get type
+            int type = Character.getNumericValue(message.charAt(0));
+            message = message.substring(2);
+            //get uuid
+            if (type != 0) {
+                messageUUID = UUID.fromString(message.substring(0, 36));
+                message = message.substring(37);
+                ch.getClient(messageUUID).updateLastMessageTime();
+            }
+            switch (type) {
+                //new connection
+                case 0 -> {
+                    if (!gameStarted) {
+                        
+                    }
+                }
+                //lobby timeout
+                case 1 -> {
+                    if (!gameStarted) {
+                        
+                    }
+                }
+
+                //in game tick
+                //should be players sending inputs
+                case 2 -> {
+                    if (gameStarted) {
+                        
+                    }
+                }
             }
         });
     }

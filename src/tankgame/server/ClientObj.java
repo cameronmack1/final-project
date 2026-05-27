@@ -14,13 +14,32 @@ import java.io.PrintWriter;
 public class ClientObj {
 
     public Socket socket;
-    PrintWriter output;
+    public final PrintWriter output;
     public final UUID id;
+    private long lastMessageTime;
+    private String name;
 
     public ClientObj(Socket socket, PrintWriter output, UUID id) {
         this.socket = socket;
         this.output = output;
         this.id = id;
+        this.lastMessageTime = System.currentTimeMillis();
+    }
+    
+    public String getName(){
+        return this.name;
+    }
+    
+    public void setName(String playerName){
+        name = playerName;
+    }
+    
+    public void updateLastMessageTime(){
+        lastMessageTime = System.currentTimeMillis();
+    }
+    
+    public long getLastMessageTime(){
+        return lastMessageTime;
     }
 
     public void send(String message) {//sends a message to the client
