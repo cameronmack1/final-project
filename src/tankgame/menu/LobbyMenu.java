@@ -34,7 +34,7 @@ public class LobbyMenu extends JPanel {
 
         //load images
         try {
-            bg = ImageIO.read(new File("src" + File.separator + "images" + File.separator + "mainMenu.png")).getScaledInstance(w, h, Image.SCALE_DEFAULT);
+            bg = ImageIO.read(new File("src" + File.separator + "images" + File.separator + "LobbyMenuForest.png")).getScaledInstance(w, h, Image.SCALE_DEFAULT);
         } catch (IOException e) {
             System.out.println("error loading file");
         } catch (NullPointerException e) {
@@ -60,7 +60,6 @@ public class LobbyMenu extends JPanel {
             startDebug();
         });
         debug.setFont(f);
-
         setVisible(true);
     }
 

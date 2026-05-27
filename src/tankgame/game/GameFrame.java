@@ -3,11 +3,13 @@ package tankgame.game;
 import tankgame.game.Render.GameCanvas;
 import javax.swing.JFrame;
 import tankgame.menu.MainMenu;
+import tankgame.menu.LobbyMenu;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import tankgame.server.UDPListener;
 import tankgame.server.ClientHandler;
+import tankgame.server.LobbyPlayer;
 
 import java.net.BindException;
 import java.net.SocketException;
@@ -15,6 +17,7 @@ import java.net.SocketException;
 import java.io.IOException;
 
 import java.util.UUID;
+import java.util.ArrayList;
 
 /**
  *
@@ -22,7 +25,8 @@ import java.util.UUID;
  */
 public class GameFrame extends JFrame {
 
-    private final MainMenu mm;
+    private MainMenu mm;
+    private LobbyMenu lm;
     private UDPListener udpListener;
     private ClientHandler ch;
     private boolean gameStarted = false;
@@ -45,6 +49,13 @@ public class GameFrame extends JFrame {
 
     //starts the server
     public void initServerLobby() {
+        //create lobby menu panel and remove main menu
+        this.remove(mm);
+        lm = new LobbyMenu(this);
+        this.add(lm);
+        setVisible(true);
+        
+        ArrayList<LobbyPlayer> lobbyPlayers = new ArrayList<>();
         port = 6767;
         boolean portFound = false;
         //create client handler
@@ -79,22 +90,20 @@ public class GameFrame extends JFrame {
             int type = Character.getNumericValue(message.charAt(0));
             message = message.substring(2);
             //get uuid
-            if (type != 0) {
-                messageUUID = UUID.fromString(message.substring(0, 36));
-                message = message.substring(37);
-                ch.getClient(messageUUID).updateLastMessageTime();
-            }
+            messageUUID = UUID.fromString(message.substring(0, 36));
+            message = message.substring(37);
+            ch.getClient(messageUUID).updateLastMessageTime();
             switch (type) {
                 //new connection
                 case 0 -> {
                     if (!gameStarted) {
-                        
+                        lobbyPlayers.add(new LobbyPlayer(message));
                     }
                 }
                 //lobby timeout
                 case 1 -> {
                     if (!gameStarted) {
-                        
+
                     }
                 }
 
@@ -102,7 +111,7 @@ public class GameFrame extends JFrame {
                 //should be players sending inputs
                 case 2 -> {
                     if (gameStarted) {
-                        
+
                     }
                 }
             }

@@ -42,10 +42,12 @@ public class ClientHandler {
     public ClientObj[] getClients() {
         return this.clients.toArray(ClientObj[]::new);
     }
-    
-    public ClientObj getClient(UUID userID){
-        for(ClientObj client : clients){
-            if(client.id == userID) return client;
+
+    public ClientObj getClient(UUID userID) {
+        for (ClientObj client : clients) {
+            if (client.id == userID) {
+                return client;
+            }
         }
         return null;
     }
@@ -82,7 +84,7 @@ public class ClientHandler {
             if (clients.get(i).id.equals(id)) {
                 try {
                     clients.get(i).close();
-                } catch (IOException e){
+                } catch (IOException e) {
                     //i still dont know why it can throw IOExceptions
                     e.printStackTrace();
                 }
@@ -108,7 +110,9 @@ public class ClientHandler {
                     System.out.println("New connection: " + socket.getRemoteSocketAddress());
 
                     //create client object with client details
-                    ClientObj c = new ClientObj(socket, out, UUID.randomUUID());
+                    UUID id = UUID.randomUUID();
+                    ClientObj c = new ClientObj(socket, out, id);
+                    c.send("0:" + id.toString());
                     clients.add(c);
 
                     //create thread to handle each client seperately
