@@ -2,7 +2,7 @@ package tankgame.menu;
 import javax.swing.JPanel;
 /**
  *
- * @author Koorosh
+ * @author Layne
  */
 public class LobbyMenu extends JPanel {
     
