@@ -9,10 +9,14 @@ import java.util.UUID;
  * @author Cameron
  */
 public class ServerPlayer extends Player {
-    public final UUID id;
+    private final UUID id;
 
-    public ServerPlayer(double x, double y, UUID id) {
-        super(x, y);
+    public ServerPlayer(double x, double y, int rid, UUID id) {
+        super(x, y, rid);
         this.id = id;
+    }
+    
+    public UUID getID(){
+        return this.id;
     }
 }

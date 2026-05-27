@@ -15,9 +15,10 @@ public abstract class Player {
     public static final double ACCELERATION = 0.5;
     public static final double TURN_SPEED = 1.0 / 67.0;
 
-    public Player(double x, double y) {
+    public Player(double x, double y, int rid) {
         this.x = x;
         this.y = y;
+        this.rid = rid;
     }
 
     public Player(Player toBeCopied) {

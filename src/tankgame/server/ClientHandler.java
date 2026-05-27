@@ -30,14 +30,14 @@ public class ClientHandler {
         this.port = port;
     }
 
-    public void setPort(int port){
+    public void setPort(int port) {
         this.port = port;
     }
-    
-    public void close() throws IOException{
+
+    public void close() throws IOException {
         ss.close();
     }
-    
+
     public void removeClient(UUID id) {
         for (int i = 0; i < clients.size(); i++) {
             if (clients.get(i).id.equals(id)) {
@@ -47,31 +47,40 @@ public class ClientHandler {
         }
     }
 
-    public void initiate() throws SocketException, IOException{
-            ss =  new ServerSocket();//create server socket
-            ss.setReuseAddress(true);
-            ss.bind(new InetSocketAddress(port));
-            new Thread(() -> {//create thread that loops waiting for clients
-                while (!ss.isClosed()) {
-                    try {
-                        Socket socket = ss.accept();//block until new connection
-                        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                        System.out.println("New connection: " + socket.getRemoteSocketAddress());
-                        ClientObj c = new ClientObj(socket, out, UUID.randomUUID());//create client object with client details
-                        clients.add(c);
-                        new Thread(() -> handleClient(c)).start();//create thread to handle each client seperately
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+    public void initiate() throws SocketException, IOException {
+        //create server socket
+        ss = new ServerSocket();
+        ss.setReuseAddress(true);
+        ss.bind(new InetSocketAddress(port));
+        //create thread that loops waiting for clients
+        new Thread(() -> {
+            while (!ss.isClosed()) {
+                try {
+                    //block until new connection
+                    Socket socket = ss.accept();
+                    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                    System.out.println("New connection: " + socket.getRemoteSocketAddress());
+                    
+                    //create client object with client details
+                    ClientObj c = new ClientObj(socket, out, UUID.randomUUID());
+                    clients.add(c);
+                    
+                    //create thread to handle each client seperately
+                    new Thread(() -> handleClient(c)).start();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            }).start();
+            }
+        }).start();
     }
 
     public void handleClient(ClientObj client) {//add messages from client to the queue
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(client.socket.getInputStream()));
             String message;
-            while ((message = in.readLine()) != null) {//loops and receieves messages, ends when null message is recieved
+            
+            //loops and receieves messages, ends when null message is recieved
+            while ((message = in.readLine()) != null) {
                 recieveQueue.add(message);
             }
         } catch (Exception e) {

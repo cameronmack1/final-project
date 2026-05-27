@@ -18,6 +18,7 @@ public class GameHandler {
 
     //server stuff
     ArrayList<Player> players = new ArrayList<>();
+    ArrayList<Projectile> projectiles = new ArrayList<>();
 
     //local stuff
     int projCooldown;
@@ -30,14 +31,14 @@ public class GameHandler {
     }
 
     public void initServer() {
-        players.add(new ServerPlayer(0, 0, null));
+        players.add(new ServerPlayer(0, 0, 0, null));
     }
 
     public void serverTick() {
 
     }
 
-    public void initLocal() {
+    public void initDebug() {
         self = new ClientPlayer(500, 500, 0);
         Snapshot defaultSnapshot = new Snapshot(new ClientPlayer[]{self}, localProj.toArray(Projectile[]::new), System.currentTimeMillis());
         gc.addSnapshot(defaultSnapshot);
@@ -45,7 +46,7 @@ public class GameHandler {
         gc.initLocal();
     }
 
-    public void localTick() {
+    public void debugTick() {
         //move self
         keys = gc.kb.getKeys();
         self.move(keys);
@@ -62,7 +63,7 @@ public class GameHandler {
             localProj.add(new Projectile(self.getX(), self.getY(), self.getAngle(), self.getVel(), self.getRID()));
             projCooldown += Projectile.COOLDOWN;
         }
-        ClientPlayer[] pArr = new ClientPlayer[]{new ClientPlayer(self, 0)};
+        ClientPlayer[] pArr = new ClientPlayer[]{new ClientPlayer(self)};
         gc.addSnapshot(new Snapshot(pArr, localProj.toArray(Projectile[]::new), System.currentTimeMillis()));
     }
 }

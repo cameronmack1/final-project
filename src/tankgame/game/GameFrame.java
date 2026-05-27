@@ -28,21 +28,21 @@ public class GameFrame extends JFrame {
         setVisible(true);
     }
     
-    public void startGame(){
+    public void startDebug(){
         remove(mm);
         GameHandler gh = new GameHandler();
         GameCanvas gc = new GameCanvas(this, gh);
         gh.setCanvas(gc);
         add(gc);
         gc.initBuffer();
-        gh.initLocal();
+        gh.initDebug();
         pack();
         
         //30 tps simulate
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
             try {
-                gh.localTick();
+                gh.debugTick();
             } catch (Exception e) {
                 e.printStackTrace();
             }

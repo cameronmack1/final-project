@@ -1,9 +1,7 @@
 package tankgame.game.Render;
 
-import tankgame.server.PlayerHandler;
 import java.util.ArrayList;
 
-import tankgame.game.Render.*;
 import tankgame.game.projectile.Projectile;
 
 import javax.imageio.ImageIO;
@@ -21,12 +19,10 @@ import java.awt.Image;
 import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.geom.AffineTransform;
-import java.awt.Toolkit;
 import java.awt.RenderingHints;
 
 import java.io.File;
 
-import tankgame.client.ClientPlayer;
 import tankgame.game.GameFrame;
 import tankgame.game.GameHandler;
 import tankgame.game.KeyHandler;
