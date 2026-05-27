@@ -35,7 +35,7 @@ public class MainMenu extends JPanel {
 
         //load images
         try {
-            bg = ImageIO.read(new File("src" + File.separator + "images" + File.separator + "tank.png"));
+            bg = ImageIO.read(new File("src" + File.separator + "images" + File.separator + "mainMenu.png")).getScaledInstance(w, h, Image.SCALE_DEFAULT);
         } catch (IOException e) {
             System.out.println("error loading file");
         } catch (NullPointerException e) {
