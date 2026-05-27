@@ -12,7 +12,7 @@ import tankgame.game.GameFrame;
 /**
  * vvvvv that guys a poopyhead
  *
- * @author Koorosh
+ * @author Layne
  */
 public class MainMenu extends JPanel {
 
@@ -20,6 +20,8 @@ public class MainMenu extends JPanel {
     private GameFrame gf;
     private int w;
     private int h;
+    private int testVariable;
+    private int e;
 
     public MainMenu(GameFrame gf) {
         //initialize
