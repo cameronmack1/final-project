@@ -1,20 +1,35 @@
 package tankgame.game;
-    
+
 import tankgame.game.Render.GameCanvas;
 import javax.swing.JFrame;
 import tankgame.menu.MainMenu;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import tankgame.server.UDPListener;
+import tankgame.server.ClientHandler;
+
+import java.net.BindException;
+import java.net.SocketException;
+
+import java.io.IOException;
+
+import java.util.UUID;
 
 /**
  *
  * @author Cameron
  */
 public class GameFrame extends JFrame {
-    MainMenu mm;
+
+    private MainMenu mm;
+    private UDPListener udpListener;
+    private ClientHandler ch;
+    private boolean gameStarted = false;
+    private int port;
     private int width;
     private int height;
+
     public GameFrame() {
         //initialize the JFrame
         setExtendedState(MAXIMIZED_BOTH);
@@ -27,8 +42,63 @@ public class GameFrame extends JFrame {
         this.add(mm);
         setVisible(true);
     }
-    
-    public void startDebug(){
+
+    //starts the server
+    public void initServerLobby() {
+        port = 6767;
+        boolean portFound = false;
+        //create client handler
+        ch = new ClientHandler(port);
+        //keep trying to make tcp server with new port until it doesnt give bindException
+        //basically if port is already taken then retry with new one
+        do {
+            try {
+                //initiate them all
+                //only ch.initiate gives errors so once that goes through then we can start the udp server
+                ch.initiate();
+                udpListener = new UDPListener(port);
+                udpListener.initiate();
+                portFound = true;
+            } catch (BindException e) {
+                //port already in use
+                port++;
+            } catch (SocketException e) {
+                //connection reset
+                e.printStackTrace();
+            } catch (IOException e) {
+                //idk why it throws this but be scared if it does
+                e.printStackTrace();
+            }
+        } while (!portFound);
+
+        //add action listener for when a message is recieved
+        ch.addActionListener(al -> {
+            String message = ch.recieveQueue.poll();
+            UUID messageUUID;
+            messageUUID = UUID.fromString(message.substring(0, 36));
+            message = message.substring(37);
+            if (gameStarted) {
+                //during game, all messages should be players sending their inputs
+                
+            } else {
+                //in lobby, all messages should be either new connections or saying that the client is still connected
+                
+            }
+        });
+    }
+
+    public void initServer() {
+        udpListener.close();
+        try {
+            ch.stopAccepting();
+        } catch (IOException e) {
+            //idk why this can throw
+            e.printStackTrace();
+        }
+        gameStarted = true;
+    }
+
+    public void startDebug() {
         remove(mm);
         GameHandler gh = new GameHandler();
         GameCanvas gc = new GameCanvas(this, gh);
@@ -37,7 +107,7 @@ public class GameFrame extends JFrame {
         gc.initBuffer();
         gh.initDebug();
         pack();
-        
+
         //30 tps simulate
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
@@ -52,7 +122,7 @@ public class GameFrame extends JFrame {
         renderScheduler.scheduleAtFixedRate(() -> {
             try {
                 gc.renderLoop();
-            } catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }, 0, 1000 / 144, TimeUnit.MILLISECONDS);

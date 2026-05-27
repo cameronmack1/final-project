@@ -17,7 +17,7 @@ public class UDPListener {
     public UDPListener(int port) {
         this.port = port;
     }
-
+    
     public boolean isListening() {//return if the socket is currently listening
         return isListening;
     }
@@ -34,22 +34,28 @@ public class UDPListener {
             isListening = true;
             new Thread(() -> {
                 try {
-                    socket = new DatagramSocket(port);//create socket
+                    //create socket
+                    socket = new DatagramSocket(port);
                     while (isListening) {
-                        byte[] receiveData = new byte[1024];//create receive data variable
+                        //create receive data variable
+                        byte[] receiveData = new byte[1024];
                         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-
-                        socket.receive(receivePacket);//block until packet recieved
-
-                        InetAddress clientAddress = receivePacket.getAddress();//create response message with client ip and port
+                        
+                        //block until packet recieved
+                        socket.receive(receivePacket);
+                        
+                        //create response message using client ip and port
+                        InetAddress clientAddress = receivePacket.getAddress();
                         int clientPort = receivePacket.getPort();
                         byte[] sendData = String.valueOf(port).getBytes();
 
+                        //send message
                         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, clientAddress, clientPort);//send response packet
                         socket.send(sendPacket);
                     }
                 } catch (Exception e) {
-                    if (!isListening) {//dont print stack trace on normal shutdown
+                    //dont print stack trace on normal shutdown
+                    if (!isListening) {
                         return;
                     }
                     e.printStackTrace();//adjust error handling later

@@ -15,7 +15,6 @@ import tankgame.server.*;
 public class GameHandler {
 
     private GameCanvas gc;
-
     //server stuff
     ArrayList<Player> players = new ArrayList<>();
     ArrayList<Projectile> projectiles = new ArrayList<>();
@@ -31,7 +30,7 @@ public class GameHandler {
     }
 
     public void initServer() {
-        players.add(new ServerPlayer(0, 0, 0, null));
+        
     }
 
     public void serverTick() {

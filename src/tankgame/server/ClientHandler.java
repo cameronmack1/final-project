@@ -15,16 +15,33 @@ import java.net.ServerSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /**
  *
  * @author Cameron
  */
 public class ClientHandler {
 
-    public ArrayList<ClientObj> clients = new ArrayList<>();
+    private ArrayList<ClientObj> clients = new ArrayList<>();
     public Queue<String> recieveQueue = new LinkedList<>();
     private int port;
-    ServerSocket ss;
+    private ServerSocket ss;
+    private boolean isAcceptingClients;
+    private final ArrayList<ActionListener> listeners = new ArrayList<>();
+
+    public void addActionListener(ActionListener listener) {
+        listeners.add(listener);
+    }
+
+    boolean getIsAcceptingClients() {
+        return isAcceptingClients;
+    }
+
+    public ClientObj[] getClients() {
+        return this.clients.toArray(ClientObj[]::new);
+    }
 
     public ClientHandler(int port) {
         this.port = port;
@@ -34,14 +51,34 @@ public class ClientHandler {
         this.port = port;
     }
 
-    public void close() throws IOException {
+    public void close() {
+        try {
+            if (!ss.isClosed()) {
+                ss.close();
+            }
+            for (ClientObj co : clients) {
+                co.close();
+            }
+        } catch (IOException e) {
+            //idk
+            e.printStackTrace();
+        }
+    }
+
+    public void stopAccepting() throws IOException {
         ss.close();
+        isAcceptingClients = false;
     }
 
     public void removeClient(UUID id) {
         for (int i = 0; i < clients.size(); i++) {
             if (clients.get(i).id.equals(id)) {
-                clients.get(i).close();
+                try {
+                    clients.get(i).close();
+                } catch (IOException e){
+                    //i still dont know why it can throw IOExceptions
+                    e.printStackTrace();
+                }
                 clients.remove(i);
             }
         }
@@ -52,6 +89,8 @@ public class ClientHandler {
         ss = new ServerSocket();
         ss.setReuseAddress(true);
         ss.bind(new InetSocketAddress(port));
+        isAcceptingClients = true;
+
         //create thread that loops waiting for clients
         new Thread(() -> {
             while (!ss.isClosed()) {
@@ -60,11 +99,11 @@ public class ClientHandler {
                     Socket socket = ss.accept();
                     PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                     System.out.println("New connection: " + socket.getRemoteSocketAddress());
-                    
+
                     //create client object with client details
                     ClientObj c = new ClientObj(socket, out, UUID.randomUUID());
                     clients.add(c);
-                    
+
                     //create thread to handle each client seperately
                     new Thread(() -> handleClient(c)).start();
                 } catch (Exception e) {
@@ -74,17 +113,31 @@ public class ClientHandler {
         }).start();
     }
 
+    /**
+     * receives messages from clients and puts them into the recieveQueue
+     *
+     * @param client the client object to handle
+     */
     public void handleClient(ClientObj client) {//add messages from client to the queue
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(client.socket.getInputStream()));
             String message;
-            
+
             //loops and receieves messages, ends when null message is recieved
             while ((message = in.readLine()) != null) {
                 recieveQueue.add(message);
+                notifyListeners();
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void notifyListeners() {
+        //create action event and send to listeners
+        ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "MessageRecieved");
+        for (ActionListener listener : listeners) {
+            listener.actionPerformed(event);
         }
     }
 }
