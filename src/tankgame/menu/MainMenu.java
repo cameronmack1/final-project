@@ -65,7 +65,8 @@ public class MainMenu extends JPanel {
     }
 
     public void hostGame() {
-
+        gf.initServerLobby();
+        
     }
 
     public void startDebug() {
