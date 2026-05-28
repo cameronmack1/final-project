@@ -139,6 +139,8 @@ public class ClientHandler {
             //messagetype:userid:message
             //message types are 0 for new connection, 1 to tell reset your timeout timer, and 2 to send your inputs every tick
             //new connection message has just name
+            //reset timer has nothing
+            //inputs has 5 1s or 0s that represent inputs
             while ((message = in.readLine()) != null) {
                 recieveQueue.add(message);
                 notifyListeners();

@@ -29,6 +29,7 @@ public class GameFrame extends JFrame {
     private LobbyMenu lm;
     private UDPListener udpListener;
     private ClientHandler ch;
+    private GameHandler gh;
     private boolean gameStarted = false;
     private int port;
     private int width;
@@ -54,7 +55,7 @@ public class GameFrame extends JFrame {
         lm = new LobbyMenu(this);
         this.add(lm);
         setVisible(true);
-        
+
         ArrayList<LobbyPlayer> lobbyPlayers = new ArrayList<>();
         port = 6767;
         boolean portFound = false;
@@ -97,21 +98,25 @@ public class GameFrame extends JFrame {
                 //new connection
                 case 0 -> {
                     if (!gameStarted) {
-                        lobbyPlayers.add(new LobbyPlayer(message));
+                        LobbyPlayer lp = new LobbyPlayer(message, messageUUID);
+                        lobbyPlayers.add(lp);
+                        lm.addPlayer(lp);
                     }
                 }
-                //lobby timeout
+                //reset timeout
                 case 1 -> {
-                    if (!gameStarted) {
-
-                    }
+                    //literally do nothing lmao
                 }
 
                 //in game tick
                 //should be players sending inputs
                 case 2 -> {
                     if (gameStarted) {
-
+                        boolean[] keys = new boolean[5];
+                        for (int i = 0; i < 5; i++) {
+                            keys[i] = '1' == message.charAt(i);
+                        }
+                        gh.getPlayer(messageUUID).setKeys(keys);
                     }
                 }
             }
@@ -131,7 +136,7 @@ public class GameFrame extends JFrame {
 
     public void startDebug() {
         remove(mm);
-        GameHandler gh = new GameHandler();
+        gh = new GameHandler();
         GameCanvas gc = new GameCanvas(this, gh);
         gh.setCanvas(gc);
         add(gc);

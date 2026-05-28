@@ -7,6 +7,7 @@ import tankgame.game.Render.Snapshot;
 import tankgame.game.projectile.Projectile;
 import tankgame.client.ClientPlayer;
 import tankgame.server.*;
+import java.util.UUID;
 
 /**
  *
@@ -16,8 +17,8 @@ public class GameHandler {
 
     private GameCanvas gc;
     //server stuff
-    ArrayList<Player> players = new ArrayList<>();
-    ArrayList<Projectile> projectiles = new ArrayList<>();
+    private ArrayList<ServerPlayer> players = new ArrayList<>();
+    private ArrayList<Projectile> projectiles = new ArrayList<>();
 
     //local stuff
     int projCooldown;
@@ -28,7 +29,16 @@ public class GameHandler {
     public void setCanvas(GameCanvas canvas) {
         gc = canvas;
     }
-
+    
+    public ServerPlayer getPlayer(UUID ID){
+        for(ServerPlayer player : players){
+            if(ID == player.getID()){
+                return player;
+            }
+        }
+        return null;
+    }
+    
     public void initServer() {
         
     }
