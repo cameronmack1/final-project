@@ -44,12 +44,12 @@ public class LobbyMenu extends JPanel {
         }
 
         //create buttons
-        JButton startButton = new JButton("Host Game");
+        JButton startButton = new JButton("Start Game");
         startButton.setBounds(w / 2 - w / 10, 4 * h / 6 - h / 10, w / 5, h / 10);
         add(startButton);
         startButton.setVisible(true);
         startButton.addActionListener(al -> {
-            hostGame();
+            startGame();
         });
         startButton.setFont(f);
 
@@ -64,8 +64,8 @@ public class LobbyMenu extends JPanel {
         setVisible(true);
     }
 
-    public void hostGame() {
-
+    public void startGame() {
+        gf.initServer();
     }
 
     public void startDebug() {

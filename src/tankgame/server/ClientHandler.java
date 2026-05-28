@@ -118,7 +118,9 @@ public class ClientHandler {
                     //create thread to handle each client seperately
                     new Thread(() -> handleClient(c)).start();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    if(!ss.isClosed()){
+                        //ouu shii
+                    }
                 }
             }
         }).start();

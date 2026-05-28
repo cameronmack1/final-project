@@ -32,6 +32,7 @@ public class GameFrame extends JFrame {
     private UDPListener udpListener;
     private ClientHandler ch;
     private GameHandler gh;
+    private GameCanvas gc;
     private boolean gameStarted = false;
     private int port;
     private int width;
@@ -149,6 +150,7 @@ public class GameFrame extends JFrame {
         add(gc);
 
         //start loops
+        initLocal();
         //30 tps simulate
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
@@ -172,6 +174,17 @@ public class GameFrame extends JFrame {
             }
         }, 0, 1000 / 30, TimeUnit.MILLISECONDS);
 
+    }
+
+    public void initLocal() {
+        gh = new GameHandler(this);
+        gc = new GameCanvas(this, gh);
+        gh.setCanvas(gc);
+        add(gc);
+        gc.initBuffer();
+        gh.initDebug();
+        pack();
+
         //144 fps render
         ScheduledExecutorService renderScheduler = Executors.newSingleThreadScheduledExecutor();
         renderScheduler.scheduleAtFixedRate(() -> {
@@ -181,18 +194,12 @@ public class GameFrame extends JFrame {
                 e.printStackTrace();
             }
         }, 0, 1000 / 144, TimeUnit.MILLISECONDS);
+
     }
 
     public void startDebug() {
         remove(mm);
-        gh = new GameHandler(this);
-        GameCanvas gc = new GameCanvas(this, gh);
-        gh.setCanvas(gc);
-        add(gc);
-        gc.initBuffer();
-        gh.initDebug();
-        pack();
-
+        initLocal();
         //30 tps simulate
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
@@ -202,14 +209,5 @@ public class GameFrame extends JFrame {
                 e.printStackTrace();
             }
         }, 0, 1000 / 30, TimeUnit.MILLISECONDS);
-        //144 fps render
-        ScheduledExecutorService renderScheduler = Executors.newSingleThreadScheduledExecutor();
-        renderScheduler.scheduleAtFixedRate(() -> {
-            try {
-                gc.renderLoop();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }, 0, 1000 / 144, TimeUnit.MILLISECONDS);
     }
 }

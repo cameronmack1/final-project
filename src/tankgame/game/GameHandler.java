@@ -1,7 +1,6 @@
 package tankgame.game;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import tankgame.game.Render.GameCanvas;
 import tankgame.game.Render.Snapshot;
@@ -45,16 +44,29 @@ public class GameHandler {
         }
         return null;
     }
+    
+    public void initLocal(){
+        self = new ClientPlayer(0, 0, 0);
+        Snapshot defaultSnapshot = new Snapshot(new ClientPlayer[]{self}, localProj.toArray(Projectile[]::new), System.currentTimeMillis());
+        gc.addSnapshot(defaultSnapshot);
+        gc.addSnapshot(defaultSnapshot);
+        gc.initLocal();
+    }
 
-    public void initServer() {
-
+    public void initServer(LobbyPlayer[] lpArray) {
+        int ridCount = 0;
+        for(LobbyPlayer lp : lpArray){
+            players.add(new ServerPlayer(0, 0, ridCount, lp.getID()));
+        }
     }
 
     public String serverTick() {
         String data = null;
+        //move all projectiles
         for (Projectile projectile : projectiles) {
             projectile.move();
         }
+        //move players and check shooting for each player
         for (ServerPlayer player : players) {
             player.setCooldown(player.getCooldown() - 1);
 
@@ -65,6 +77,7 @@ public class GameHandler {
                 player.setCooldown(Projectile.COOLDOWN);
             }
         }
+        //check collision
 
         //create snapshot and convert it to base64
         Snapshot ss = new Snapshot(players.toArray(Player[]::new), projectiles.toArray(Projectile[]::new), System.currentTimeMillis());
