@@ -1,6 +1,7 @@
 package tankgame.game;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import tankgame.game.Render.GameCanvas;
 import tankgame.game.Render.Snapshot;
@@ -15,36 +16,52 @@ import java.util.UUID;
  */
 public class GameHandler {
 
+    private GameFrame gf;
     private GameCanvas gc;
     //server stuff
     private ArrayList<ServerPlayer> players = new ArrayList<>();
     private ArrayList<Projectile> projectiles = new ArrayList<>();
 
     //local stuff
-    int projCooldown;
     boolean[] keys;
     ClientPlayer self;
     private volatile ArrayList<Projectile> localProj = new ArrayList<>();
 
+    public GameHandler(GameFrame gf) {
+        this.gf = gf;
+    }
+
     public void setCanvas(GameCanvas canvas) {
         gc = canvas;
     }
-    
-    public ServerPlayer getPlayer(UUID ID){
-        for(ServerPlayer player : players){
-            if(ID == player.getID()){
+
+    public ServerPlayer getPlayer(UUID ID) {
+        for (ServerPlayer player : players) {
+            if (ID == player.getID()) {
                 return player;
             }
         }
         return null;
     }
-    
+
     public void initServer() {
-        
+
     }
 
     public void serverTick() {
-
+        for (Projectile projectile : projectiles) {
+            projectile.move();
+        }
+        for (ServerPlayer player : players) {
+            player.setCooldown(player.getCooldown() -1);
+            
+            player.move(player.getKeys());
+            //player shooting
+            if (player.getKeys()[4] && player.getCooldown() <= 0) {
+                projectiles.add(new Projectile(player.getX(), player.getY(), player.getAngle(), player.getVel(), player.getRID()));
+                player.setCooldown(Projectile.COOLDOWN);
+            }
+        }
     }
 
     public void initDebug() {
@@ -55,23 +72,24 @@ public class GameHandler {
         gc.initLocal();
     }
 
-    public void debugTick() {
-        //move self
+    public void localTick() {
         keys = gc.kb.getKeys();
-        self.move(keys);
         //move projectile
         for (Projectile proj : localProj) {
             proj.move();
         }
         //lower projectile cooldowns
-        if (projCooldown > 0) {
-            projCooldown--;
+        if (self.getCooldown() > 0) {
+            self.setCooldown(self.getCooldown() - 1);
         }
         //shoot projectile
-        if (keys[4] && projCooldown == 0) {
+        if (keys[4] && self.getCooldown() <= 0) {
             localProj.add(new Projectile(self.getX(), self.getY(), self.getAngle(), self.getVel(), self.getRID()));
-            projCooldown += Projectile.COOLDOWN;
+            self.setCooldown(Projectile.COOLDOWN);
         }
+        //move self
+        self.setKeys(keys);
+        self.move(keys);
         ClientPlayer[] pArr = new ClientPlayer[]{new ClientPlayer(self)};
         gc.addSnapshot(new Snapshot(pArr, localProj.toArray(Projectile[]::new), System.currentTimeMillis()));
     }

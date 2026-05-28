@@ -6,11 +6,13 @@ package tankgame.game;
  */
 public abstract class Player {
 
-    private int rid;
+    private boolean[] keys = new boolean[] {false, false, false, false, false};
+    private final int rid;
     private double x = 500;
     private double y = 500;
     private double angle;
     private double velocity = 0;
+    private int projCooldown;
     public static final double BRAKING_POWER = 0.25;
     public static final double ACCELERATION = 0.5;
     public static final double TURN_SPEED = 1.0 / 67.0;
@@ -27,6 +29,22 @@ public abstract class Player {
         this.y = toBeCopied.getY();
         this.angle = toBeCopied.getAngle();
         this.velocity = toBeCopied.getVel();
+    }
+    
+    public void setCooldown(int cooldown){
+        this.projCooldown = cooldown;
+    }
+    
+    public int getCooldown(){
+        return projCooldown;
+    }
+
+    public boolean[] getKeys(){
+        return keys;
+    }
+    
+    public void setKeys(boolean[] keys) {
+        this.keys = keys;
     }
 
     public int getRID() {

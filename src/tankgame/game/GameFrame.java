@@ -7,9 +7,11 @@ import tankgame.menu.LobbyMenu;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
 import tankgame.server.UDPListener;
 import tankgame.server.ClientHandler;
 import tankgame.server.LobbyPlayer;
+import tankgame.server.ClientObj;
 
 import java.net.BindException;
 import java.net.SocketException;
@@ -55,6 +57,8 @@ public class GameFrame extends JFrame {
         lm = new LobbyMenu(this);
         this.add(lm);
         setVisible(true);
+
+        gh = new GameHandler(this);
 
         ArrayList<LobbyPlayer> lobbyPlayers = new ArrayList<>();
         port = 6767;
@@ -105,10 +109,10 @@ public class GameFrame extends JFrame {
                 }
                 //reset timeout
                 case 1 -> {
-                    //literally do nothing lmao
+                    //literally do nothing lmao cuz the timeout is reset earlier
                 }
 
-                //in game tick
+                //in game
                 //should be players sending inputs
                 case 2 -> {
                     if (gameStarted) {
@@ -119,11 +123,18 @@ public class GameFrame extends JFrame {
                         gh.getPlayer(messageUUID).setKeys(keys);
                     }
                 }
+
+                //player leave lobby
+                case 9 -> {
+                    ch.removeClient(messageUUID);
+                }
             }
         });
+
     }
 
     public void initServer() {
+        //close sockets
         udpListener.close();
         try {
             ch.stopAccepting();
@@ -132,11 +143,45 @@ public class GameFrame extends JFrame {
             e.printStackTrace();
         }
         gameStarted = true;
+        //canvas
+        GameCanvas gc = new GameCanvas(this, gh);
+        gh.setCanvas(gc);
+        add(gc);
+
+        //start loops
+        //30 tps simulate
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.scheduleAtFixedRate(() -> {
+            //check timeout and kick player if last message time is > 10 seconds
+            for (ClientObj co : ch.getClients()) {
+                if (co.getLastMessageTime() - System.currentTimeMillis() > 10_000) {
+                    ch.removeClient(co.id);
+                }
+            }
+
+            //tick
+            try {
+                gh.localTick();
+                gh.serverTick();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, 0, 1000 / 30, TimeUnit.MILLISECONDS);
+
+        //144 fps render
+        ScheduledExecutorService renderScheduler = Executors.newSingleThreadScheduledExecutor();
+        renderScheduler.scheduleAtFixedRate(() -> {
+            try {
+                gc.renderLoop();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, 0, 1000 / 144, TimeUnit.MILLISECONDS);
     }
 
     public void startDebug() {
         remove(mm);
-        gh = new GameHandler();
+        gh = new GameHandler(this);
         GameCanvas gc = new GameCanvas(this, gh);
         gh.setCanvas(gc);
         add(gc);
@@ -148,7 +193,7 @@ public class GameFrame extends JFrame {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
             try {
-                gh.debugTick();
+                gh.localTick();
             } catch (Exception e) {
                 e.printStackTrace();
             }
