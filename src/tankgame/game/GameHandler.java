@@ -10,6 +10,8 @@ import tankgame.client.ClientPlayer;
 import tankgame.server.*;
 import java.util.UUID;
 
+import java.io.IOException;
+
 /**
  *
  * @author Cameron
@@ -48,13 +50,14 @@ public class GameHandler {
 
     }
 
-    public void serverTick() {
+    public String serverTick() {
+        String data = null;
         for (Projectile projectile : projectiles) {
             projectile.move();
         }
         for (ServerPlayer player : players) {
-            player.setCooldown(player.getCooldown() -1);
-            
+            player.setCooldown(player.getCooldown() - 1);
+
             player.move(player.getKeys());
             //player shooting
             if (player.getKeys()[4] && player.getCooldown() <= 0) {
@@ -62,6 +65,16 @@ public class GameHandler {
                 player.setCooldown(Projectile.COOLDOWN);
             }
         }
+
+        //create snapshot and convert it to base64
+        Snapshot ss = new Snapshot(players.toArray(Player[]::new), projectiles.toArray(Projectile[]::new), System.currentTimeMillis());
+        try {
+            data = ss.serialize();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        data = "2:" + data;
+        return data;
     }
 
     public void initDebug() {

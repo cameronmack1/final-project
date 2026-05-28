@@ -161,8 +161,12 @@ public class GameFrame extends JFrame {
 
             //tick
             try {
+                //local prediction then server prediction and send game state to clients
                 gh.localTick();
-                gh.serverTick();
+                String message = gh.serverTick();
+                for (ClientObj co : ch.getClients()) {
+                    co.send(message);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
