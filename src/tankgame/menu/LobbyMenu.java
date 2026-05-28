@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import tankgame.game.GameFrame;
+import tankgame.server.LobbyPlayer;
 
 /**
  * vvvvv that guys a poopyhead
@@ -76,4 +77,10 @@ public class LobbyMenu extends JPanel {
         super.paintComponent(g);
         g.drawImage(bg, 0, 0, this);
     }
+    
+    public void addPlayer (LobbyPlayer Player){
+        
+    }
+            
+    
 }
