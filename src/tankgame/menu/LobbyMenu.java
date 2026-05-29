@@ -9,12 +9,16 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import tankgame.game.GameFrame;
 import tankgame.server.LobbyPlayer;
+import java.util.UUID;
+import java.util.ArrayList;
 
 /**
  * vvvvv that guys a poopyhead
  *
- * @author Layne */
+ * @author Koorosh */
 public class LobbyMenu extends JPanel {
+    
+    private ArrayList<LobbyPlayer> playerList = new ArrayList<>();
 
     private Image bg;
     private GameFrame gf;
@@ -78,8 +82,18 @@ public class LobbyMenu extends JPanel {
         g.drawImage(bg, 0, 0, this);
     }
     
-    public void addPlayer (LobbyPlayer Player){
-        
+    public void addPlayer (LobbyPlayer player){
+        playerList.add(player);
+    }
+    
+    public void removePlayer(UUID id){
+        for(int i = 0; i<playerList.size();i++){
+            if(playerList.get(i).getID()==id){
+                playerList.remove(id);
+                break;
+            }
+        }
+      
     }
             
     
