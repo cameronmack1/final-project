@@ -13,7 +13,7 @@ import java.util.UUID;
 import java.util.ArrayList;
 
 /**
- * vvvvv that guys a poopyhead
+ * shoutout @wwavely
  *
  * @author Koorosh */
 public class LobbyMenu extends JPanel {
@@ -89,7 +89,7 @@ public class LobbyMenu extends JPanel {
     public void removePlayer(UUID id){
         for(int i = 0; i<playerList.size();i++){
             if(playerList.get(i).getID()==id){
-                playerList.remove(id);
+                playerList.remove(i);
                 break;
             }
         }
