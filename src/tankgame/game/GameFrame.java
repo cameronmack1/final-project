@@ -74,7 +74,7 @@ public class GameFrame extends JFrame {
                 //only ch.initiate gives errors so once that goes through then we can start the udp server
                 ch.initiate();
                 udpListener = new UDPListener(port);
-                udpListener.initiate();
+                udpListener.initiate("replace this with name when added");
                 portFound = true;
             } catch (BindException e) {
                 //port already in use

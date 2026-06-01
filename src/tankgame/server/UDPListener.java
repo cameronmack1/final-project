@@ -29,7 +29,7 @@ public class UDPListener {
         }
     }
 
-    public void initiate() {//starts listening for broadcasts
+    public void initiate(String name) {//starts listening for broadcasts
         if (!isListening) {
             isListening = true;
             new Thread(() -> {
@@ -47,7 +47,7 @@ public class UDPListener {
                         //create response message using client ip and port
                         InetAddress clientAddress = receivePacket.getAddress();
                         int clientPort = receivePacket.getPort();
-                        byte[] sendData = String.valueOf(port).getBytes();
+                        byte[] sendData = String.valueOf(port+":"+name).getBytes();
 
                         //send message
                         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, clientAddress, clientPort);//send response packet
