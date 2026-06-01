@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * @author Cameron
  */
 public class UDPScanner {
-    public ServerObject[] scan() throws SocketException, UnknownHostException {
+    public static ServerObject[] scan() throws SocketException, UnknownHostException {
         //create shi
         DatagramSocket UDPSocket = new DatagramSocket();
         UDPSocket.setBroadcast(true);
