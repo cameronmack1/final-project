@@ -41,16 +41,15 @@ public class MainMenu extends JPanel {
         //load images
         try {
             bg = ImageIO.read(new File("src" + File.separator + "images" + File.separator + "mainMenu.png")).getScaledInstance(w, h, Image.SCALE_DEFAULT);
-        
+
         } catch (IOException e) {
             System.out.println("error loading file");
         } catch (NullPointerException e) {
             System.out.println("error file missing wtf did u do");
             e.printStackTrace();
         }
-        
+
         //create buttons
-        
         JTextField username = new JTextField("Username");
         username.setBounds(w / 2 - w / 10, 4 * h / 6 - h / 7, w / 5, h / 10);
         add(username);
@@ -59,38 +58,37 @@ public class MainMenu extends JPanel {
         username.setVisible(true);
         username.setForeground(Color.GRAY);
         setVisible(true);
-        
+
         username.addFocusListener(new FocusAdapter() {
 
-    @Override
-    public void focusGained(FocusEvent e) {
-        if (username.getText().equals("Username")) {
-            username.setText("");
-            username.setForeground(Color.BLACK);
-        }
-    }
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (username.getText().equals("Username")) {
+                    username.setText("");
+                    username.setForeground(Color.BLACK);
+                }
+            }
 
-    @Override
-    public void focusLost(FocusEvent e) {
-        if (username.getText().trim().isEmpty()) {
-            username.setText("Username");
-            username.setForeground(Color.GRAY);
-        }
-    }
-});
-        
-        
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (username.getText().trim().isEmpty()) {
+                    username.setText("Username");
+                    username.setForeground(Color.GRAY);
+                }
+            }
+        });
+
         JButton startButton = new JButton("Host Game");
         startButton.setBounds(w / 2 - w / 10, 4 * h / 5 - h / 9, w / 5, h / 10);
         add(startButton);
         startButton.setVisible(true);
         startButton.addActionListener(al -> {
-             String name = username.getText().trim();
+            String name = username.getText().trim();
 
-    if (name.isEmpty() || name.equalsIgnoreCase("Username")) {
-        System.out.println("pls enter a valid username");
-        return;
-    }
+            if (name.isEmpty() || name.equalsIgnoreCase("Username")) {
+                System.out.println("pls enter a valid username");
+                return;
+            }
             hostGame();
         });
         startButton.setFont(f);
@@ -109,6 +107,13 @@ public class MainMenu extends JPanel {
         add(scan);
         scan.setVisible(true);
         scan.addActionListener(al -> {
+            String name = username.getText().trim();
+
+            if (name.isEmpty() || name.equalsIgnoreCase("Username")) {
+
+                System.out.println("pls enter a valid username");
+                return;
+            }
             ServerObject[] test;
             try {
                 test = UDPScanner.scan();
@@ -121,8 +126,6 @@ public class MainMenu extends JPanel {
         });
         scan.setFont(f);
 
- 
-        
     }
 
     public void hostGame() {
