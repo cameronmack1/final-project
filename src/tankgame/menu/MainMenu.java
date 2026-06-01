@@ -21,12 +21,9 @@ import java.awt.event.FocusEvent;
 public class MainMenu extends JPanel {
 
     private Image bg;
-    private Image debugBg;
     private GameFrame gf;
     private int w;
     private int h;
-    private int testVariable;
-    private int e;
     private JTextField username;
 
     public MainMenu(GameFrame gf) {
@@ -115,15 +112,7 @@ public class MainMenu extends JPanel {
                 System.out.println("pls enter a valid username");
                 return;
             }
-            ServerObject[] test;
-            try {
-                test = UDPScanner.scan();
-                for (ServerObject so : test) {
-                    System.out.println(so.getIP()+ ":" + so.getName());
-                }
-            } catch (Exception e) {
-
-            }
+            gf.openScanMenu();
         });
         scan.setFont(f);
 

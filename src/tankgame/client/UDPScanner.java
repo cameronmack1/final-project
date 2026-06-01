@@ -48,13 +48,13 @@ public class UDPScanner {
         });
         listenerThread.start();
         //time out listener after 5 seconds
-        UDPSocket.setSoTimeout(5000);
+        UDPSocket.setSoTimeout(1000);
 
         //send packet
         try {
             UDPSocket.send(broadcastPacket);
             //wait for listener thread to end
-            listenerThread.join(5000);
+            listenerThread.join(1000);
         } catch (IOException e) {
             //thats not what i woulda done
         } catch (InterruptedException e){
