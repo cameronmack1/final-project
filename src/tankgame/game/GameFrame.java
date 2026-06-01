@@ -102,6 +102,7 @@ public class GameFrame extends JFrame {
             switch (type) {
                 //new connection
                 case 0 -> {
+                    //if in lobby
                     if (!gameStarted) {
                         //send all players to the new guy
                         try {
@@ -116,7 +117,7 @@ public class GameFrame extends JFrame {
                         lobbyPlayers.add(lp);
                         lm.addPlayer(lp);
 
-                        //send new player to everyones
+                        //send new player to everyone
                         String data = "1:" + messageUUID + ":" + message;
                         ch.broadcast(data);
                     }

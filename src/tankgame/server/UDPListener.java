@@ -35,7 +35,7 @@ public class UDPListener {
             new Thread(() -> {
                 try {
                     //create socket
-                    socket = new DatagramSocket(port);
+                    socket = new DatagramSocket(6767);
                     while (isListening) {
                         //create receive data variable
                         byte[] receiveData = new byte[1024];
