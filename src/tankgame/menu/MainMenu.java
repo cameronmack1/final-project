@@ -1,5 +1,7 @@
 package tankgame.menu;
 
+import tankgame.client.UDPScanner;
+import tankgame.client.ServerObject;
 import javax.swing.JPanel;
 import java.awt.Image;
 import javax.swing.*;
@@ -12,10 +14,12 @@ import tankgame.game.GameFrame;
 /**
  * vvvvv that guys a poopyhead
  *
- * @author Layne */
+ * @author Layne
+ */
 public class MainMenu extends JPanel {
 
     private Image bg;
+    private Image debugBg;
     private GameFrame gf;
     private int w;
     private int h;
@@ -28,23 +32,24 @@ public class MainMenu extends JPanel {
         this.gf = gf;
         w = gf.getWidth();
         h = gf.getHeight();
-        
+
         //font
-        Font f = new Font("Comic Sans", Font.PLAIN, h/18);
+        Font f = new Font("Comic Sans", Font.PLAIN, h / 18);
 
         //load images
         try {
             bg = ImageIO.read(new File("src" + File.separator + "images" + File.separator + "mainMenu.png")).getScaledInstance(w, h, Image.SCALE_DEFAULT);
+        
         } catch (IOException e) {
             System.out.println("error loading file");
         } catch (NullPointerException e) {
             System.out.println("error file missing wtf did u do");
             e.printStackTrace();
         }
-
+        
         //create buttons
         JButton startButton = new JButton("Host Game");
-        startButton.setBounds(w / 2 - w / 10, 4 * h / 6 - h / 10, w / 5, h / 10);
+        startButton.setBounds(w / 2 - w / 10, 4 * h / 5 - h / 9, w / 5, h / 10);
         add(startButton);
         startButton.setVisible(true);
         startButton.addActionListener(al -> {
@@ -53,13 +58,37 @@ public class MainMenu extends JPanel {
         startButton.setFont(f);
 
         JButton debug = new JButton("Debug");
-        debug.setBounds(0, h - h / 10, w / 7, h / 10);
+        debug.setBounds(0, h - h / 11, w / 7, h / 10);
         add(debug);
         debug.setVisible(true);
         debug.addActionListener(al -> {
             startDebug();
         });
         debug.setFont(f);
+
+        JButton scan = new JButton("Find Lobby");
+        scan.setBounds(w / 2 - w / 10, 4 * h / 5, w / 5, h / 10);
+        add(scan);
+        scan.setVisible(true);
+        scan.addActionListener(al -> {
+            ServerObject[] test;
+            try {
+                test = UDPScanner.scan();
+                for (ServerObject so : test) {
+                    System.out.println(so.getIP());
+                }
+            } catch (Exception e) {
+
+            }
+        });
+        scan.setFont(f);
+
+        JTextField username = new JTextField("Username");
+        username.setBounds(w / 2 - w / 10, 4 * h / 6 - h / 7, w / 5, h / 10);
+        add(username);
+        username.setFont(f);
+        username.setHorizontalAlignment(JTextField.CENTER);
+        username.setVisible(true);
 
         setVisible(true);
     }
