@@ -44,6 +44,8 @@ public final class GameCanvas extends Canvas {
     Graphics2D g2d;
     BufferedImage tank;
     BufferedImage bullet;
+    BufferedImage debug;
+    public boolean inDebug = false;
 
     BufferStrategy buffer;
 
@@ -95,6 +97,7 @@ public final class GameCanvas extends Canvas {
         try {
             tank = resizeImage(60, 80, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "tank.png")));
             bullet = resizeImage(20, 20, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "bullet.png")));
+            debug = resizeImage(1920, 1080, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "whoisthat.jpg")));
         } catch (IOException e) {
             System.out.println("error loading file");
         } catch (NullPointerException e) {
@@ -171,6 +174,7 @@ public final class GameCanvas extends Canvas {
         g2d = img.createGraphics();
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, 1920, 1080);
+        if(inDebug)g2d.drawImage(debug, 0, 0, null);
         if(local){
                 long t1 = localSnapshots.get(0).getTime();
                 long t2 = localSnapshots.get(1).getTime();

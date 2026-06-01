@@ -228,6 +228,7 @@ public class GameFrame extends JFrame {
     public void startDebug() {
         remove(mm);
         initLocal();
+        gc.inDebug = true;
         //30 tps simulate
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
