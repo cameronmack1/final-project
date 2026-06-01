@@ -119,7 +119,7 @@ public class MainMenu extends JPanel {
             try {
                 test = UDPScanner.scan();
                 for (ServerObject so : test) {
-                    System.out.println(so.getIP());
+                    System.out.println(so.getIP()+ ":" + so.getName());
                 }
             } catch (Exception e) {
 
