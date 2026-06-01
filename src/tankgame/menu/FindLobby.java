@@ -1,13 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package tankgame.menu;
 
 import java.awt.Font;
 import java.awt.Image;
 import tankgame.game.GameFrame;
 import javax.swing.JPanel;
+import tankgame.client.ServerObject;
 /**
  *
  * @author layne
@@ -20,7 +17,7 @@ public class FindLobby extends JPanel {
     private int h;
     private int e;
     
-    public FindLobby(GameFrame gf) {
+    public FindLobby(GameFrame gf, ServerObject[] servers) {
         //initialize
         setLayout(null);
         this.gf = gf;
