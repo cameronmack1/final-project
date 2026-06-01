@@ -27,6 +27,7 @@ public class MainMenu extends JPanel {
     private int h;
     private int testVariable;
     private int e;
+    private JTextField username;
 
     public MainMenu(GameFrame gf) {
         //initialize
@@ -50,7 +51,7 @@ public class MainMenu extends JPanel {
         }
 
         //create buttons
-        JTextField username = new JTextField("Username");
+        username = new JTextField("Username");
         username.setBounds(w / 2 - w / 10, 4 * h / 6 - h / 7, w / 5, h / 10);
         add(username);
         username.setFont(f);
@@ -128,6 +129,10 @@ public class MainMenu extends JPanel {
 
     }
 
+    public String getUsername(){
+        return username.getText();
+    }
+    
     public void hostGame() {
         gf.initServerLobby();
     }
