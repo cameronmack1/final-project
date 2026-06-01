@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import tankgame.game.GameFrame;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 /**
  * vvvvv that guys a poopyhead
@@ -48,11 +50,47 @@ public class MainMenu extends JPanel {
         }
         
         //create buttons
+        
+        JTextField username = new JTextField("Username");
+        username.setBounds(w / 2 - w / 10, 4 * h / 6 - h / 7, w / 5, h / 10);
+        add(username);
+        username.setFont(f);
+        username.setHorizontalAlignment(JTextField.CENTER);
+        username.setVisible(true);
+        username.setForeground(Color.GRAY);
+        setVisible(true);
+        
+        username.addFocusListener(new FocusAdapter() {
+
+    @Override
+    public void focusGained(FocusEvent e) {
+        if (username.getText().equals("Username")) {
+            username.setText("");
+            username.setForeground(Color.BLACK);
+        }
+    }
+
+    @Override
+    public void focusLost(FocusEvent e) {
+        if (username.getText().trim().isEmpty()) {
+            username.setText("Username");
+            username.setForeground(Color.GRAY);
+        }
+    }
+});
+        
+        
         JButton startButton = new JButton("Host Game");
         startButton.setBounds(w / 2 - w / 10, 4 * h / 5 - h / 9, w / 5, h / 10);
         add(startButton);
         startButton.setVisible(true);
         startButton.addActionListener(al -> {
+             String name = username.getText().trim();
+
+    if (name.isEmpty() || name.equalsIgnoreCase("Username")) {
+        System.out.println("pls enter a valid username");
+        return;
+    }
             hostGame();
         });
         startButton.setFont(f);
@@ -83,14 +121,8 @@ public class MainMenu extends JPanel {
         });
         scan.setFont(f);
 
-        JTextField username = new JTextField("Username");
-        username.setBounds(w / 2 - w / 10, 4 * h / 6 - h / 7, w / 5, h / 10);
-        add(username);
-        username.setFont(f);
-        username.setHorizontalAlignment(JTextField.CENTER);
-        username.setVisible(true);
-
-        setVisible(true);
+ 
+        
     }
 
     public void hostGame() {
