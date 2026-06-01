@@ -3,6 +3,8 @@ package tankgame.server;
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.StandardSocketOptions;
+import java.net.InetSocketAddress;
 
 /**
  *
@@ -17,7 +19,7 @@ public class UDPListener {
     public UDPListener(int port) {
         this.port = port;
     }
-    
+
     public boolean isListening() {//return if the socket is currently listening
         return isListening;
     }
@@ -35,19 +37,21 @@ public class UDPListener {
             new Thread(() -> {
                 try {
                     //create socket
-                    socket = new DatagramSocket(6767);
+                    socket = new DatagramSocket(null);
+                    socket.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+                    socket.bind(new InetSocketAddress(6767));
                     while (isListening) {
                         //create receive data variable
                         byte[] receiveData = new byte[1024];
                         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-                        
+
                         //block until packet recieved
                         socket.receive(receivePacket);
-                        
+
                         //create response message using client ip and port
                         InetAddress clientAddress = receivePacket.getAddress();
                         int clientPort = receivePacket.getPort();
-                        byte[] sendData = String.valueOf(port+":"+name).getBytes();
+                        byte[] sendData = String.valueOf(port + ":" + name).getBytes();
 
                         //send message
                         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, clientAddress, clientPort);//send response packet

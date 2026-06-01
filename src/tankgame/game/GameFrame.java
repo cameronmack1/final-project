@@ -29,7 +29,7 @@ import java.util.ArrayList;
  * @author Cameron
  */
 public class GameFrame extends JFrame {
-
+    
     private FindLobby fl;
     private MainMenu mm;
     private LobbyMenu lm;
@@ -42,7 +42,7 @@ public class GameFrame extends JFrame {
     private int width;
     private int height;
     ArrayList<LobbyPlayer> lobbyPlayers;
-
+    
     public GameFrame() {
         //initialize the JFrame
         setExtendedState(MAXIMIZED_BOTH);
@@ -65,7 +65,7 @@ public class GameFrame extends JFrame {
         setVisible(true);
         lobbyPlayers = new ArrayList<>();
         gh = new GameHandler(this);
-
+        
         port = 6767;
         boolean portFound = false;
         //create client handler
@@ -77,12 +77,13 @@ public class GameFrame extends JFrame {
                 //initiate them all
                 //only ch.initiate gives errors so once that goes through then we can start the udp server
                 ch.initiate();
-                udpListener = new UDPListener(port);
+                udpListener = new UDPListener(6767);
                 udpListener.initiate(mm.getUsername());
                 portFound = true;
             } catch (BindException e) {
                 //port already in use
                 port++;
+                ch.setPort(port);
             } catch (SocketException e) {
                 //connection reset
                 e.printStackTrace();
@@ -148,11 +149,11 @@ public class GameFrame extends JFrame {
                 case 9 -> {
                     removePlayer(messageUUID);
                 }
-
+                
             }
         });
     }
-
+    
     public void removePlayer(UUID id) {
         ch.removeClient(id);
         if (!gameStarted) {
@@ -166,7 +167,7 @@ public class GameFrame extends JFrame {
             ch.broadcast(sendMessage);
         }
     }
-
+    
     public void initServer() {
         //close sockets
         udpListener.close();
@@ -204,9 +205,9 @@ public class GameFrame extends JFrame {
                 e.printStackTrace();
             }
         }, 0, 1000 / 30, TimeUnit.MILLISECONDS);
-
+        
     }
-
+    
     public void openScanMenu() {
         ServerObject[] sos;
         try {
@@ -219,12 +220,13 @@ public class GameFrame extends JFrame {
             //yeah idk still
         }
     }
-
+    
     public void joinServer(ServerObject so) {
+        this.remove(fl);
         TCPHandler th = new TCPHandler(so.getIP(), so.getPort());
-
+        
     }
-
+    
     public void initLocal() {
         gh = new GameHandler(this);
         gc = new GameCanvas(this, gh);
@@ -243,9 +245,9 @@ public class GameFrame extends JFrame {
                 e.printStackTrace();
             }
         }, 0, 1000 / 144, TimeUnit.MILLISECONDS);
-
+        
     }
-
+    
     public void startDebug() {
         remove(mm);
         initLocal();
