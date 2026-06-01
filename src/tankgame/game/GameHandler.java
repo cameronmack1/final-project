@@ -1,5 +1,7 @@
 package tankgame.game;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 import tankgame.game.Render.GameCanvas;
@@ -10,6 +12,9 @@ import tankgame.server.*;
 import java.util.UUID;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Base64;
 
 /**
  *
@@ -82,11 +87,11 @@ public class GameHandler {
         //create snapshot and convert it to base64
         Snapshot ss = new Snapshot(players.toArray(Player[]::new), projectiles.toArray(Projectile[]::new), System.currentTimeMillis());
         try {
-            data = ss.serialize();
+            data = serialize(ss);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        data = "2:" + data;
+        data = "3:" + data;
         return data;
     }
 
@@ -118,5 +123,47 @@ public class GameHandler {
         self.move(keys);
         ClientPlayer[] pArr = new ClientPlayer[]{new ClientPlayer(self)};
         gc.addSnapshot(new Snapshot(pArr, localProj.toArray(Projectile[]::new), System.currentTimeMillis()));
+    
+        
+    }
+    
+    
+      /**
+     * converts an object into a base64 encoded serialized string
+     * @param o the object to serialize
+     * @return base64 encoded string containing the serialized data of this object
+     * @throws IOException sometimes
+     */
+    public static String serialize(Object o) throws IOException {
+        //create output stream
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream(bos);
+
+        //write object to output stream
+        out.writeObject(o);
+        out.flush();
+
+        //convert to bytes then to base64 string
+        byte[] bytes = bos.toByteArray();
+        return Base64.getEncoder().encodeToString(bytes);
+    }
+
+    /**
+     * deserialized a string into a snapshot object
+     * @param data the string data
+     * @return the deserialized object
+     * @throws IOException sometimes
+     * @throws ClassNotFoundException sometimes
+     */
+    public static Object deserialize(String data) throws IOException, ClassNotFoundException {
+        //base 64 string to bytes
+        byte[] bytes = Base64.getDecoder().decode(data);
+
+        //put through input stream
+        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+        ObjectInputStream in = new ObjectInputStream(bis);
+
+        //return as snapshot
+        return in.readObject();
     }
 }

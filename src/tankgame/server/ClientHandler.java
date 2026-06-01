@@ -127,6 +127,16 @@ public class ClientHandler {
     }
 
     /**
+     * sends a message to all clients
+     * @param message the message to send
+     */
+    public void broadcast(String message){
+        for(ClientObj co : clients){
+            co.send(message);
+        }
+    }
+    
+    /**
      * receives messages from clients and puts them into the recieveQueue
      *
      * @param client the client object to handle

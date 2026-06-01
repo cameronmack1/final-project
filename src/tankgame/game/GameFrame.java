@@ -37,6 +37,7 @@ public class GameFrame extends JFrame {
     private int port;
     private int width;
     private int height;
+    ArrayList<LobbyPlayer> lobbyPlayers;
 
     public GameFrame() {
         //initialize the JFrame
@@ -58,10 +59,9 @@ public class GameFrame extends JFrame {
         lm = new LobbyMenu(this);
         this.add(lm);
         setVisible(true);
-
+        lobbyPlayers = new ArrayList<>();
         gh = new GameHandler(this);
 
-        ArrayList<LobbyPlayer> lobbyPlayers = new ArrayList<>();
         port = 6767;
         boolean portFound = false;
         //create client handler
@@ -103,14 +103,28 @@ public class GameFrame extends JFrame {
                 //new connection
                 case 0 -> {
                     if (!gameStarted) {
+                        //send all players to the new guy
+                        try {
+                            String data = "0:" + GameHandler.serialize(lobbyPlayers);
+                            ch.getClient(messageUUID).send(data);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        
+                        //add new guy to the lobby
                         LobbyPlayer lp = new LobbyPlayer(message, messageUUID);
                         lobbyPlayers.add(lp);
                         lm.addPlayer(lp);
+
+                        //send new player to everyones
+                        String data = "1:" + messageUUID + ":" + message;
+                        ch.broadcast(data);
                     }
                 }
                 //reset timeout
+
                 case 1 -> {
-                    //literally do nothing lmao cuz the timeout is reset earlier
+                    //literally do nothing lmao cuz the timeout is reset earlier lmao
                 }
 
                 //in game
@@ -127,11 +141,26 @@ public class GameFrame extends JFrame {
 
                 //player leave lobby
                 case 9 -> {
-                    ch.removeClient(messageUUID);
+                    removePlayer(messageUUID);
+                }
+
+            }
+        }
+        );
+    }
+
+    public void removePlayer(UUID id) {
+        ch.removeClient(id);
+        if (!gameStarted) {
+            lm.removePlayer(id);
+            for (int i = 0; i < lobbyPlayers.size(); i++) {
+                if (lobbyPlayers.get(i).getID() == id) {
+                    lobbyPlayers.remove(i);
                 }
             }
-        });
-
+            String sendMessage = "2:" + id;
+            ch.broadcast(sendMessage);
+        }
     }
 
     public void initServer() {
@@ -145,7 +174,7 @@ public class GameFrame extends JFrame {
         }
         gameStarted = true;
         //canvas
-        GameCanvas gc = new GameCanvas(this, gh);
+        gc = new GameCanvas(this, gh);
         gh.setCanvas(gc);
         add(gc);
 
@@ -166,9 +195,7 @@ public class GameFrame extends JFrame {
                 //local prediction then server prediction and send game state to clients
                 gh.localTick();
                 String message = gh.serverTick();
-                for (ClientObj co : ch.getClients()) {
-                    co.send(message);
-                }
+                ch.broadcast(message);
             } catch (Exception e) {
                 e.printStackTrace();
             }
