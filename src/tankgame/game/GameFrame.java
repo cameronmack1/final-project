@@ -1,9 +1,12 @@
 package tankgame.game;
 
 import tankgame.game.Render.GameCanvas;
+import tankgame.menu.*;
+import tankgame.client.ServerObject;
+import tankgame.client.TCPHandler;
+import tankgame.client.UDPScanner;
+
 import javax.swing.JFrame;
-import tankgame.menu.MainMenu;
-import tankgame.menu.LobbyMenu;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +30,7 @@ import java.util.ArrayList;
  */
 public class GameFrame extends JFrame {
 
+    private FindLobby fl;
     private MainMenu mm;
     private LobbyMenu lm;
     private UDPListener udpListener;
@@ -74,7 +78,7 @@ public class GameFrame extends JFrame {
                 //only ch.initiate gives errors so once that goes through then we can start the udp server
                 ch.initiate();
                 udpListener = new UDPListener(port);
-                udpListener.initiate("replace this with name when added");
+                udpListener.initiate(mm.getUsername());
                 portFound = true;
             } catch (BindException e) {
                 //port already in use
@@ -111,7 +115,7 @@ public class GameFrame extends JFrame {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        
+
                         //add new guy to the lobby
                         LobbyPlayer lp = new LobbyPlayer(message, messageUUID);
                         lobbyPlayers.add(lp);
@@ -146,8 +150,7 @@ public class GameFrame extends JFrame {
                 }
 
             }
-        }
-        );
+        });
     }
 
     public void removePlayer(UUID id) {
@@ -201,6 +204,24 @@ public class GameFrame extends JFrame {
                 e.printStackTrace();
             }
         }, 0, 1000 / 30, TimeUnit.MILLISECONDS);
+
+    }
+
+    public void openScanMenu() {
+        ServerObject[] sos;
+        try {
+            sos = UDPScanner.scan();
+            fl = new FindLobby(this, sos);
+            this.add(fl);
+            remove(mm);
+            setVisible(true);
+        } catch (IOException e) {
+            //yeah idk still
+        }
+    }
+
+    public void joinServer(ServerObject so) {
+        TCPHandler th = new TCPHandler(so.getIP(), so.getPort());
 
     }
 
