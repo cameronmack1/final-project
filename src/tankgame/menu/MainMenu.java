@@ -87,7 +87,7 @@ public class MainMenu extends JPanel {
             String name = username.getText().trim();
 
            if (name.isEmpty() || name.equalsIgnoreCase("Username")) {
-        JOptionPane.showMessageDialog(this, "Please enter a valid username.", "Invalid Username", JOptionPane.WARNING_MESSAGE
+        JOptionPane.showMessageDialog(this, "Please enter a valid username yo", "yo", JOptionPane.WARNING_MESSAGE
     );
     return;
 }
@@ -115,7 +115,7 @@ public class MainMenu extends JPanel {
             String name = username.getText().trim();
 
             if (name.isEmpty() || name.equalsIgnoreCase("Username")) {
-                  JOptionPane.showMessageDialog(this, "Please enter a valid username.", "Invalid Username", JOptionPane.WARNING_MESSAGE);
+                  JOptionPane.showMessageDialog(this, "Please enter a valid username yo", "yo", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             gf.openScanMenu();
