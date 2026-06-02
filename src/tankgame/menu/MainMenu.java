@@ -92,7 +92,6 @@ public class MainMenu extends JPanel {
     return;
 }
             enterName.setVisible(false); // hide error
-            gf.openScanMenu();
             
             hostGame();
         });
