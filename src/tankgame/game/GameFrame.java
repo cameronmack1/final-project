@@ -6,6 +6,8 @@ import tankgame.client.ServerObject;
 import tankgame.client.TCPHandler;
 import tankgame.client.UDPScanner;
 
+import java.net.UnknownHostException;
+
 import javax.swing.JFrame;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -33,30 +35,29 @@ import javax.swing.SwingUtilities;
  * @author Cameron
  */
 public class GameFrame extends JFrame {
-    
+
     private FindLobby fl;
     private MainMenu mm;
     private LobbyMenu lm;
     private UDPListener udpListener;
     private ClientHandler ch;
+    private TCPHandler th;
     private GameHandler gh;
     private GameCanvas gc;
     private boolean gameStarted = false;
     private int port;
-    private int width;
-    private int height;
     ArrayList<LobbyPlayer> lobbyPlayers;
-    
+
     public GameFrame() {
         //initialize the JFrame
         setExtendedState(MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setUndecorated(true);
         SwingUtilities.invokeLater(() -> {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        mm = new MainMenu(this, (int)screenSize.getWidth(), (int)screenSize.getHeight());
-        this.add(mm);
-        setVisible(true);
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            mm = new MainMenu(this, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+            this.add(mm);
+            setVisible(true);
         });
     }
 
@@ -69,7 +70,7 @@ public class GameFrame extends JFrame {
         setVisible(true);
         lobbyPlayers = new ArrayList<>();
         gh = new GameHandler(this);
-        
+
         port = 6767;
         boolean portFound = false;
         //create client handler
@@ -153,11 +154,11 @@ public class GameFrame extends JFrame {
                 case 9 -> {
                     removePlayer(messageUUID);
                 }
-                
+
             }
         });
     }
-    
+
     public void removePlayer(UUID id) {
         ch.removeClient(id);
         if (!gameStarted) {
@@ -171,7 +172,7 @@ public class GameFrame extends JFrame {
             ch.broadcast(sendMessage);
         }
     }
-    
+
     public void initServer() {
         //close sockets
         udpListener.close();
@@ -209,9 +210,9 @@ public class GameFrame extends JFrame {
                 e.printStackTrace();
             }
         }, 0, 1000 / 30, TimeUnit.MILLISECONDS);
-        
+
     }
-    
+
     public void openScanMenu() {
         ServerObject[] sos;
         try {
@@ -224,13 +225,47 @@ public class GameFrame extends JFrame {
             //yeah idk still
         }
     }
-    
+
     public void joinServer(ServerObject so) {
+        try {
+            th = new TCPHandler(so.getIP(), so.getPort());
+        } catch (UnknownHostException e) {
+            //failed to connect to server (no longer exists)
+        } catch (IOException e) {
+            //error
+            e.printStackTrace();
+        }
+
+        //message recieved
+        th.addActionListener(al -> {
+            String message = ch.recieveQueue.poll();
+            //get type
+            int type = Character.getNumericValue(message.charAt(0));
+            message = message.substring(2);
+            switch (type) {
+                //just connected, message will have arraylist of players
+                case 0 -> {
+                    try {
+                        lobbyPlayers = (ArrayList<LobbyPlayer>) GameHandler.deserialize(message);
+                    } catch (IOException e) {
+                        //idk
+                        e.printStackTrace();
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                        //this should NOT happen
+                    }
+                }
+
+                //new player joined
+                case 1 -> {
+                    
+                }
+            }
+        });
         this.remove(fl);
-        TCPHandler th = new TCPHandler(so.getIP(), so.getPort());
-        
+        lm = new LobbyMenu(this);
     }
-    
+
     public void initLocal() {
         gh = new GameHandler(this);
         gc = new GameCanvas(this, gh);
@@ -249,9 +284,9 @@ public class GameFrame extends JFrame {
                 e.printStackTrace();
             }
         }, 0, 1000 / 144, TimeUnit.MILLISECONDS);
-        
+
     }
-    
+
     public void startDebug() {
         remove(mm);
         initLocal();
