@@ -46,10 +46,10 @@ public class MainMenu extends JPanel {
             System.out.println("error file missing wtf did u do");
             e.printStackTrace();
         }
-            JOptionPane enterName = new JOptionPane("Please enter a valid username yo.");
-               this.add(enterName);
-               enterName.setBounds(0, h - h / 11, w / 7, h / 10);
-               enterName.setVisible(false);
+        JOptionPane enterName = new JOptionPane("Please enter a valid username yo.");
+        this.add(enterName);
+        enterName.setBounds(0, h - h / 11, w / 7, h / 10);
+        enterName.setVisible(false);
         //create buttons
         username = new JTextField("Username");
         username.setBounds(w / 2 - w / 10, 4 * h / 6 - h / 7, w / 5, h / 10);
@@ -86,13 +86,13 @@ public class MainMenu extends JPanel {
         startButton.addActionListener(al -> {
             String name = username.getText().trim();
 
-           if (name.isEmpty() || name.equalsIgnoreCase("Username")) {
-        JOptionPane.showMessageDialog(this, "Please enter a valid username yo", "yo", JOptionPane.WARNING_MESSAGE
-    );
-    return;
-}
+            if (name.isEmpty() || name.equalsIgnoreCase("Username")) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid username yo", "yo", JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
             enterName.setVisible(false); // hide error
-            
+
             hostGame();
         });
         startButton.setFont(f);
@@ -114,7 +114,7 @@ public class MainMenu extends JPanel {
             String name = username.getText().trim();
 
             if (name.isEmpty() || name.equalsIgnoreCase("Username")) {
-                  JOptionPane.showMessageDialog(this, "Please enter a valid username yo", "yo", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Please enter a valid username yo", "yo", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             gf.openScanMenu();
