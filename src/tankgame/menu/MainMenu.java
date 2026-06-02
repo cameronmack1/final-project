@@ -26,12 +26,12 @@ public class MainMenu extends JPanel {
     private int h;
     private JTextField username;
 
-    public MainMenu(GameFrame gf) {
+    public MainMenu(GameFrame gf, int width, int height) {
         //initialize
         setLayout(null);
         this.gf = gf;
-        w = gf.getWidth();
-        h = gf.getHeight();
+        w = width;
+        h = height;
 
         //font
         Font f = new Font("Comic Sans", Font.PLAIN, h / 18);
@@ -118,10 +118,10 @@ public class MainMenu extends JPanel {
 
     }
 
-    public String getUsername(){
+    public String getUsername() {
         return username.getText();
     }
-    
+
     public void hostGame() {
         gf.initServerLobby();
     }

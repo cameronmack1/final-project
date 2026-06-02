@@ -24,6 +24,10 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.ArrayList;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import javax.swing.SwingUtilities;
+
 /**
  *
  * @author Cameron
@@ -48,12 +52,12 @@ public class GameFrame extends JFrame {
         setExtendedState(MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setUndecorated(true);
-        setVisible(true);
-        width = getWidth();
-        height = getHeight();
-        mm = new MainMenu(this);
+        SwingUtilities.invokeLater(() -> {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        mm = new MainMenu(this, (int)screenSize.getWidth(), (int)screenSize.getHeight());
         this.add(mm);
         setVisible(true);
+        });
     }
 
     //starts the server
