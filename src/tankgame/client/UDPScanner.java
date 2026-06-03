@@ -21,9 +21,9 @@ public class UDPScanner {
         UDPSocket.setBroadcast(true);
         ArrayList<ServerObject> servers = new ArrayList<>();
 
-        //make the packet on port 6767
-        InetAddress broadcastAddress = InetAddress.getByName("255.255.255.255");
-        System.out.println(UDPSocket.getLocalAddress());
+        //make the packet on port 6767]
+        InetAddress broadcastAddress = InetAddress.getByName(BroadcastHelper.getBroadcastAddress());
+        
         byte[] data = "six seven".getBytes();
         DatagramPacket broadcastPacket = new DatagramPacket(data, data.length, broadcastAddress, 6767);
 
@@ -46,7 +46,7 @@ public class UDPScanner {
                 //socket timed out (good)
             } catch (IOException e) {
                 //ouuu shii
-                System.out.println("FUCK2");
+                e.printStackTrace();
             }
         });
         listenerThread.start();
@@ -56,7 +56,6 @@ public class UDPScanner {
         //send packet
         try {
             UDPSocket.send(broadcastPacket);
-            System.out.println(broadcastPacket.getAddress() +" "+broadcastPacket.getPort());
             //wait for listener thread to end
             listenerThread.join(1000);
         } catch (IOException e) {
