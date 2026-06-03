@@ -183,10 +183,6 @@ public class GameFrame extends JFrame {
             e.printStackTrace();
         }
         gameStarted = true;
-        //canvas
-        gc = new GameCanvas(this, gh);
-        gh.setCanvas(gc);
-        add(gc);
 
         //start loops
         initLocal();
