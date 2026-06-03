@@ -21,4 +21,8 @@ public class LobbyPlayer {
         return this.ID;
     }
 
+    public String getName(){
+        return this.name;
+    }
+    
 }
