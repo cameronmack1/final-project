@@ -43,8 +43,10 @@ public class UDPScanner {
                 }
             } catch (SocketTimeoutException e) {
                 //socket timed out (good)
+                System.out.println("FUCK");
             } catch (IOException e) {
                 //ouuu shii
+                System.out.println("FUCK2");
             }
         });
         listenerThread.start();

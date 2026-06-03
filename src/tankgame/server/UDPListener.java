@@ -47,6 +47,7 @@ public class UDPListener {
 
                         //block until packet recieved
                         socket.receive(receivePacket);
+                        System.out.println("new udp hear yeah uhuh");
 
                         //create response message using client ip and port
                         InetAddress clientAddress = receivePacket.getAddress();
