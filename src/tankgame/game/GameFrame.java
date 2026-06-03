@@ -183,7 +183,7 @@ public class GameFrame extends JFrame {
             e.printStackTrace();
         }
         gameStarted = true;
-
+        remove(lm);
         //start loops
         initLocal();
         //30 tps simulate
