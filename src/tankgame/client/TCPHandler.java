@@ -1,5 +1,7 @@
 package tankgame.client;
 
+import java.net.SocketException;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -34,10 +36,15 @@ public class TCPHandler {
         //create input stream (recieving) and add action listener
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String message;
-        
-        while ((message = in.readLine()) != null) {
-            recieveQueue.add(message);
-            notifyListeners();
+
+        try {
+            while ((message = in.readLine()) != null) {
+                recieveQueue.add(message);
+                notifyListeners();
+            }
+        } catch (SocketException e) {
+            //server disconnects u or fail to connect
+            
         }
     }
 
@@ -48,7 +55,7 @@ public class TCPHandler {
             listener.actionPerformed(event);
         }
     }
-    
+
     /**
      * send message to server
      *

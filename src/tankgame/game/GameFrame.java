@@ -116,7 +116,11 @@ public class GameFrame extends JFrame {
                     if (!gameStarted) {
                         //send all players to the new guy
                         try {
-                            String data = "0:" + GameHandler.serialize(lobbyPlayers);
+                            ArrayList<LobbyPlayer> tempLP = new ArrayList<>();
+                            for (LobbyPlayer lp : lobbyPlayers) {
+                                tempLP.add(new LobbyPlayer(lp.getName(), null));
+                            }
+                            String data = "0:" + GameHandler.serialize(tempLP);
                             ch.getClient(messageUUID).send(data);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -128,7 +132,7 @@ public class GameFrame extends JFrame {
                         lm.addPlayer(lp);
 
                         //send new player to everyone
-                        String data = "1:" + messageUUID + ":" + message;
+                        String data = "1:" + message;
                         ch.broadcast(data);
                     }
                 }
@@ -255,7 +259,10 @@ public class GameFrame extends JFrame {
 
                 //new player joined
                 case 1 -> {
-                    
+                    //create lobby player from message and add them
+                    LobbyPlayer lp = new LobbyPlayer(message, null);
+                    lobbyPlayers.add(lp);
+                    lm.addPlayer(lp);
                 }
             }
         });
