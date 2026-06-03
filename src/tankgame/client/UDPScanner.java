@@ -14,6 +14,7 @@ import java.util.ArrayList;
  * @author Cameron
  */
 public class UDPScanner {
+
     public static ServerObject[] scan() throws SocketException, UnknownHostException {
         //create shi
         DatagramSocket UDPSocket = new DatagramSocket();
@@ -53,12 +54,15 @@ public class UDPScanner {
         //send packet
         try {
             UDPSocket.send(broadcastPacket);
+            System.out.println(broadcastPacket.getAddress() +" "+broadcastPacket.getPort());
             //wait for listener thread to end
             listenerThread.join(1000);
         } catch (IOException e) {
             //thats not what i woulda done
-        } catch (InterruptedException e){
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             //thing lowkey got interrupted
+            e.printStackTrace();
         }
 
         return servers.toArray(ServerObject[]::new);

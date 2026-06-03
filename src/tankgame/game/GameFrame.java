@@ -213,6 +213,7 @@ public class GameFrame extends JFrame {
         ServerObject[] sos;
         try {
             sos = UDPScanner.scan();
+            System.out.println(sos.length);
             fl = new FindLobby(this, sos);
             this.add(fl);
             remove(mm);
