@@ -93,18 +93,9 @@ public class MainMenu extends JPanel {
         add(startButton);
         startButton.setVisible(true);
         startButton.addActionListener(al -> {
-            String name = username.getText().trim();
-            
-
-            if (name.isEmpty() || name.equalsIgnoreCase("Username")) {
-                JOptionPane.showMessageDialog(this, "Please enter a valid username yo", "yo", JOptionPane.WARNING_MESSAGE
-                );
-                return;
-            }
+            checkUsername();
             enterName.setVisible(false); // hide error
 
-            
-            
             hostGame();
         });
         startButton.setFont(f);
@@ -123,12 +114,7 @@ public class MainMenu extends JPanel {
         add(scan);
         scan.setVisible(true);
         scan.addActionListener(al -> {
-            String name = username.getText().trim();
-
-            if (name.isEmpty() || name.equalsIgnoreCase("Username")) {
-                JOptionPane.showMessageDialog(this, "Please enter a valid username yo", "yo", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
+            checkUsername();
             gf.openScanMenu();
         });
         scan.setFont(f);
@@ -152,18 +138,17 @@ public class MainMenu extends JPanel {
         super.paintComponent(g);
         g.drawImage(bg, 0, 0, this);
     }
-    private void checkUsername(){
-         String name = username.getText().trim();
-            
 
-            if (name.isEmpty() || name.equalsIgnoreCase("Username")) {
-                JOptionPane.showMessageDialog(this, "Please enter a valid username yo", "yo", JOptionPane.WARNING_MESSAGE
-                );
-                return;
-            }
-            enterName.setVisible(false); // hide error
+    private void checkUsername() {
+        String name = username.getText().trim();
+
+        if (name.isEmpty() || name.equalsIgnoreCase("Username")) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid username yo", "yo", JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+        enterName.setVisible(false); // hide error
+        gf.setUsername(name);
     }
+
 }
-
-
-

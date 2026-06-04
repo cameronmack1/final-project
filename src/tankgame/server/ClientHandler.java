@@ -118,7 +118,7 @@ public class ClientHandler {
                     //create thread to handle each client seperately
                     new Thread(() -> handleClient(c)).start();
                 } catch (Exception e) {
-                    if(!ss.isClosed()){
+                    if (!ss.isClosed()) {
                         //ouu shii
                     }
                 }
@@ -128,14 +128,15 @@ public class ClientHandler {
 
     /**
      * sends a message to all clients
+     *
      * @param message the message to send
      */
-    public void broadcast(String message){
-        for(ClientObj co : clients){
+    public void broadcast(String message) {
+        for (ClientObj co : clients) {
             co.send(message);
         }
     }
-    
+
     /**
      * receives messages from clients and puts them into the recieveQueue
      *
@@ -154,6 +155,7 @@ public class ClientHandler {
             //reset timer has nothing
             //inputs has 5 1s or 0s that represent inputs   
             while ((message = in.readLine()) != null) {
+                System.out.println("received: " + message);
                 recieveQueue.add(message);
                 notifyListeners();
             }

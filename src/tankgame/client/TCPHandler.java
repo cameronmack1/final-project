@@ -32,22 +32,28 @@ public class TCPHandler {
 
         //create output stream (sending messages)
         out = new PrintWriter(socket.getOutputStream(), true);
+    }
 
-        //create input stream (recieving) and add action listener
-        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        String message;
-        try {
-            while ((message = in.readLine()) != null) {
-                System.out.println("recieved: " + message);
-                recieveQueue.add(message);
-                notifyListeners();
+    public void initiate() {
+        new Thread(() -> {
+
+            String message;
+            try {
+                //create input stream (recieving) and add action listener
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                while ((message = in.readLine()) != null) {
+                    System.out.println("recieved: " + message);
+                    recieveQueue.add(message);
+                    notifyListeners();
+                }
+                System.out.println("end of tcphandler recieve message");
+            } catch (SocketException e) {
+                //server disconnects u or fail to connect
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            System.out.println("end of tcphandler recieve message");
-        } catch (SocketException e) {
-            //server disconnects u or fail to connect
-            e.printStackTrace();
-        }
-        System.out.println("end of constructor");
+        }).start();
     }
 
     private void notifyListeners() {

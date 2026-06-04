@@ -244,10 +244,11 @@ public class GameFrame extends JFrame {
             //error
             e.printStackTrace();
         }
+        th.initiate();
 
         //message recieved
         th.addActionListener(al -> {
-            String message = ch.recieveQueue.poll();
+            String message = th.recieveQueue.poll();
             System.out.println(message);
             //get type
             int type = Character.getNumericValue(message.charAt(0));
@@ -255,10 +256,9 @@ public class GameFrame extends JFrame {
             switch (type) {
                 //initialize your own UUID and shi
                 case 0 -> {
-                    System.out.println("sending");
                     this.id = UUID.fromString(message);
-                    th.send("0:" + this.id + this.username);
-                    System.out.println("0:" + this.id + this.username);
+                    th.send("0:" + this.id + ":" + this.username);
+                    System.out.println("0:" + this.id + ":" + this.username);
                 }
                 //just connected, message will have arraylist of players
                 case 1 -> {
@@ -292,8 +292,6 @@ public class GameFrame extends JFrame {
                 }
             }
         });
-        this.remove(fl);
-        lm = new LobbyMenu(this);
     }
 
     public void initLocal() {
