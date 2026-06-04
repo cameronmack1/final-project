@@ -58,6 +58,19 @@ public class MainMenu extends JPanel {
         username.setHorizontalAlignment(JTextField.CENTER);
         username.setVisible(true);
         username.setForeground(Color.GRAY);
+        username.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyTyped(java.awt.event.KeyEvent e) {
+                char c = e.getKeyChar();
+                if (c == java.awt.event.KeyEvent.VK_BACK_SPACE
+                        || c == java.awt.event.KeyEvent.VK_DELETE) {
+                    return;
+                }
+                if (username.getText().length() >= 13) {
+                    e.consume();
+                }
+            }
+        });
         setVisible(true);
 
         username.addFocusListener(new FocusAdapter() {
