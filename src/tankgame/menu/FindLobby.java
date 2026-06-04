@@ -10,6 +10,7 @@ import tankgame.game.GameFrame;
 import javax.swing.JPanel;
 import tankgame.client.ServerObject;
 import javax.swing.JButton;
+import tankgame.client.UDPScanner;
 
 /**
  *
@@ -23,7 +24,7 @@ public class FindLobby extends JPanel {
     private int h;
     private int e;
     private JButton[] buttons;
-    private final ServerObject[] servers;
+    private ServerObject[] servers;
 
     public FindLobby(GameFrame gf, ServerObject[] servers) {
         //initialize
@@ -32,10 +33,13 @@ public class FindLobby extends JPanel {
         w = gf.getWidth();
         h = gf.getHeight();
         this.servers = servers;
-
+        
         //font
         Font f = new Font("Comic Sans", Font.PLAIN, h / 18);
-
+       JButton refresh = new JButton("refresh");
+         refresh.setBounds(0, h - h / 11, w / 7, h / 10);
+         add(refresh);
+         refresh.setVisible(true);
         try {
             tuffBG = ImageIO.read(new File("src" + File.separator + "images" + File.separator + "TuffTuffTuffBackground.png")).getScaledInstance(w, h, Image.SCALE_DEFAULT);
 
@@ -57,7 +61,7 @@ public class FindLobby extends JPanel {
             });
             lobby.setFont(f);
         }
-
+  
     }
 
     @Override
@@ -65,5 +69,9 @@ public class FindLobby extends JPanel {
         super.paintComponent(g);
         g.drawImage(tuffBG, 0, 0, this);
     }
+    
+    private void refresh(){
+        
+    } 
 
 }
