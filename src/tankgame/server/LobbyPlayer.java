@@ -1,13 +1,14 @@
 package tankgame.server;
 
 import java.util.UUID;
+import java.io.Serializable;
 
 /**
  *
  * @author layne
  */
-public class LobbyPlayer {
-
+public class LobbyPlayer implements Serializable {
+    private static final long serialVersionUID = 69L;
     private String name;
     private UUID ID;
 
@@ -21,8 +22,8 @@ public class LobbyPlayer {
         return this.ID;
     }
 
-    public String getName(){
+    public String getName() {
         return this.name;
     }
-    
+
 }

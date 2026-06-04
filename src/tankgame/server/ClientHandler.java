@@ -45,7 +45,7 @@ public class ClientHandler {
 
     public ClientObj getClient(UUID userID) {
         for (ClientObj client : clients) {
-            if (client.id == userID) {
+            if (client.id .equals(userID)) {
                 return client;
             }
         }
@@ -63,7 +63,7 @@ public class ClientHandler {
     public void close() {
         try {
             if (!ss.isClosed()) {
-                ss.close();
+                ss.close()
             }
             for (ClientObj co : clients) {
                 co.close();

@@ -73,6 +73,7 @@ public class GameFrame extends JFrame {
         this.add(lm);
         setVisible(true);
         lobbyPlayers = new ArrayList<>();
+        lobbyPlayers.add(new LobbyPlayer(username, null));
         gh = new GameHandler(this, isHost);
 
         port = 6767;
@@ -121,7 +122,7 @@ public class GameFrame extends JFrame {
                         //send all players to the new guy
                         try {
                             ArrayList<LobbyPlayer> tempLP = new ArrayList<>();
-                            System.out.println("size" + lobbyPlayers.size());
+                            System.out.println("size:" + lobbyPlayers.size());
                             for (LobbyPlayer lp : lobbyPlayers) {
                                 tempLP.add(new LobbyPlayer(lp.getName(), null));
                             }
