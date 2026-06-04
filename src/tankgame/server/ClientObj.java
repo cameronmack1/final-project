@@ -25,25 +25,26 @@ public class ClientObj {
         this.id = id;
         this.lastMessageTime = System.currentTimeMillis();
     }
-    
-    public String getName(){
+
+    public String getName() {
         return this.name;
     }
-    
-    public void setName(String playerName){
+
+    public void setName(String playerName) {
         name = playerName;
     }
-    
-    public void updateLastMessageTime(){
+
+    public void updateLastMessageTime() {
         lastMessageTime = System.currentTimeMillis();
     }
-    
-    public long getLastMessageTime(){
+
+    public long getLastMessageTime() {
         return lastMessageTime;
     }
 
     public void send(String message) {//sends a message to the client
-        output.print(message);
+        output.println(message);
+        System.out.println("sent message: " + message);
     }
 
     public void close() throws IOException {//closes the socket

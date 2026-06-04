@@ -121,6 +121,7 @@ public class GameFrame extends JFrame {
                         //send all players to the new guy
                         try {
                             ArrayList<LobbyPlayer> tempLP = new ArrayList<>();
+                            System.out.println("size" + lobbyPlayers.size());
                             for (LobbyPlayer lp : lobbyPlayers) {
                                 tempLP.add(new LobbyPlayer(lp.getName(), null));
                             }
@@ -256,12 +257,13 @@ public class GameFrame extends JFrame {
                 case 0 -> {
                     this.id = UUID.fromString(message);
                     th.send("0:" + this.id + this.username);
+                    System.out.println("0:" + this.id + this.username);
                 }
                 //just connected, message will have arraylist of players
                 case 1 -> {
                     try {
                         lobbyPlayers = (ArrayList<LobbyPlayer>) GameHandler.deserialize(message);
-                        System.out.println(lobbyPlayers.size());
+                        System.out.println("size:" + lobbyPlayers.size());
                     } catch (IOException e) {
                         //idk
                         e.printStackTrace();
@@ -283,7 +285,7 @@ public class GameFrame extends JFrame {
                 case 3 -> {
                     try {
                         gc.addServerSnapshot((Snapshot) GameHandler.deserialize(message));
-                    } catch(Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }

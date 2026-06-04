@@ -27,7 +27,7 @@ public class TCPHandler {
     PrintWriter out;
 
     public TCPHandler(String ip, int port) throws UnknownHostException, IOException {
-        //creat socket
+        //create socket
         socket = new Socket(ip, port);
 
         //create output stream (sending messages)
@@ -36,16 +36,18 @@ public class TCPHandler {
         //create input stream (recieving) and add action listener
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String message;
-
         try {
             while ((message = in.readLine()) != null) {
+                System.out.println("recieved: " + message);
                 recieveQueue.add(message);
                 notifyListeners();
             }
+            System.out.println("end of tcphandler recieve message");
         } catch (SocketException e) {
             //server disconnects u or fail to connect
-            
+            e.printStackTrace();
         }
+        System.out.println("end of constructor");
     }
 
     private void notifyListeners() {
@@ -63,6 +65,7 @@ public class TCPHandler {
      */
     public void send(String message) {
         out.print(message);
+        System.out.println("sent message tcph: " + message);
     }
 
     public void close() throws IOException {
