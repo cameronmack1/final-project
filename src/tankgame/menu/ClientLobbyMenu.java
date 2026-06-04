@@ -49,6 +49,16 @@ public class ClientLobbyMenu extends JPanel {
             System.out.println("error file missing wtf did u do");
             e.printStackTrace();
         }
+        
+        //buttons
+        JButton leaveButton = new JButton("Leave Game");
+        leaveButton.setBounds(0, 0, w / 5, h / 10);
+        add(leaveButton);
+        leaveButton.setVisible(true);
+        leaveButton.addActionListener(al -> {
+            gf.leaveGame();
+        });
+        leaveButton.setFont(f);
     }
 
     public void refreshLabels() {

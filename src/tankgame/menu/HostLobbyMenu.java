@@ -66,6 +66,8 @@ public class HostLobbyMenu extends JPanel {
             startDebug();
         });
         debug.setFont(f);
+
+        playerLabels = new JLabel[0];
         setVisible(true);
     }
 
@@ -90,23 +92,32 @@ public class HostLobbyMenu extends JPanel {
 
     public void removePlayer(UUID id) {
         for (int i = 0; i < playerList.size(); i++) {
-            if (playerList.get(i).getID() == id) {
+            if (id.equals(playerList.get(i).getID())) {
+                System.out.println(id + " " + i + " " + playerList.get(i).getName());
                 playerList.remove(i);
+                refreshLabels();
                 break;
             }
         }
-        refreshLabels();
+        System.out.println(playerList.size());
     }
 
     public void refreshLabels() {
+        if (playerLabels.length != 0) {
+            for (JLabel label : playerLabels) {
+                remove(label);
+            }
+        }
         playerLabels = new JLabel[playerList.size()];
         for (int i = 0; i < playerLabels.length; i++) {
-            JLabel label = new JLabel(playerList.get(i).getName());
-            label.setBounds(w / 8, h / 8 * (i + 1), w / 3, h / 10);
-            add(label);
-            label.setVisible(true);
-            label.setFont(f);
-            label.setForeground(Color.WHITE);
+            playerLabels[i] = new JLabel(playerList.get(i).getName());
+            playerLabels[i].setBounds(w / 8, h / 8 * (i + 1), w / 3, h / 10);
+            add(playerLabels[i]);
+            playerLabels[i].setVisible(true);
+            playerLabels[i].setFont(f);
+            playerLabels[i].setForeground(Color.WHITE);
         }
+        revalidate();
+        repaint();
     }
 }

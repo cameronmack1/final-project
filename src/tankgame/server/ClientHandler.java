@@ -45,7 +45,7 @@ public class ClientHandler {
 
     public ClientObj getClient(UUID userID) {
         for (ClientObj client : clients) {
-            if (client.id .equals(userID)) {
+            if (client.id.equals(userID)) {
                 return client;
             }
         }
@@ -159,7 +159,13 @@ public class ClientHandler {
                 recieveQueue.add(message);
                 notifyListeners();
             }
-        } catch (Exception e) {
+        } catch (SocketException e) {
+            //player leaves
+            String message = "9:" + client.id;
+            recieveQueue.add(message);
+            notifyListeners();
+        } catch (IOException e) {
+            //weird error
             e.printStackTrace();
         }
     }

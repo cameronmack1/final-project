@@ -52,6 +52,9 @@ public class GameFrame extends JFrame {
     private UUID id;
     private String username;
 
+    private int w;
+    private int h;
+
     public GameFrame() {
         //initialize the JFrame
         setExtendedState(MAXIMIZED_BOTH);
@@ -63,6 +66,9 @@ public class GameFrame extends JFrame {
             this.add(mm);
             setVisible(true);
         });
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        w = (int) screenSize.getWidth();
+        h = (int) screenSize.getHeight();
     }
 
     //starts the server
@@ -114,8 +120,10 @@ public class GameFrame extends JFrame {
             message = message.substring(2);
             //get uuid
             messageUUID = UUID.fromString(message.substring(0, 36));
-            message = message.substring(37);
-            ch.getClient(messageUUID).updateLastMessageTime();
+            if (type != 9) {
+                message = message.substring(37);
+                ch.getClient(messageUUID).updateLastMessageTime();
+            }
             switch (type) {
                 //new connection
                 case 0 -> {
@@ -159,9 +167,9 @@ public class GameFrame extends JFrame {
 
                 //player leave lobby
                 case 9 -> {
+                    System.out.println("removed player: " + messageUUID);
                     removePlayer(messageUUID);
                 }
-
             }
         });
     }
@@ -171,11 +179,11 @@ public class GameFrame extends JFrame {
         if (!gameStarted) {
             hlm.removePlayer(id);
             for (int i = 0; i < lobbyPlayers.size(); i++) {
-                if (lobbyPlayers.get(i).getID() == id) {
+                if (id.equals(lobbyPlayers.get(i).getID())) {
                     lobbyPlayers.remove(i);
                 }
             }
-            String sendMessage = "2:" + id;
+            String sendMessage = "9:" + id;
             ch.broadcast(sendMessage);
         }
     }
@@ -262,7 +270,7 @@ public class GameFrame extends JFrame {
                 case 1 -> {
                     try {
                         lobbyPlayers = (ArrayList<LobbyPlayer>) GameHandler.deserialize(message);
-                        for(LobbyPlayer lp : lobbyPlayers){
+                        for (LobbyPlayer lp : lobbyPlayers) {
                             clm.addPlayer(lp);
                         }
                     } catch (IOException e) {
@@ -291,6 +299,12 @@ public class GameFrame extends JFrame {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                }
+
+                //player leave
+                case 9 -> {
+                    UUID newID = UUID.fromString(message.substring(0, 36));
+                    clm.removePlayer(newID);
                 }
             }
         });
@@ -334,6 +348,21 @@ public class GameFrame extends JFrame {
                 e.printStackTrace();
             }
         }, 0, 1000 / 30, TimeUnit.MILLISECONDS);
+    }
+
+    public void leaveGame() {
+        th.send("9:" + id);
+        try {
+            th.close();
+        } catch (IOException e) {
+            //already closed
+            e.printStackTrace();
+        }
+        remove(clm);
+        mm = new MainMenu(this, this.w, this.h);
+        add(mm);
+        setVisible(true);
+        this.username = "";
     }
 
     public void setUsername(String name) {
