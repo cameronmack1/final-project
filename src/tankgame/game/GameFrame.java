@@ -237,6 +237,7 @@ public class GameFrame extends JFrame {
         remove(fl);
         lm = new LobbyMenu(this/*, isHost*/);
         add(lm);
+        setVisible(true);
         try {
             th = new TCPHandler(so.getIP(), so.getPort());
         } catch (UnknownHostException e) {
