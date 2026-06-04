@@ -25,6 +25,7 @@ public class MainMenu extends JPanel {
     private int w;
     private int h;
     private JTextField username;
+    private JOptionPane enterName;
 
     public MainMenu(GameFrame gf, int width, int height) {
         //initialize
@@ -46,7 +47,7 @@ public class MainMenu extends JPanel {
             System.out.println("error file missing wtf did u do");
             e.printStackTrace();
         }
-        JOptionPane enterName = new JOptionPane("Please enter a valid username yo.");
+        enterName = new JOptionPane("Please enter a valid username yo.");
         this.add(enterName);
         enterName.setBounds(0, h - h / 11, w / 7, h / 10);
         enterName.setVisible(false);
@@ -61,11 +62,6 @@ public class MainMenu extends JPanel {
         username.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
             public void keyTyped(java.awt.event.KeyEvent e) {
-                char c = e.getKeyChar();
-                if (c == java.awt.event.KeyEvent.VK_BACK_SPACE
-                        || c == java.awt.event.KeyEvent.VK_DELETE) {
-                    return;
-                }
                 if (username.getText().length() >= 13) {
                     e.consume();
                 }
@@ -98,6 +94,7 @@ public class MainMenu extends JPanel {
         startButton.setVisible(true);
         startButton.addActionListener(al -> {
             String name = username.getText().trim();
+            
 
             if (name.isEmpty() || name.equalsIgnoreCase("Username")) {
                 JOptionPane.showMessageDialog(this, "Please enter a valid username yo", "yo", JOptionPane.WARNING_MESSAGE
@@ -106,6 +103,8 @@ public class MainMenu extends JPanel {
             }
             enterName.setVisible(false); // hide error
 
+            
+            
             hostGame();
         });
         startButton.setFont(f);
@@ -153,4 +152,18 @@ public class MainMenu extends JPanel {
         super.paintComponent(g);
         g.drawImage(bg, 0, 0, this);
     }
+    private void checkUsername(){
+         String name = username.getText().trim();
+            
+
+            if (name.isEmpty() || name.equalsIgnoreCase("Username")) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid username yo", "yo", JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
+            enterName.setVisible(false); // hide error
+    }
 }
+
+
+
