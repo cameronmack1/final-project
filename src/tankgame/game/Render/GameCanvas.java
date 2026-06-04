@@ -36,7 +36,6 @@ public final class GameCanvas extends Canvas {
 
     GameHandler gh;
     GameFrame gf;
-    int gameState;
     boolean isHost;
     BufferedImage img;
     private int width;
@@ -113,10 +112,17 @@ public final class GameCanvas extends Canvas {
         buffer = getBufferStrategy();
         requestFocusInWindow();
     }
+    
+    public void addServerSnapshot(Snapshot s){
+        serverSnapshots.add(0, s);
+        if (serverSnapshots.size() > 150) {
+            serverSnapshots.remove(serverSnapshots.size() - 1);
+        }
+    }
 
-    public void addSnapshot(Snapshot s) {
+    public void addLocalSnapshot(Snapshot s) {
         localSnapshots.add(0,s);
-        if (localSnapshots.size() > 5) {
+        if (localSnapshots.size() > 150) {
             localSnapshots.remove(localSnapshots.size() - 1);
         }
     }

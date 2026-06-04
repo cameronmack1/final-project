@@ -24,16 +24,18 @@ public class GameHandler {
 
     private GameFrame gf;
     private GameCanvas gc;
+    
     //server stuff
     private ArrayList<ServerPlayer> players = new ArrayList<>();
     private ArrayList<Projectile> projectiles = new ArrayList<>();
+    private boolean isHost;
 
     //local stuff
     boolean[] keys;
     ClientPlayer self;
     private volatile ArrayList<Projectile> localProj = new ArrayList<>();
 
-    public GameHandler(GameFrame gf) {
+    public GameHandler(GameFrame gf, boolean isHost) {
         this.gf = gf;
     }
 
@@ -53,8 +55,8 @@ public class GameHandler {
     public void initLocal(){
         self = new ClientPlayer(0, 0, 0);
         Snapshot defaultSnapshot = new Snapshot(new ClientPlayer[]{self}, localProj.toArray(Projectile[]::new), System.currentTimeMillis());
-        gc.addSnapshot(defaultSnapshot);
-        gc.addSnapshot(defaultSnapshot);
+        gc.addLocalSnapshot(defaultSnapshot);
+        gc.addLocalSnapshot(defaultSnapshot);
         gc.initLocal();
     }
 
@@ -98,8 +100,8 @@ public class GameHandler {
     public void initDebug() {
         self = new ClientPlayer(500, 500, 0);
         Snapshot defaultSnapshot = new Snapshot(new ClientPlayer[]{self}, localProj.toArray(Projectile[]::new), System.currentTimeMillis());
-        gc.addSnapshot(defaultSnapshot);
-        gc.addSnapshot(defaultSnapshot);
+        gc.addLocalSnapshot(defaultSnapshot);
+        gc.addLocalSnapshot(defaultSnapshot);
         gc.initLocal();
     }
 
@@ -122,9 +124,11 @@ public class GameHandler {
         self.setKeys(keys);
         self.move(keys);
         ClientPlayer[] pArr = new ClientPlayer[]{new ClientPlayer(self)};
-        gc.addSnapshot(new Snapshot(pArr, localProj.toArray(Projectile[]::new), System.currentTimeMillis()));
-    
+        gc.addLocalSnapshot(new Snapshot(pArr, localProj.toArray(Projectile[]::new), System.currentTimeMillis()));
         
+        if(!isHost){
+            gf.sendKeys(keys);
+        }
     }
     
     

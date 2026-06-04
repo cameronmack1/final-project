@@ -1,6 +1,6 @@
 package tankgame.game;
 
-import tankgame.game.Render.GameCanvas;
+import tankgame.game.Render.*;
 import tankgame.menu.*;
 import tankgame.client.ServerObject;
 import tankgame.client.TCPHandler;
@@ -46,7 +46,10 @@ public class GameFrame extends JFrame {
     private GameCanvas gc;
     private boolean gameStarted = false;
     private int port;
-    ArrayList<LobbyPlayer> lobbyPlayers;
+    private ArrayList<LobbyPlayer> lobbyPlayers;
+    private boolean isHost = false;
+    private UUID id;
+    private String username;
 
     public GameFrame() {
         //initialize the JFrame
@@ -64,12 +67,13 @@ public class GameFrame extends JFrame {
     //starts the server
     public void initServerLobby() {
         //create lobby menu panel and remove main menu
+        isHost = true;
         this.remove(mm);
-        lm = new LobbyMenu(this);
+        lm = new LobbyMenu(this/*, isHost*/);
         this.add(lm);
         setVisible(true);
         lobbyPlayers = new ArrayList<>();
-        gh = new GameHandler(this);
+        gh = new GameHandler(this, isHost);
 
         port = 6767;
         boolean portFound = false;
@@ -120,7 +124,7 @@ public class GameFrame extends JFrame {
                             for (LobbyPlayer lp : lobbyPlayers) {
                                 tempLP.add(new LobbyPlayer(lp.getName(), null));
                             }
-                            String data = "0:" + GameHandler.serialize(tempLP);
+                            String data = "1:" + GameHandler.serialize(tempLP);
                             ch.getClient(messageUUID).send(data);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -132,7 +136,7 @@ public class GameFrame extends JFrame {
                         lm.addPlayer(lp);
 
                         //send new player to everyone
-                        String data = "1:" + message;
+                        String data = "2:" + message;
                         ch.broadcast(data);
                     }
                 }
@@ -228,6 +232,9 @@ public class GameFrame extends JFrame {
     }
 
     public void joinServer(ServerObject so) {
+        remove(fl);
+        lm = new LobbyMenu(this/*, isHost*/);
+        add(lm);
         try {
             th = new TCPHandler(so.getIP(), so.getPort());
         } catch (UnknownHostException e) {
@@ -240,14 +247,21 @@ public class GameFrame extends JFrame {
         //message recieved
         th.addActionListener(al -> {
             String message = ch.recieveQueue.poll();
+            System.out.println(message);
             //get type
             int type = Character.getNumericValue(message.charAt(0));
             message = message.substring(2);
             switch (type) {
-                //just connected, message will have arraylist of players
+                //initialize your own UUID and shi
                 case 0 -> {
+                    this.id = UUID.fromString(message);
+                    th.send("0:" + this.id + this.username);
+                }
+                //just connected, message will have arraylist of players
+                case 1 -> {
                     try {
                         lobbyPlayers = (ArrayList<LobbyPlayer>) GameHandler.deserialize(message);
+                        System.out.println(lobbyPlayers.size());
                     } catch (IOException e) {
                         //idk
                         e.printStackTrace();
@@ -258,11 +272,20 @@ public class GameFrame extends JFrame {
                 }
 
                 //new player joined
-                case 1 -> {
+                case 2 -> {
                     //create lobby player from message and add them
                     LobbyPlayer lp = new LobbyPlayer(message, null);
                     lobbyPlayers.add(lp);
                     lm.addPlayer(lp);
+                }
+
+                //tick
+                case 3 -> {
+                    try {
+                        gc.addServerSnapshot((Snapshot) GameHandler.deserialize(message));
+                    } catch(Exception e){
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -271,7 +294,7 @@ public class GameFrame extends JFrame {
     }
 
     public void initLocal() {
-        gh = new GameHandler(this);
+        gh = new GameHandler(this, isHost);
         gc = new GameCanvas(this, gh);
         gh.setCanvas(gc);
         add(gc);
@@ -291,6 +314,10 @@ public class GameFrame extends JFrame {
 
     }
 
+    public void sendKeys(boolean[] keys) {
+        String message;
+    }
+
     public void startDebug() {
         remove(mm);
         initLocal();
@@ -304,5 +331,9 @@ public class GameFrame extends JFrame {
                 e.printStackTrace();
             }
         }, 0, 1000 / 30, TimeUnit.MILLISECONDS);
+    }
+
+    public void setUsername(String name) {
+        this.username = name;
     }
 }
