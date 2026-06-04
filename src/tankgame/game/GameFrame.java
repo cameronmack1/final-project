@@ -255,6 +255,7 @@ public class GameFrame extends JFrame {
             switch (type) {
                 //initialize your own UUID and shi
                 case 0 -> {
+                    System.out.println("sending");
                     this.id = UUID.fromString(message);
                     th.send("0:" + this.id + this.username);
                     System.out.println("0:" + this.id + this.username);

@@ -64,7 +64,7 @@ public class TCPHandler {
      * @param message message to send
      */
     public void send(String message) {
-        out.print(message);
+        out.println(message);
         System.out.println("sent message tcph: " + message);
     }
 
