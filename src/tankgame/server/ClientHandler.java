@@ -63,7 +63,7 @@ public class ClientHandler {
     public void close() {
         try {
             if (!ss.isClosed()) {
-                ss.close()
+                ss.close();
             }
             for (ClientObj co : clients) {
                 co.close();
