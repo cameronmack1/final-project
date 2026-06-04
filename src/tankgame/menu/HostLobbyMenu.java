@@ -15,27 +15,28 @@ import java.util.ArrayList;
 /**
  * shoutout @wwavely
  *
- * @author Koorosh */
-public class LobbyMenu extends JPanel {
-    
+ * @author Koorosh
+ */
+public class HostLobbyMenu extends JPanel {
+
     private ArrayList<LobbyPlayer> playerList = new ArrayList<>();
 
     private Image bg;
     private GameFrame gf;
     private int w;
     private int h;
-    private int testVariable;
-    private int e;
+    private JLabel[] playerLabels;
+    private Font f;
 
-    public LobbyMenu(GameFrame gf) {
+    public HostLobbyMenu(GameFrame gf) {
         //initialize
         setLayout(null);
         this.gf = gf;
         w = gf.getWidth();
         h = gf.getHeight();
-        
+
         //font
-        Font f = new Font("Comic Sans", Font.PLAIN, h/18);
+        f = new Font("Comic Sans", Font.PLAIN, h / 18);
 
         //load images
         try {
@@ -81,20 +82,31 @@ public class LobbyMenu extends JPanel {
         super.paintComponent(g);
         g.drawImage(bg, 0, 0, this);
     }
-    
-    public void addPlayer (LobbyPlayer player){
+
+    public void addPlayer(LobbyPlayer player) {
         playerList.add(player);
+        refreshLabels();
     }
-    
-    public void removePlayer(UUID id){
-        for(int i = 0; i<playerList.size();i++){
-            if(playerList.get(i).getID()==id){
+
+    public void removePlayer(UUID id) {
+        for (int i = 0; i < playerList.size(); i++) {
+            if (playerList.get(i).getID() == id) {
                 playerList.remove(i);
                 break;
             }
         }
-      
+        refreshLabels();
     }
-            
-    
+
+    public void refreshLabels() {
+        playerLabels = new JLabel[playerList.size()];
+        for (int i = 0; i < playerLabels.length; i++) {
+            JLabel label = new JLabel(playerList.get(i).getName());
+            label.setBounds(w / 8, h / 8 * (i + 1), w / 3, h / 10);
+            add(label);
+            label.setVisible(true);
+            label.setFont(f);
+            label.setForeground(Color.WHITE);
+        }
+    }
 }

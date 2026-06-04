@@ -38,7 +38,8 @@ public class GameFrame extends JFrame {
 
     private FindLobby fl;
     private MainMenu mm;
-    private LobbyMenu lm;
+    private HostLobbyMenu hlm;
+    private ClientLobbyMenu clm;
     private UDPListener udpListener;
     private ClientHandler ch;
     private TCPHandler th;
@@ -69,11 +70,12 @@ public class GameFrame extends JFrame {
         //create lobby menu panel and remove main menu
         isHost = true;
         this.remove(mm);
-        lm = new LobbyMenu(this/*, isHost*/);
-        this.add(lm);
+        hlm = new HostLobbyMenu(this);
+        this.add(hlm);
         setVisible(true);
         lobbyPlayers = new ArrayList<>();
         lobbyPlayers.add(new LobbyPlayer(username, null));
+        hlm.addPlayer(lobbyPlayers.get(0));
         gh = new GameHandler(this, isHost);
 
         port = 6767;
@@ -121,12 +123,7 @@ public class GameFrame extends JFrame {
                     if (!gameStarted) {
                         //send all players to the new guy
                         try {
-                            ArrayList<LobbyPlayer> tempLP = new ArrayList<>();
-                            System.out.println("size:" + lobbyPlayers.size());
-                            for (LobbyPlayer lp : lobbyPlayers) {
-                                tempLP.add(new LobbyPlayer(lp.getName(), null));
-                            }
-                            String data = "1:" + GameHandler.serialize(tempLP);
+                            String data = "1:" + GameHandler.serialize(lobbyPlayers);
                             ch.getClient(messageUUID).send(data);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -135,10 +132,10 @@ public class GameFrame extends JFrame {
                         //add new guy to the lobby
                         LobbyPlayer lp = new LobbyPlayer(message, messageUUID);
                         lobbyPlayers.add(lp);
-                        lm.addPlayer(lp);
+                        hlm.addPlayer(lp);
 
                         //send new player to everyone
-                        String data = "2:" + message;
+                        String data = "2:" + messageUUID + ":" + message;
                         ch.broadcast(data);
                     }
                 }
@@ -172,7 +169,7 @@ public class GameFrame extends JFrame {
     public void removePlayer(UUID id) {
         ch.removeClient(id);
         if (!gameStarted) {
-            lm.removePlayer(id);
+            hlm.removePlayer(id);
             for (int i = 0; i < lobbyPlayers.size(); i++) {
                 if (lobbyPlayers.get(i).getID() == id) {
                     lobbyPlayers.remove(i);
@@ -193,7 +190,7 @@ public class GameFrame extends JFrame {
             e.printStackTrace();
         }
         gameStarted = true;
-        remove(lm);
+        remove(hlm);
         //start loops
         initLocal();
         //30 tps simulate
@@ -235,8 +232,8 @@ public class GameFrame extends JFrame {
 
     public void joinServer(ServerObject so) {
         remove(fl);
-        lm = new LobbyMenu(this/*, isHost*/);
-        add(lm);
+        clm = new ClientLobbyMenu(this);
+        add(clm);
         setVisible(true);
         try {
             th = new TCPHandler(so.getIP(), so.getPort());
@@ -251,7 +248,6 @@ public class GameFrame extends JFrame {
         //message recieved
         th.addActionListener(al -> {
             String message = th.recieveQueue.poll();
-            System.out.println(message);
             //get type
             int type = Character.getNumericValue(message.charAt(0));
             message = message.substring(2);
@@ -266,7 +262,9 @@ public class GameFrame extends JFrame {
                 case 1 -> {
                     try {
                         lobbyPlayers = (ArrayList<LobbyPlayer>) GameHandler.deserialize(message);
-                        System.out.println("size:" + lobbyPlayers.size());
+                        for(LobbyPlayer lp : lobbyPlayers){
+                            clm.addPlayer(lp);
+                        }
                     } catch (IOException e) {
                         //idk
                         e.printStackTrace();
@@ -279,9 +277,11 @@ public class GameFrame extends JFrame {
                 //new player joined
                 case 2 -> {
                     //create lobby player from message and add them
-                    LobbyPlayer lp = new LobbyPlayer(message, null);
+                    UUID newID = UUID.fromString(message.substring(0, 36));
+                    message = message.substring(37);
+                    LobbyPlayer lp = new LobbyPlayer(message, newID);
                     lobbyPlayers.add(lp);
-                    lm.addPlayer(lp);
+                    clm.addPlayer(lp);
                 }
 
                 //tick

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import tankgame.game.Render.GameCanvas;
 import tankgame.game.Render.Snapshot;
-import tankgame.game.projectile.Projectile;
+import tankgame.game.projectile.*;
 import tankgame.client.ClientPlayer;
 import tankgame.server.*;
 import java.util.UUID;
@@ -18,7 +18,7 @@ import java.util.Base64;
 
 /**
  *
- * @author Cameron
+ * @author Cameronx
  */
 public class GameHandler {
 
@@ -80,7 +80,7 @@ public class GameHandler {
             player.move(player.getKeys());
             //player shooting
             if (player.getKeys()[4] && player.getCooldown() <= 0) {
-                projectiles.add(new Projectile(player.getX(), player.getY(), player.getAngle(), player.getVel(), player.getRID()));
+                projectiles.add(new NormalProjectile(player.getX(), player.getY(), player.getAngle(), player.getVel(), player.getRID()));
                 player.setCooldown(Projectile.COOLDOWN);
             }
         }
@@ -117,7 +117,7 @@ public class GameHandler {
         }
         //shoot projectile
         if (keys[4] && self.getCooldown() <= 0) {
-            localProj.add(new Projectile(self.getX(), self.getY(), self.getAngle(), self.getVel(), self.getRID()));
+            localProj.add(new NormalProjectile(self.getX(), self.getY(), self.getAngle(), self.getVel(), self.getRID()));
             self.setCooldown(Projectile.COOLDOWN);
         }
         //move self
