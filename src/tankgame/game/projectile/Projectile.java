@@ -4,16 +4,16 @@ package tankgame.game.projectile;
  *
  * @author layne
  */
-public class Projectile {
+public abstract class Projectile {
 
     public static final int COOLDOWN = 30;
     public static final int DEFAULT_SPEED = 10;
-    private boolean isNew = true;
-    private double x;
-    private double y;
-    private double angle;
-    private double velocity;
-    private final int rid;
+    protected boolean isNew = true;
+    protected double x;
+    protected double y;
+    protected double angle;
+    protected double velocity;
+    protected final int rid;
 
     public Projectile(double x, double y, double angle, double velocity, int rid) {
         this.x = x + Math.cos(angle) * 50;

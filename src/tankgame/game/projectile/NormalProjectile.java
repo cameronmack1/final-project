@@ -8,6 +8,21 @@ package tankgame.game.projectile;
  *
  * @author layne
  */
-public class NormalProjectile {
-    
+public class NormalProjectile extends Projectile {
+ public NormalProjectile(double x, double y, double angle, double velocity, int rid) {
+        super(x, y, angle, velocity, rid);
+        this.velocity = velocity / 2 + DEFAULT_SPEED;
+    }
+
+    @Override
+    public void move() {
+        if (isNew) {
+            isNew = false;
+        }
+
+        y += Math.sin(angle) * velocity;
+        x += Math.cos(angle) * velocity;
+    }
 }
+    
+
