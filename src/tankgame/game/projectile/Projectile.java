@@ -2,6 +2,8 @@ package tankgame.game.projectile;
 
 import java.util.UUID;
 
+import tankgame.game.GameHandler;
+
 /**
  *
  * @author layne
@@ -45,7 +47,7 @@ public abstract class Projectile {
         return isNew;
     }
 
-    public void move() {
+    public void move(GameHandler gh) {
         if (isNew) {
             isNew = false;
         }

@@ -15,16 +15,6 @@ public class NormalProjectile extends Projectile {
         super(x, y, angle, velocity, owner);
         this.velocity = velocity / 2 + DEFAULT_SPEED;
     }
-
-    @Override
-    public void move() {
-        if (isNew) {
-            isNew = false;
-        }
-
-        y += Math.sin(angle) * velocity;
-        x += Math.cos(angle) * velocity;
-    }
 }
     
 

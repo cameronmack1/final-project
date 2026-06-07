@@ -6,7 +6,7 @@ package tankgame.game;
  */
 public abstract class Player {
 
-    private boolean[] keys = new boolean[] {false, false, false, false, false};
+    private boolean[] keys = new boolean[]{false, false, false, false, false};
     private double x = 500;
     private double y = 500;
     private double angle;
@@ -27,19 +27,19 @@ public abstract class Player {
         this.angle = toBeCopied.getAngle();
         this.velocity = toBeCopied.getVel();
     }
-    
-    public void setCooldown(int cooldown){
+
+    public void setCooldown(int cooldown) {
         this.projCooldown = cooldown;
     }
-    
-    public int getCooldown(){
+
+    public int getCooldown() {
         return projCooldown;
     }
 
-    public boolean[] getKeys(){
+    public boolean[] getKeys() {
         return keys;
     }
-    
+
     public void setKeys(boolean[] keys) {
         this.keys = keys;
     }
@@ -60,7 +60,7 @@ public abstract class Player {
         return angle;
     }
 
-    public void move(boolean[] keys) { //up[0], left[1], down[2], right[3] message by Layne Ripley
+    public void move(boolean[] keys, GameHandler gh) { //up[0], left[1], down[2], right[3] message by Layne Ripley
         if (keys[0] ^ keys[2]) {//if only one of forwards or backwards pressed
             if (keys[0]) {
                 velocity += ACCELERATION;
@@ -78,14 +78,95 @@ public abstract class Player {
         if (velocity < -5) {
             velocity = -5;
         }
+        double da = 0;
         if (keys[1]) {//pressing left
-            angle -= velocity * TURN_SPEED;
+            da = -velocity * TURN_SPEED;
         }
         if (keys[3]) {//pressing right
-            angle += velocity * TURN_SPEED;
+            da = velocity * TURN_SPEED;
         }
-        y += Math.sin(angle) * velocity;
-        x += Math.cos(angle) * velocity;
+        //change in x and y including the change in angle
+        double dya = Math.sin(angle + da) * velocity;
+        double dxa = Math.cos(angle + da) * velocity;
 
+        //change in x and y excluding the change in angle
+        double dy = Math.sin(angle) * velocity;
+        double dx = Math.cos(angle) * velocity;
+
+        //points for each corner of the tank with rotation
+        //front right
+        double dx1a = (20 * Math.cos(angle + da)) - (10 * Math.sin(angle + da)) + x;
+        double dy1a = (20 * Math.sin(angle + da)) + (10 * Math.cos(angle + da)) + y;
+
+        //back right
+        double dx2a = (-35 * Math.cos(angle + da)) - (10 * Math.sin(angle + da)) + x;
+        double dy2a = (-35 * Math.sin(angle + da)) + (10 * Math.cos(angle + da)) + y;
+
+        //front left
+        double dx3a = (20 * Math.cos(angle + da)) - (-10 * Math.sin(angle + da)) + x;
+        double dy3a = (20 * Math.sin(angle + da)) + (-10 * Math.cos(angle + da)) + y;
+
+        //back left
+        double dx4a = (-35 * Math.cos(angle + da)) - (-10 * Math.sin(angle + da)) + x;
+        double dy4a = (-35 * Math.sin(angle + da)) + (-10 * Math.cos(angle + da)) + y;
+
+        //front middle
+        double dx5a = (20 * Math.cos(angle + da)) + x;
+        double dy5a = (20 * Math.sin(angle + da)) + y;
+
+        //back middle
+        double dx6a = (-35 * Math.cos(angle + da)) + x;
+        double dy6a = (-35 * Math.sin(angle + da)) + y;
+
+        //if the tank cannot be moved and rotated, move but do not rotate
+        //points for each corner of the tank without rotation
+        //front right
+        double dx1 = (20 * Math.cos(angle)) - (10 * Math.sin(angle)) + x;
+        double dy1 = (20 * Math.sin(angle)) + (10 * Math.cos(angle)) + y;
+
+        //back right
+        double dx2 = (-35 * Math.cos(angle)) - (10 * Math.sin(angle)) + x;
+        double dy2 = (-35 * Math.sin(angle)) + (10 * Math.cos(angle)) + y;
+
+        //front left
+        double dx3 = (20 * Math.cos(angle)) - (-10 * Math.sin(angle)) + x;
+        double dy3 = (20 * Math.sin(angle)) + (-10 * Math.cos(angle)) + y;
+
+        //back left
+        double dx4 = (-35 * Math.cos(angle)) - (-10 * Math.sin(angle)) + x;
+        double dy4 = (-35 * Math.sin(angle)) + (-10 * Math.cos(angle)) + y;
+
+        //front middle
+        double dx5 = (20 * Math.cos(angle)) + x;
+        double dy5 = (20 * Math.sin(angle)) + y;
+
+        //back middle
+        double dx6 = (-35 * Math.cos(angle)) + x;
+        double dy6 = (-35 * Math.sin(angle)) + y;
+
+        boolean mx = false;
+        boolean my = false;
+
+        //move in x direction if all points are able to
+        if (!(gh.checkPos(dx1a + dxa, dy1a) || gh.checkPos(dx2a + dxa, dy2a) || gh.checkPos(dx3a + dxa, dy3a) || gh.checkPos(dx4a + dxa, dy4a) || gh.checkPos(dx5a + dxa, dy5a) || gh.checkPos(dx6a + dxa, dy6a))) {
+            x += dxa;
+            angle += da / 2;
+            mx = true;
+        }
+        //move in y direction if possible
+        if (!(gh.checkPos(dx1a, dy1a + dya) || gh.checkPos(dx2a, dy2a + dya) || gh.checkPos(dx3a, dy3a + dya) || gh.checkPos(dx4a, dy4a + dya) || gh.checkPos(dx5a, dy5a + dya) || gh.checkPos(dx6a, dy6a + dya))) {
+            y += dya;
+            angle += da / 2;
+            my = true;
+        }
+
+        //move in x direction if all points are able to
+        if (!(mx || gh.checkPos(dx1 + dx, dy1) || gh.checkPos(dx2 + dx, dy2) || gh.checkPos(dx3 + dx, dy3) || gh.checkPos(dx4 + dx, dy4) || gh.checkPos(dx5 + dx, dy5) || gh.checkPos(dx6 + dx, dy6))) {
+            x += dx;
+        }
+        //move in y direction if possible
+        if (!(my || gh.checkPos(dx1, dy1 + dy) || gh.checkPos(dx2, dy2 + dy) || gh.checkPos(dx3, dy3 + dy) || gh.checkPos(dx4, dy4 + dy) || gh.checkPos(dx5, dy5 + dy) || gh.checkPos(dx6, dy6 + dy))) {
+            y += dy;
+        }
     }
 }

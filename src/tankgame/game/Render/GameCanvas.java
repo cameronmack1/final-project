@@ -7,7 +7,6 @@ import tankgame.game.projectile.Projectile;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 
-import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Canvas;
@@ -53,15 +52,12 @@ public final class GameCanvas extends Canvas {
     public boolean inDebug = false;
     private final UUID id;
 
-    private static final int WALL_SIZE = 10;
+    public static final int WALL_SIZE = 10;
 
     BufferStrategy buffer;
 
-    private int projCooldown = 0;
-
     GraphicsEnvironment ge;
     GraphicsDevice gd;
-    GraphicsConfiguration gc;
 
     private boolean local;
 
@@ -79,6 +75,10 @@ public final class GameCanvas extends Canvas {
 
     public KeyHandler kb = new KeyHandler();
 
+    private double tileHeight;
+    private double tileWidth;
+    private boolean[][] map;
+
     public GameCanvas(GameFrame gf, GameHandler gh, UUID id) {
         this.gf = gf;
         this.gh = gh;
@@ -95,7 +95,6 @@ public final class GameCanvas extends Canvas {
         //graphics stuff
         ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         gd = ge.getDefaultScreenDevice();
-        gc = gd.getDefaultConfiguration();
 
         //set rendering hints
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
@@ -147,15 +146,7 @@ public final class GameCanvas extends Canvas {
         return (val2 - val1) * alpha + val1;
     }
 
-    public void renderMap(boolean[][] map) {
-        //calculate tile sizes in pixels using the number of tiles
-        double wallHeight = WALL_SIZE * ((map.length + 1d) / 2d);
-        double tileHeight = (1080d - wallHeight) / ((map.length) / 2);
-
-        double wallWidth = WALL_SIZE * ((map[0].length + 1d) / 2d);
-        double tileWidth = (1920d - wallWidth) / ((map[0].length) / 2);
-
-        int pos = 1;
+    public void renderMap() {
         //render shi
         g2d.setColor(Color.BLACK);
         for (int y = 0; y < map.length; y++) {
@@ -165,8 +156,8 @@ public final class GameCanvas extends Canvas {
                     //if odd x then it is thin
                     //if odd y then it is short
                     //(corner pieces are at odd,odd)
-                    int h = (y % 2 == 0) ? (int) Math.round(WALL_SIZE) : (int) Math.round(tileHeight+1);
-                    int w = (x % 2 == 0) ? (int) (WALL_SIZE) : (int) (tileWidth+1);
+                    int h = (y % 2 == 0) ? (int) Math.round(WALL_SIZE) : (int) Math.round(tileHeight + 1);
+                    int w = (x % 2 == 0) ? (int) (WALL_SIZE) : (int) (tileWidth + 1);
                     int curY = (int) (Math.round(tileHeight * (y / 2) + WALL_SIZE * ((y + 1) / 2)));
                     int curX = (int) (Math.round(tileWidth * (x / 2) + WALL_SIZE * ((x + 1) / 2)));
                     g2d.fillRect(curX, curY, w, h);
@@ -203,6 +194,36 @@ public final class GameCanvas extends Canvas {
                 a1 = playerArray1[i].getAngle();
                 a2 = playerArray2[i].getAngle();
                 drawImageAtRot(tank, lerp(x2, x1, time), lerp(y2, y1, time), lerp(a2, a1, time) + Math.PI / 2);
+
+                //draw points on tank corners (60x80)
+                //display hitbox code
+                /*double xl = lerp(x2, x1, time);
+                double yl = lerp(y2, y1, time);
+                double al = lerp(a2, a1, time);
+                double dx1 = (20 * Math.cos(al)) - (10 * Math.sin(al)) + xl;
+                double dy1 = (20 * Math.sin(al)) + (10 * Math.cos(al)) + yl;
+                
+                double dx2 = (-35 * Math.cos(al)) - (10 * Math.sin(al)) + xl;
+                double dy2 = (-35 * Math.sin(al)) + (10 * Math.cos(al)) + yl;
+                
+                double dx3 = (20 * Math.cos(al)) - (-10 * Math.sin(al)) + xl;
+                double dy3 = (20 * Math.sin(al)) + (-10 * Math.cos(al)) + yl;
+                
+                double dx4 = (-35 * Math.cos(al)) - (-10 * Math.sin(al)) + xl;
+                double dy4 = (-35 * Math.sin(al)) + (-10 * Math.cos(al)) + yl;
+                
+                double dx5 = (20 * Math.cos(al)) + xl;
+                double dy5 = (20 * Math.sin(al)) + yl;
+                
+                double dx6 = (-35 * Math.cos(al)) + xl;
+                double dy6 = (-35 * Math.sin(al)) + yl;
+                g2d.setColor(Color.WHITE);
+                g2d.draw(new java.awt.geom.Ellipse2D.Double(dx1, dy1, 5, 5));
+                g2d.draw(new java.awt.geom.Ellipse2D.Double(dx2, dy2, 5, 5));
+                g2d.draw(new java.awt.geom.Ellipse2D.Double(dx3, dy3, 5, 5));
+                g2d.draw(new java.awt.geom.Ellipse2D.Double(dx4, dy4, 5, 5));
+                g2d.draw(new java.awt.geom.Ellipse2D.Double(dx5, dy5, 5, 5));
+                g2d.draw(new java.awt.geom.Ellipse2D.Double(dx6, dy6, 5, 5));*/
             }
         }
         Projectile[] projArray1 = s1.getProjectileArray();
@@ -233,7 +254,7 @@ public final class GameCanvas extends Canvas {
         if (inDebug) {
             g2d.drawImage(debug, 0, 0, null);
         }
-        renderMap(gh.getMap());
+        renderMap();
         if (local) {
             long t1 = localSnapshots.get(0).getTime();
             long t2 = localSnapshots.get(1).getTime();
@@ -272,5 +293,16 @@ public final class GameCanvas extends Canvas {
         g2d.rotate(angle);
         g2d.drawImage(img, -img.getWidth(null) / 2, -img.getHeight(null) / 2, null);
         g2d.setTransform(old);
+    }
+
+    public void setMap(boolean[][] map) {
+        this.map = map;
+
+        //calculate tile sizes in pixels using the number of tiles
+        double wallHeight = WALL_SIZE * ((map.length + 1d) / 2d);
+        this.tileHeight = (1080d - wallHeight) / ((map.length) / 2);
+
+        double wallWidth = WALL_SIZE * ((map[0].length + 1d) / 2d);
+        this.tileWidth = (1920d - wallWidth) / ((map[0].length) / 2);
     }
 }

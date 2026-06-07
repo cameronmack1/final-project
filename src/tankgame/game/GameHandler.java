@@ -24,13 +24,15 @@ public class GameHandler {
 
     private GameFrame gf;
     private GameCanvas gc;
-    
+
     private UUID id;
     //server stuff
     private ArrayList<ServerPlayer> players = new ArrayList<>();
     private ArrayList<Projectile> projectiles = new ArrayList<>();
     public boolean isHost;
-    
+
+    private double tileHeight;
+    private double tileWidth;
     private boolean[][] map;
 
     //local stuff
@@ -42,12 +44,19 @@ public class GameHandler {
         this.gf = gf;
         this.isHost = isHost;
     }
-    
-    public void setMap(boolean[][] map){
+
+    public void setMap(boolean[][] map) {
         this.map = map;
+
+        //calculate tile sizes in pixels using the number of tiles
+        double wallHeight = GameCanvas.WALL_SIZE * ((map.length + 1d) / 2d);
+        this.tileHeight = (1080d - wallHeight) / ((map.length) / 2);
+
+        double wallWidth = GameCanvas.WALL_SIZE * ((map[0].length + 1d) / 2d);
+        this.tileWidth = (1920d - wallWidth) / ((map[0].length) / 2);
     }
-    
-    public void setID(UUID id){
+
+    public void setID(UUID id) {
         this.id = id;
     }
 
@@ -63,8 +72,8 @@ public class GameHandler {
         }
         return null;
     }
-    
-    public void initLocal(){
+
+    public void initLocal() {
         self = new ClientPlayer(75, 50);
         Snapshot defaultSnapshot = new Snapshot(new ClientPlayer[]{self}, localProj.toArray(Projectile[]::new), System.currentTimeMillis());
         gc.addLocalSnapshot(defaultSnapshot);
@@ -73,8 +82,8 @@ public class GameHandler {
     }
 
     public void initServer(LobbyPlayer[] lpArray) {
-        for(LobbyPlayer lp : lpArray){
-            players.add(new ServerPlayer(0, 0,  lp.getID()));
+        for (LobbyPlayer lp : lpArray) {
+            players.add(new ServerPlayer(0, 0, lp.getID()));
         }
     }
 
@@ -82,13 +91,13 @@ public class GameHandler {
         String data = null;
         //move all projectiles
         for (Projectile projectile : projectiles) {
-            projectile.move();
+            projectile.move(this);
         }
         //move players and check shooting for each player
         for (ServerPlayer player : players) {
             player.setCooldown(player.getCooldown() - 1);
 
-            player.move(player.getKeys());
+            player.move(player.getKeys(), this);
             //player shooting
             if (player.getKeys()[4] && player.getCooldown() <= 0) {
                 projectiles.add(new NormalProjectile(player.getX(), player.getY(), player.getAngle(), player.getVel(), player.getID()));
@@ -112,7 +121,7 @@ public class GameHandler {
         keys = gc.kb.getKeys();
         //move projectile
         for (Projectile proj : localProj) {
-            proj.move();
+            proj.move(this);
         }
         //lower projectile cooldowns
         if (self.getCooldown() > 0) {
@@ -125,23 +134,54 @@ public class GameHandler {
         }
         //move self
         self.setKeys(keys);
-        self.move(keys);
+        self.move(keys, this);
         ClientPlayer[] pArr = new ClientPlayer[]{new ClientPlayer(self)};
         gc.addLocalSnapshot(new Snapshot(pArr, localProj.toArray(Projectile[]::new), System.currentTimeMillis()));
-        
-        if(!isHost){
+
+        if (!isHost) {
             //gf.sendKeys(keys);
         }
     }
-    
-    public boolean[][] getMap(){
+
+    public boolean[][] getMap() {
         return map;
     }
-    
-      /**
+
+    /**
+     * checks whether a position is inside of a wall on the map
+     *
+     * @param x the x position to check
+     * @param y the y position to check
+     * @return true if colliding, false if not
+     */
+    public boolean checkPos(double x, double y) {
+        int gridX = -1;
+        int gridY = -1;
+        int curX = 0;
+        int curY = 0;
+
+        //increase temp x position by tile size or wall size depending on position, and increase grid value until we reach the grid point that the x position is in
+        do {
+            gridX++;
+            curX += (gridX % 2 == 0) ? GameCanvas.WALL_SIZE : tileWidth;
+        } while (curX <= x);
+
+        //increase temp y position by tile size or wall size depending on position, and increase grid value until we reach the grid point that the y position is in
+        do {
+            gridY++;
+            curY += (gridY % 2 == 0) ? GameCanvas.WALL_SIZE : tileHeight;
+        } while (curY <= y);
+
+        //return if the grid position is a wall or not
+        return map[gridY][gridX];
+    }
+
+    /**
      * converts an object into a base64 encoded serialized string
+     *
      * @param o the object to serialize
-     * @return base64 encoded string containing the serialized data of this object
+     * @return base64 encoded string containing the serialized data of this
+     * object
      * @throws IOException sometimes
      */
     public static String serialize(Object o) throws IOException {
@@ -160,6 +200,7 @@ public class GameHandler {
 
     /**
      * deserialized a string into a snapshot object
+     *
      * @param data the string data
      * @return the deserialized object
      * @throws IOException sometimes

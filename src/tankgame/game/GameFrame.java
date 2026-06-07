@@ -336,7 +336,9 @@ public class GameFrame extends JFrame {
         gc = new GameCanvas(this, gh, id);
         gh.setCanvas(gc);
         gh.setID(id);
-        gh.setMap(new MapGenerate().generate(seed));
+        boolean[][] map = new MapGenerate().generate(seed);
+        gh.setMap(map);
+        gc.setMap(map);
         add(gc);
         gc.initBuffer();
         gh.initLocal();
