@@ -2,15 +2,13 @@ package tankgame;
 
 import tankgame.game.GameFrame;
 
-import java.util.Scanner;
+import tankgame.game.Render.GameCanvas;
 
 /**
  *
  * @author Cameron
  */
 public class Main {
-
-    static int port = 6767;
 
     /**
      * @param args the command line arguments

@@ -162,7 +162,8 @@ public final class GameCanvas extends Canvas {
         Player[] playerArray2 = s2.getPlayerArray();
         for (int i = 0; i < playerArray1.length; i++) {
             //check if it is a server player, and if it is then check the id against self id
-            if (playerArray1[i] instanceof ServerPlayer sp) {
+            if (playerArray1[i] instanceof ServerPlayer) {
+                ServerPlayer sp = (ServerPlayer) playerArray1[i];
                 if (!sp.getID().equals(id)) {
                     x1 = playerArray1[i].getX();
                     x2 = playerArray2[i].getX();

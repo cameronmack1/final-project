@@ -26,7 +26,6 @@ public class GameHandler {
     private GameCanvas gc;
     
     private UUID id;
-    
     //server stuff
     private ArrayList<ServerPlayer> players = new ArrayList<>();
     private ArrayList<Projectile> projectiles = new ArrayList<>();

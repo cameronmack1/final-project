@@ -282,8 +282,8 @@ public class GameFrame extends JFrame {
                         lobbyPlayers.clear();
                         ArrayList<?> list = (ArrayList<?>) GameHandler.deserialize(message);
                         for (Object o : list) {
-                            if (o instanceof LobbyPlayer lp) {
-                                lobbyPlayers.add(lp);
+                            if (o instanceof LobbyPlayer) {
+                                lobbyPlayers.add((LobbyPlayer) o);
                             }
                         }
                         for (LobbyPlayer lp : lobbyPlayers) {
