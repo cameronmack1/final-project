@@ -4,13 +4,15 @@
  */
 package tankgame.game.projectile;
 
+import java.util.UUID;
+
 /**
  *
  * @author layne
  */
 public class NormalProjectile extends Projectile {
- public NormalProjectile(double x, double y, double angle, double velocity, int rid) {
-        super(x, y, angle, velocity, rid);
+ public NormalProjectile(double x, double y, double angle, double velocity, UUID owner) {
+        super(x, y, angle, velocity, owner);
         this.velocity = velocity / 2 + DEFAULT_SPEED;
     }
 

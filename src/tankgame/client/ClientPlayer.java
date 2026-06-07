@@ -12,7 +12,7 @@ public class ClientPlayer extends Player {
         super(toBeCopied);
     }
     
-    public ClientPlayer(int x, int y, int id){
-        super(x, y, id);
+    public ClientPlayer(int x, int y){
+        super(x, y);
     }
 }

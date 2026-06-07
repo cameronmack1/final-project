@@ -11,8 +11,8 @@ import java.util.UUID;
 public class ServerPlayer extends Player {
     private final UUID id;
 
-    public ServerPlayer(double x, double y, int rid, UUID id) {
-        super(x, y, rid);
+    public ServerPlayer(double x, double y, UUID id) {
+        super(x, y);
         this.id = id;
     }
     

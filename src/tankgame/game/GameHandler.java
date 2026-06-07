@@ -25,6 +25,8 @@ public class GameHandler {
     private GameFrame gf;
     private GameCanvas gc;
     
+    private UUID id;
+    
     //server stuff
     private ArrayList<ServerPlayer> players = new ArrayList<>();
     private ArrayList<Projectile> projectiles = new ArrayList<>();
@@ -37,6 +39,11 @@ public class GameHandler {
 
     public GameHandler(GameFrame gf, boolean isHost) {
         this.gf = gf;
+        this.isHost = isHost;
+    }
+    
+    public void setID(UUID id){
+        this.id = id;
     }
 
     public void setCanvas(GameCanvas canvas) {
@@ -53,7 +60,7 @@ public class GameHandler {
     }
     
     public void initLocal(){
-        self = new ClientPlayer(0, 0, 0);
+        self = new ClientPlayer(0, 0);
         Snapshot defaultSnapshot = new Snapshot(new ClientPlayer[]{self}, localProj.toArray(Projectile[]::new), System.currentTimeMillis());
         gc.addLocalSnapshot(defaultSnapshot);
         gc.addLocalSnapshot(defaultSnapshot);
@@ -61,9 +68,8 @@ public class GameHandler {
     }
 
     public void initServer(LobbyPlayer[] lpArray) {
-        int ridCount = 0;
         for(LobbyPlayer lp : lpArray){
-            players.add(new ServerPlayer(0, 0, ridCount, lp.getID()));
+            players.add(new ServerPlayer(0, 0,  lp.getID()));
         }
     }
 
@@ -80,7 +86,7 @@ public class GameHandler {
             player.move(player.getKeys());
             //player shooting
             if (player.getKeys()[4] && player.getCooldown() <= 0) {
-                projectiles.add(new NormalProjectile(player.getX(), player.getY(), player.getAngle(), player.getVel(), player.getRID()));
+                projectiles.add(new NormalProjectile(player.getX(), player.getY(), player.getAngle(), player.getVel(), player.getID()));
                 player.setCooldown(Projectile.COOLDOWN);
             }
         }
@@ -98,7 +104,7 @@ public class GameHandler {
     }
 
     public void initDebug() {
-        self = new ClientPlayer(500, 500, 0);
+        self = new ClientPlayer(500, 500);
         Snapshot defaultSnapshot = new Snapshot(new ClientPlayer[]{self}, localProj.toArray(Projectile[]::new), System.currentTimeMillis());
         gc.addLocalSnapshot(defaultSnapshot);
         gc.addLocalSnapshot(defaultSnapshot);
@@ -117,7 +123,7 @@ public class GameHandler {
         }
         //shoot projectile
         if (keys[4] && self.getCooldown() <= 0) {
-            localProj.add(new NormalProjectile(self.getX(), self.getY(), self.getAngle(), self.getVel(), self.getRID()));
+            localProj.add(new NormalProjectile(self.getX(), self.getY(), self.getAngle(), self.getVel(), id));
             self.setCooldown(Projectile.COOLDOWN);
         }
         //move self

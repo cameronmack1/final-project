@@ -7,7 +7,6 @@ package tankgame.game;
 public abstract class Player {
 
     private boolean[] keys = new boolean[] {false, false, false, false, false};
-    private final int rid;
     private double x = 500;
     private double y = 500;
     private double angle;
@@ -17,14 +16,12 @@ public abstract class Player {
     public static final double ACCELERATION = 0.5;
     public static final double TURN_SPEED = 1.0 / 67.0;
 
-    public Player(double x, double y, int rid) {
+    public Player(double x, double y) {
         this.x = x;
         this.y = y;
-        this.rid = rid;
     }
 
     public Player(Player toBeCopied) {
-        this.rid = toBeCopied.getRID();
         this.x = toBeCopied.getX();
         this.y = toBeCopied.getY();
         this.angle = toBeCopied.getAngle();
@@ -45,10 +42,6 @@ public abstract class Player {
     
     public void setKeys(boolean[] keys) {
         this.keys = keys;
-    }
-
-    public int getRID() {
-        return rid;
     }
 
     public double getVel() {
@@ -95,5 +88,4 @@ public abstract class Player {
         x += Math.cos(angle) * velocity;
 
     }
-
 }

@@ -93,7 +93,7 @@ public class GameFrame extends JFrame {
         do {
             try {
                 //initiate them all
-                //only ch.initiate gives errors so once that goes through then we can start the udp server
+                //only ch.initiate can give  errors so once that goes through then we can start the udp server
                 ch.initiate();
                 udpListener = new UDPListener(6767);
                 udpListener.initiate(mm.getUsername());
@@ -188,6 +188,13 @@ public class GameFrame extends JFrame {
         }
     }
 
+    public void initClient() {
+        gameStarted = true;
+        remove(clm);
+        initLocal();
+
+    }
+
     public void initServer() {
         //close sockets
         udpListener.close();
@@ -252,6 +259,7 @@ public class GameFrame extends JFrame {
             e.printStackTrace();
         }
         th.initiate();
+        isHost = false;
 
         //message recieved
         th.addActionListener(al -> {
@@ -300,6 +308,12 @@ public class GameFrame extends JFrame {
                         e.printStackTrace();
                     }
                 }
+                
+                //init game
+                //will contain seed and players
+                case 4 ->{
+                    
+                }
 
                 //player leave
                 case 9 -> {
@@ -314,9 +328,10 @@ public class GameFrame extends JFrame {
         gh = new GameHandler(this, isHost);
         gc = new GameCanvas(this, gh);
         gh.setCanvas(gc);
+        gh.setID(id);
         add(gc);
         gc.initBuffer();
-        gh.initDebug();
+        gh.initLocal();
         pack();
 
         //144 fps render
@@ -332,7 +347,13 @@ public class GameFrame extends JFrame {
     }
 
     public void sendKeys(boolean[] keys) {
-        String message;
+        String message = "2:"+id;
+        message = message + ":";
+        //1s and 0s for true and false
+        for(int i = 0; i<5; i++){
+            message = message + (keys[i] ? 1 : 0);
+        }
+        th.send(message);
     }
 
     public void startDebug() {

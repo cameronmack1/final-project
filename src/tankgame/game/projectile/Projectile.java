@@ -1,5 +1,7 @@
 package tankgame.game.projectile;
 
+import java.util.UUID;
+
 /**
  *
  * @author layne
@@ -13,18 +15,14 @@ public abstract class Projectile {
     protected double y;
     protected double angle;
     protected double velocity;
-    protected final int rid;
+    protected final UUID owner;
 
-    public Projectile(double x, double y, double angle, double velocity, int rid) {
+    public Projectile(double x, double y, double angle, double velocity, UUID owner) {
         this.x = x + Math.cos(angle) * 50;
         this.y = y + Math.sin(angle) * 50;
         this.angle = angle;
         this.velocity = velocity/2 + DEFAULT_SPEED;
-        this.rid = rid;
-    }
-
-    public double getRID() {
-        return rid;
+        this.owner = owner;
     }
 
     public double getVel() {
