@@ -30,7 +30,9 @@ public class GameHandler {
     //server stuff
     private ArrayList<ServerPlayer> players = new ArrayList<>();
     private ArrayList<Projectile> projectiles = new ArrayList<>();
-    private boolean isHost;
+    public boolean isHost;
+    
+    private boolean[][] map;
 
     //local stuff
     boolean[] keys;
@@ -40,6 +42,10 @@ public class GameHandler {
     public GameHandler(GameFrame gf, boolean isHost) {
         this.gf = gf;
         this.isHost = isHost;
+    }
+    
+    public void setMap(boolean[][] map){
+        this.map = map;
     }
     
     public void setID(UUID id){

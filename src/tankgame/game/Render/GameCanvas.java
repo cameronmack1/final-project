@@ -27,11 +27,17 @@ import tankgame.game.GameFrame;
 import tankgame.game.GameHandler;
 import tankgame.game.KeyHandler;
 import tankgame.game.Player;
+;
+import tankgame.server.ServerPlayer;
+
+import java.util.UUID;
 
 /**
  *
  * @author Cameron
  */
+
+
 public final class GameCanvas extends Canvas {
 
     GameHandler gh;
@@ -45,6 +51,7 @@ public final class GameCanvas extends Canvas {
     BufferedImage bullet;
     BufferedImage debug;
     public boolean inDebug = false;
+    private final UUID id;
 
     BufferStrategy buffer;
 
@@ -53,7 +60,7 @@ public final class GameCanvas extends Canvas {
     GraphicsEnvironment ge;
     GraphicsDevice gd;
     GraphicsConfiguration gc;
-    
+
     private boolean local;
 
     //this should only contain the local player and local projectiles
@@ -70,7 +77,7 @@ public final class GameCanvas extends Canvas {
 
     public KeyHandler kb = new KeyHandler();
 
-    public GameCanvas(GameFrame gf, GameHandler gh) {
+    public GameCanvas(GameFrame gf, GameHandler gh, UUID id) {
         this.gf = gf;
         this.gh = gh;
         addKeyListener(kb);
@@ -104,6 +111,8 @@ public final class GameCanvas extends Canvas {
             e.printStackTrace();
         }
 
+        this.id = id;
+
         setVisible(true);
     }
 
@@ -112,8 +121,8 @@ public final class GameCanvas extends Canvas {
         buffer = getBufferStrategy();
         requestFocusInWindow();
     }
-    
-    public void addServerSnapshot(Snapshot s){
+
+    public void addServerSnapshot(Snapshot s) {
         serverSnapshots.add(0, s);
         if (serverSnapshots.size() > 150) {
             serverSnapshots.remove(serverSnapshots.size() - 1);
@@ -121,7 +130,7 @@ public final class GameCanvas extends Canvas {
     }
 
     public void addLocalSnapshot(Snapshot s) {
-        localSnapshots.add(0,s);
+        localSnapshots.add(0, s);
         if (localSnapshots.size() > 150) {
             localSnapshots.remove(localSnapshots.size() - 1);
         }
@@ -134,6 +143,10 @@ public final class GameCanvas extends Canvas {
     public static double lerp(double val1, double val2, double alpha) {
         //val 1 is old, val2 is new
         return (val2 - val1) * alpha + val1;
+    }
+    
+    public void renderMap(boolean[][] map){
+        
     }
 
     public void render(Snapshot s1, Snapshot s2, double time) {
@@ -148,13 +161,18 @@ public final class GameCanvas extends Canvas {
         Player[] playerArray1 = s1.getPlayerArray();
         Player[] playerArray2 = s2.getPlayerArray();
         for (int i = 0; i < playerArray1.length; i++) {
-            x1 = playerArray1[i].getX();
-            x2 = playerArray2[i].getX();
-            y1 = playerArray1[i].getY();
-            y2 = playerArray2[i].getY();
-            a1 = playerArray1[i].getAngle();
-            a2 = playerArray2[i].getAngle();
-            drawImageAtRot(tank, lerp(x2, x1, time), lerp(y2, y1, time), lerp(a2, a1, time) + Math.PI / 2);
+            //check if it is a server player, and if it is then check the id against self id
+            if (playerArray1[i] instanceof ServerPlayer sp) {
+                if (!sp.getID().equals(id)) {
+                    x1 = playerArray1[i].getX();
+                    x2 = playerArray2[i].getX();
+                    y1 = playerArray1[i].getY();
+                    y2 = playerArray2[i].getY();
+                    a1 = playerArray1[i].getAngle();
+                    a2 = playerArray2[i].getAngle();
+                    drawImageAtRot(tank, lerp(x2, x1, time), lerp(y2, y1, time), lerp(a2, a1, time) + Math.PI / 2);
+                }
+            }
         }
         Projectile[] projArray1 = s1.getProjectileArray();
         Projectile[] projArray2 = s2.getProjectileArray();
@@ -180,14 +198,16 @@ public final class GameCanvas extends Canvas {
         g2d = img.createGraphics();
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, 1920, 1080);
-        if(inDebug)g2d.drawImage(debug, 0, 0, null);
-        if(local){
-                long t1 = localSnapshots.get(0).getTime();
-                long t2 = localSnapshots.get(1).getTime();
-                long t3 = System.currentTimeMillis() - 33;
-                double time = (double) (t3 - t2) / (double) (t1 - t2);
-                time = Math.max(0.0, Math.min(1.0, time));
-                render(localSnapshots.get(0), localSnapshots.get(1), time);
+        if (inDebug) {
+            g2d.drawImage(debug, 0, 0, null);
+        }
+        if (local) {
+            long t1 = localSnapshots.get(0).getTime();
+            long t2 = localSnapshots.get(1).getTime();
+            long t3 = System.currentTimeMillis() - 33;
+            double time = (double) (t3 - t2) / (double) (t1 - t2);
+            time = Math.max(0.0, Math.min(1.0, time));
+            render(localSnapshots.get(0), localSnapshots.get(1), time);
         }
         Graphics graphics = buffer.getDrawGraphics();
         graphics.drawImage(img.getScaledInstance(width, height, Image.SCALE_DEFAULT), 0, 0, null);

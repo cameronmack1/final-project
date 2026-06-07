@@ -17,6 +17,7 @@ import tankgame.server.UDPListener;
 import tankgame.server.ClientHandler;
 import tankgame.server.LobbyPlayer;
 import tankgame.server.ClientObj;
+import tankgame.server.GameInitializePacket;
 
 import java.net.BindException;
 import java.net.SocketException;
@@ -74,15 +75,15 @@ public class GameFrame extends JFrame {
     //starts the server
     public void initServerLobby() {
         //create lobby menu panel and remove main menu
+        this.id = UUID.randomUUID();
         isHost = true;
         this.remove(mm);
         hlm = new HostLobbyMenu(this);
         this.add(hlm);
         setVisible(true);
         lobbyPlayers = new ArrayList<>();
-        lobbyPlayers.add(new LobbyPlayer(username, null));
+        lobbyPlayers.add(new LobbyPlayer(username, id));
         hlm.addPlayer(lobbyPlayers.get(0));
-        gh = new GameHandler(this, isHost);
 
         port = 6767;
         boolean portFound = false;
@@ -188,14 +189,15 @@ public class GameFrame extends JFrame {
         }
     }
 
-    public void initClient() {
+    public void initClient(GameInitializePacket gp) {
         gameStarted = true;
         remove(clm);
-        initLocal();
+        initLocal(gp.getWidth(), gp.getHeight(), gp.getSeed());
 
     }
 
     public void initServer() {
+        long seed = (long) (Math.random() * 1);
         //close sockets
         udpListener.close();
         try {
@@ -207,7 +209,7 @@ public class GameFrame extends JFrame {
         gameStarted = true;
         remove(hlm);
         //start loops
-        initLocal();
+        initLocal(16, 9, seed);
         //30 tps simulate
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
@@ -277,7 +279,13 @@ public class GameFrame extends JFrame {
                 //just connected, message will have arraylist of players
                 case 1 -> {
                     try {
-                        lobbyPlayers = (ArrayList<LobbyPlayer>) GameHandler.deserialize(message);
+                        lobbyPlayers.clear();
+                        ArrayList<?> list = (ArrayList<?>) GameHandler.deserialize(message);
+                        for (Object o : list) {
+                            if (o instanceof LobbyPlayer lp) {
+                                lobbyPlayers.add(lp);
+                            }
+                        }
                         for (LobbyPlayer lp : lobbyPlayers) {
                             clm.addPlayer(lp);
                         }
@@ -308,11 +316,11 @@ public class GameFrame extends JFrame {
                         e.printStackTrace();
                     }
                 }
-                
+
                 //init game
                 //will contain seed and players
-                case 4 ->{
-                    
+                case 4 -> {
+
                 }
 
                 //player leave
@@ -324,11 +332,12 @@ public class GameFrame extends JFrame {
         });
     }
 
-    public void initLocal() {
+    public void initLocal(int width, int height, long seed) {
         gh = new GameHandler(this, isHost);
-        gc = new GameCanvas(this, gh);
+        gc = new GameCanvas(this, gh, id);
         gh.setCanvas(gc);
         gh.setID(id);
+        gh.setMap(new MapGenerate().generate(width, height, seed));
         add(gc);
         gc.initBuffer();
         gh.initLocal();
@@ -347,10 +356,10 @@ public class GameFrame extends JFrame {
     }
 
     public void sendKeys(boolean[] keys) {
-        String message = "2:"+id;
+        String message = "2:" + id;
         message = message + ":";
         //1s and 0s for true and false
-        for(int i = 0; i<5; i++){
+        for (int i = 0; i < 5; i++) {
             message = message + (keys[i] ? 1 : 0);
         }
         th.send(message);
@@ -358,8 +367,9 @@ public class GameFrame extends JFrame {
 
     public void startDebug() {
         remove(mm);
-        initLocal();
+        initLocal(16, 9, 10);
         gc.inDebug = true;
+        gh.isHost = true;
         //30 tps simulate
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {

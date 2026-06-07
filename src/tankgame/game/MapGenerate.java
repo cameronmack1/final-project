@@ -1,4 +1,4 @@
-package tankgame.server;
+package tankgame.game;
 
 import java.util.*;
 
@@ -10,13 +10,14 @@ public class MapGenerate {
 
     private Random rand = new Random();
 
-    public int[][] generate(int row, int col) {
-        int[][] maze = new int[row][col];
+    public boolean[][] generate(int row, int col, long seed) {
+        rand.setSeed(seed);
+        boolean[][] maze = new boolean[row][col];
 
         // (0 = path, 1 = wall)
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < col; j++) {
-                maze[i][j] = 1;
+                maze[i][j] = true;
             }
         }
 
@@ -25,11 +26,8 @@ public class MapGenerate {
         return maze;
     }
 
-    private void carvePassages(int row, int col, int[][] maze) {
-        maze[row][col] = 0;
-
-        printMaze(maze);
-        System.out.println("---------------------------");
+    private void carvePassages(int row, int col, boolean[][] maze) {
+        maze[row][col] = false;
 
         // the directions the maze can travel
         int[][] compass = {
@@ -47,16 +45,16 @@ public class MapGenerate {
             int newCol = col + direction[1];
 
             if (validCheck(newRow, newCol, maze)) {
-                maze[row + direction[0] / 2][col + direction[1] / 2] = 0;
+                maze[row + direction[0] / 2][col + direction[1] / 2] = false;
 
                 carvePassages(newRow, newCol, maze);
             }
         }
     }
 
-    private boolean validCheck(int row, int col, int[][] maze) {
+    private boolean validCheck(int row, int col, boolean[][] maze) {
         // check to make sure everything falls within the maze's bounds on every side
-        return row > 0 && row < maze.length - 1 && col > 0 && col < maze[0].length - 1 && maze[row][col] == 1;
+        return row > 0 && row < maze.length - 1 && col > 0 && col < maze[0].length - 1 && maze[row][col];
     }
 
     private void shuffle(int[][] compass) {
@@ -69,10 +67,10 @@ public class MapGenerate {
         }
     }
 
-    private void printMaze(int[][] maze) {
-        for (int i = 0; i < maze.length; i++) {
-            for (int j = 0; j < maze[0].length; j++) {
-                if (maze[i][j] == 1) {
+    private void printMaze(boolean[][] maze) {
+        for (boolean[] row : maze) {
+            for (boolean val : row) {
+                if (val) {
                     System.out.print("|");
                 } else {
                     System.out.print("_");
