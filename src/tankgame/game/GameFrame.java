@@ -192,8 +192,7 @@ public class GameFrame extends JFrame {
     public void initClient(GameInitializePacket gp) {
         gameStarted = true;
         remove(clm);
-        initLocal(gp.getWidth(), gp.getHeight(), gp.getSeed());
-
+        initLocal(gp.getSeed());
     }
 
     public void initServer() {
@@ -209,7 +208,7 @@ public class GameFrame extends JFrame {
         gameStarted = true;
         remove(hlm);
         //start loops
-        initLocal(16, 9, seed);
+        initLocal(seed);
         //30 tps simulate
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
@@ -332,12 +331,12 @@ public class GameFrame extends JFrame {
         });
     }
 
-    public void initLocal(int width, int height, long seed) {
+    public void initLocal(long seed) {
         gh = new GameHandler(this, isHost);
         gc = new GameCanvas(this, gh, id);
         gh.setCanvas(gc);
         gh.setID(id);
-        gh.setMap(new MapGenerate().generate(width, height, seed));
+        gh.setMap(new MapGenerate().generate(seed));
         add(gc);
         gc.initBuffer();
         gh.initLocal();
@@ -367,9 +366,8 @@ public class GameFrame extends JFrame {
 
     public void startDebug() {
         remove(mm);
-        initLocal(16, 9, 10);
+        initLocal(10);
         gc.inDebug = true;
-        gh.isHost = true;
         //30 tps simulate
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {

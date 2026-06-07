@@ -10,8 +10,11 @@ public class MapGenerate {
 
     private Random rand = new Random();
 
-    public boolean[][] generate(int row, int col, long seed) {
+    public boolean[][] generate(long seed) {
+        int row = 17;//height
+        int col = 33;//width
         rand.setSeed(seed);
+        //round row and column up to the nearest odd number if they are even
         boolean[][] maze = new boolean[row][col];
 
         // (0 = path, 1 = wall)
@@ -23,6 +26,7 @@ public class MapGenerate {
 
         // start carving thru it
         carvePassages(1, 1, maze);
+        printMaze(maze);
         return maze;
     }
 
@@ -66,17 +70,14 @@ public class MapGenerate {
             compass[j] = temp;
         }
     }
-
-    private void printMaze(boolean[][] maze) {
-        for (boolean[] row : maze) {
-            for (boolean val : row) {
-                if (val) {
-                    System.out.print("|");
-                } else {
-                    System.out.print("_");
-                }
+    
+    public static void printMaze(boolean[][] maze){
+        for(boolean[] row : maze){
+            for(boolean value : row){
+                if(value) System.out.print("#");
+                else System.out.print(" ");
             }
-            System.out.println();
+        System.out.println("");
         }
     }
 }

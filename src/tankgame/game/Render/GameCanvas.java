@@ -53,6 +53,8 @@ public final class GameCanvas extends Canvas {
     public boolean inDebug = false;
     private final UUID id;
 
+    private static final int WALL_SIZE = 10;
+
     BufferStrategy buffer;
 
     private int projCooldown = 0;
@@ -144,9 +146,33 @@ public final class GameCanvas extends Canvas {
         //val 1 is old, val2 is new
         return (val2 - val1) * alpha + val1;
     }
-    
-    public void renderMap(boolean[][] map){
-        
+
+    public void renderMap(boolean[][] map) {
+        //calculate tile sizes in pixels using the number of tiles
+        double wallHeight = WALL_SIZE * ((map.length + 1d) / 2d);
+        double tileHeight = (1080d - wallHeight) / ((map.length) / 2);
+
+        double wallWidth = WALL_SIZE * ((map[0].length + 1d) / 2d);
+        double tileWidth = (1920d - wallWidth) / ((map[0].length) / 2);
+
+        int pos = 1;
+        //render shi
+        g2d.setColor(Color.BLACK);
+        for (int y = 0; y < map.length; y++) {
+            for (int x = 0; x < map[0].length; x++) {
+                //if its a wall
+                if (map[y][x]) {
+                    //if odd x then it is thin
+                    //if odd y then it is short
+                    //(corner pieces are at odd,odd)
+                    int h = (y % 2 == 0) ? (int) Math.round(WALL_SIZE) : (int) Math.round(tileHeight+1);
+                    int w = (x % 2 == 0) ? (int) (WALL_SIZE) : (int) (tileWidth+1);
+                    int curY = (int) (Math.round(tileHeight * (y / 2) + WALL_SIZE * ((y + 1) / 2)));
+                    int curX = (int) (Math.round(tileWidth * (x / 2) + WALL_SIZE * ((x + 1) / 2)));
+                    g2d.fillRect(curX, curY, w, h);
+                }
+            }
+        }
     }
 
     public void render(Snapshot s1, Snapshot s2, double time) {
@@ -162,22 +188,27 @@ public final class GameCanvas extends Canvas {
         Player[] playerArray2 = s2.getPlayerArray();
         for (int i = 0; i < playerArray1.length; i++) {
             //check if it is a server player, and if it is then check the id against self id
+            boolean isSelf = false;
             if (playerArray1[i] instanceof ServerPlayer) {
                 ServerPlayer sp = (ServerPlayer) playerArray1[i];
                 if (!sp.getID().equals(id)) {
-                    x1 = playerArray1[i].getX();
-                    x2 = playerArray2[i].getX();
-                    y1 = playerArray1[i].getY();
-                    y2 = playerArray2[i].getY();
-                    a1 = playerArray1[i].getAngle();
-                    a2 = playerArray2[i].getAngle();
-                    drawImageAtRot(tank, lerp(x2, x1, time), lerp(y2, y1, time), lerp(a2, a1, time) + Math.PI / 2);
+                    isSelf = true;
                 }
+            }
+            if (!isSelf) {
+                x1 = playerArray1[i].getX();
+                x2 = playerArray2[i].getX();
+                y1 = playerArray1[i].getY();
+                y2 = playerArray2[i].getY();
+                a1 = playerArray1[i].getAngle();
+                a2 = playerArray2[i].getAngle();
+                drawImageAtRot(tank, lerp(x2, x1, time), lerp(y2, y1, time), lerp(a2, a1, time) + Math.PI / 2);
             }
         }
         Projectile[] projArray1 = s1.getProjectileArray();
         Projectile[] projArray2 = s2.getProjectileArray();
-        for (int i = 0; i < s2.getProjectileArray().length; i++) {
+        for (int i = 0;
+                i < s2.getProjectileArray().length; i++) {
             if (projArray2[i].getIsNew()) {
                 drawImageAtRot(bullet, projArray2[i].getX(), projArray2[i].getY(), projArray2[i].getAngle());
             } else {
@@ -202,6 +233,7 @@ public final class GameCanvas extends Canvas {
         if (inDebug) {
             g2d.drawImage(debug, 0, 0, null);
         }
+        renderMap(gh.getMap());
         if (local) {
             long t1 = localSnapshots.get(0).getTime();
             long t2 = localSnapshots.get(1).getTime();

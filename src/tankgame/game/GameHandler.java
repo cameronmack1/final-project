@@ -65,7 +65,7 @@ public class GameHandler {
     }
     
     public void initLocal(){
-        self = new ClientPlayer(0, 0);
+        self = new ClientPlayer(75, 50);
         Snapshot defaultSnapshot = new Snapshot(new ClientPlayer[]{self}, localProj.toArray(Projectile[]::new), System.currentTimeMillis());
         gc.addLocalSnapshot(defaultSnapshot);
         gc.addLocalSnapshot(defaultSnapshot);
@@ -108,14 +108,6 @@ public class GameHandler {
         return data;
     }
 
-    public void initDebug() {
-        self = new ClientPlayer(500, 500);
-        Snapshot defaultSnapshot = new Snapshot(new ClientPlayer[]{self}, localProj.toArray(Projectile[]::new), System.currentTimeMillis());
-        gc.addLocalSnapshot(defaultSnapshot);
-        gc.addLocalSnapshot(defaultSnapshot);
-        gc.initLocal();
-    }
-
     public void localTick() {
         keys = gc.kb.getKeys();
         //move projectile
@@ -138,10 +130,13 @@ public class GameHandler {
         gc.addLocalSnapshot(new Snapshot(pArr, localProj.toArray(Projectile[]::new), System.currentTimeMillis()));
         
         if(!isHost){
-            gf.sendKeys(keys);
+            //gf.sendKeys(keys);
         }
     }
     
+    public boolean[][] getMap(){
+        return map;
+    }
     
       /**
      * converts an object into a base64 encoded serialized string
