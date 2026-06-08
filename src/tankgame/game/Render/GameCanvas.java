@@ -245,7 +245,7 @@ public final class GameCanvas extends Canvas {
             if (!isLocal && id.equals(projArray2[i].getOwner())) {
                 isSelf = true;
             }
-            if (!isSelf) {
+            if (!isSelf&&!projArray2[i].getIsDead()) {
                 if (projArray2[i].getIsNew()) {
                     drawImageAtRot(bullet, projArray2[i].getX(), projArray2[i].getY(), projArray2[i].getAngle());
                 } else {

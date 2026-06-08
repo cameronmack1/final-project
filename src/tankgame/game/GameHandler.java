@@ -132,12 +132,14 @@ public class GameHandler {
                 player.setCooldown(Projectile.COOLDOWN);
             }
             //check if player is being hit by projectile and kill if they are
-            for (Projectile proj : projectiles) {
+            for (int i = 0; i < projectiles.size(); i++) {
+                Projectile proj = projectiles.get(i);
                 if (checkCollision(player, proj.getX(), proj.getY())) {
                     player.kill();
                     proj.kill();
                     if (player.getID().equals(id)) {
                         self.kill();
+                        localProj.get(i).kill();
                     }
                 }
             }
@@ -184,7 +186,7 @@ public class GameHandler {
                 this.players.get(0).setKeys(keys);
             }
         }
-        
+
         ClientPlayer[] pArr = new ClientPlayer[]{self};
         gc.addLocalSnapshot(new Snapshot(pArr, localProj.toArray(Projectile[]::new), System.currentTimeMillis()));
     }

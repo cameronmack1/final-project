@@ -4,13 +4,6 @@ import tankgame.game.Player;
 import tankgame.game.projectile.Projectile;
 
 import java.io.Serializable;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
-import java.io.IOException;
-
-import java.util.Base64;
 
 /**
  *
