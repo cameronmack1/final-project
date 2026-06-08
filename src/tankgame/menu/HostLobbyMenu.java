@@ -11,6 +11,8 @@ import tankgame.game.GameFrame;
 import tankgame.server.LobbyPlayer;
 import java.util.UUID;
 import java.util.ArrayList;
+import javax.sound.sampled.*;           // imports sounds
+
 
 /**
  * shoutout @wwavely
@@ -27,8 +29,19 @@ public class HostLobbyMenu extends JPanel {
     private int h;
     private JLabel[] playerLabels;
     private Font f;
+    private int RNG;
+
 
     public HostLobbyMenu(GameFrame gf) {
+           if (RNG == 67) {
+            playSound("src/sounds/sahur.wav");
+        } else if (RNG == 41 || RNG == 61){
+             playSound("src/sounds/tiki.wav");
+        } else{
+             playSound("src/sounds/lobby.wav");
+        }
+
+
         //initialize
         setLayout(null);
         this.gf = gf;
@@ -90,6 +103,19 @@ public class HostLobbyMenu extends JPanel {
         refreshLabels();
     }
 
+    public void playSound(String filename) { //play sound effects
+        try {
+            File soundFile = new File(filename);
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
+            AudioFormat format = audioStream.getFormat();
+            DataLine.Info info = new DataLine.Info(Clip.class, format);
+            Clip clip = (Clip) AudioSystem.getLine(info);
+            clip.open(audioStream);
+            clip.start(); //play the sound
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
     public void removePlayer(UUID id) {
         for (int i = 0; i < playerList.size(); i++) {
             if (id.equals(playerList.get(i).getID())) {

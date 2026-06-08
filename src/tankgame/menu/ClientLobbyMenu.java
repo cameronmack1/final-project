@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import tankgame.game.GameFrame;
 import tankgame.server.LobbyPlayer;
 import java.awt.Color;
+import javax.sound.sampled.*;           // imports sounds
 
 /**
  *
@@ -29,6 +30,7 @@ public class ClientLobbyMenu extends JPanel {
     private int w;
     private int h;
     private Font f;
+    private int RNG;
 
     public ClientLobbyMenu(GameFrame gf) {
         //initialize
@@ -36,6 +38,14 @@ public class ClientLobbyMenu extends JPanel {
         this.gf = gf;
         w = gf.getWidth();
         h = gf.getHeight();
+
+           if (RNG == 67) {
+            playSound("src/sounds/sahur.wav");
+        } else if (RNG == 41 || RNG == 61){
+             playSound("src/sounds/tiki.wav");
+        } else{
+             playSound("src/sounds/lobby.wav");
+        }
 
         //font
         f = new Font("Comic Sans", Font.PLAIN, h / 18);
@@ -79,6 +89,20 @@ public class ClientLobbyMenu extends JPanel {
 
     public void startDebug() {
         gf.startDebug();
+    }
+    
+    public void playSound(String filename) { //play sound effects
+        try {
+            File soundFile = new File(filename);
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
+            AudioFormat format = audioStream.getFormat();
+            DataLine.Info info = new DataLine.Info(Clip.class, format);
+            Clip clip = (Clip) AudioSystem.getLine(info);
+            clip.open(audioStream);
+            clip.start(); //play the sound
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
