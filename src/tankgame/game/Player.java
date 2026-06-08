@@ -1,10 +1,13 @@
 package tankgame.game;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Layne
  */
-public abstract class Player {
+public abstract class Player implements Serializable {
+    private static final long serialVersionUID = 8008L;
 
     private boolean[] keys = new boolean[]{false, false, false, false, false};
     private double x = 500;
@@ -16,6 +19,7 @@ public abstract class Player {
     public static final double ACCELERATION = 0.5;
     public static final double TURN_SPEED = 1.0 / 67.0;
     public static final double WALL_THRESHOLD = 0.3;
+    private boolean isDead = false;
 
     public Player(double x, double y) {
         this.x = x;
@@ -59,6 +63,14 @@ public abstract class Player {
 
     public double getAngle() {
         return angle;
+    }
+    
+    public void kill(){
+        this.isDead = true;
+    }
+    
+    public boolean getIsDead(){
+        return this.isDead;
     }
 
     public void move(boolean[] keys, GameHandler gh) { //up[0], left[1], down[2], right[3] message by Layne Ripley
@@ -184,9 +196,9 @@ public abstract class Player {
             my = true;
         }
 
-        //if hitting wall and almost perpendicular, lower velocity
+        //if hitting wall and almost perpendicular, lower velocity for a faster turnaround
         //horizontal wall
-        if (mx && !my && Math.abs(dx) < WALL_THRESHOLD * velocity) {
+        if (mx && !my && Math.abs(dx) < WALL_THRESHOLD * Math.abs(velocity)) {
             velocity *= 0.2;
         }
         

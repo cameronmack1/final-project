@@ -3,12 +3,15 @@ package tankgame.game.projectile;
 import java.util.UUID;
 
 import tankgame.game.GameHandler;
+import java.io.Serializable;
 
 /**
  *
  * @author layne
  */
-public abstract class Projectile {
+public abstract class Projectile implements Serializable {
+
+    private static final long serialVersionUID = 8008135L;
 
     public static final int COOLDOWN = 30;
     public static final int DEFAULT_SPEED = 10;
@@ -20,8 +23,8 @@ public abstract class Projectile {
     protected final UUID owner;
 
     public Projectile(double x, double y, double angle, double velocity, UUID owner) {
-        this.x = x + Math.cos(angle) * 15;
-        this.y = y + Math.sin(angle) * 15;
+        this.x = x + Math.cos(angle) * 20;
+        this.y = y + Math.sin(angle) * 20;
         this.angle = angle;
         this.velocity = velocity / 2 + DEFAULT_SPEED;
         this.owner = owner;

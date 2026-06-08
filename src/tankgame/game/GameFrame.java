@@ -196,7 +196,7 @@ public class GameFrame extends JFrame {
     }
 
     public void initServer() {
-        long seed = (long) (Math.random() * 1);
+        long seed = (long) (Math.random() * 1000000);
         //close sockets
         udpListener.close();
         try {
@@ -206,9 +206,20 @@ public class GameFrame extends JFrame {
             e.printStackTrace();
         }
         gameStarted = true;
-        remove(hlm);
-        //start loops
         initLocal(seed);
+        gh.initServer(lobbyPlayers.toArray(LobbyPlayer[]::new));
+        remove(hlm);
+
+        //send init packet
+        GameInitializePacket startPacket = new GameInitializePacket(gh.getPlayers(), seed);
+        try {
+            String message = "4:" + GameHandler.serialize(startPacket);
+            ch.broadcast(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //start loops
         //30 tps simulate
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
@@ -278,7 +289,7 @@ public class GameFrame extends JFrame {
                 //just connected, message will have arraylist of players
                 case 1 -> {
                     try {
-                        lobbyPlayers.clear();
+                        lobbyPlayers = new ArrayList<>();
                         ArrayList<?> list = (ArrayList<?>) GameHandler.deserialize(message);
                         for (Object o : list) {
                             if (o instanceof LobbyPlayer) {
@@ -319,7 +330,17 @@ public class GameFrame extends JFrame {
                 //init game
                 //will contain seed and players
                 case 4 -> {
-
+                    try {
+                        Object o = GameHandler.deserialize(message);
+                        if (o instanceof GameInitializePacket) {
+                            GameInitializePacket startPacket = (GameInitializePacket) o;
+                            initClient(startPacket);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 //player leave
@@ -359,7 +380,7 @@ public class GameFrame extends JFrame {
     public void sendKeys(boolean[] keys) {
         String message = "2:" + id;
         message = message + ":";
-        //1s and 0s for true and false
+        //1s and 0s for true anid false
         for (int i = 0; i < 5; i++) {
             message = message + (keys[i] ? 1 : 0);
         }
@@ -369,8 +390,10 @@ public class GameFrame extends JFrame {
     public void startDebug() {
         this.username = mm.getUsername();
         remove(mm);
+        this.isHost = true;
         initLocal((long) (Math.random() * 10000));
         gc.inDebug = true;
+        gh.inDebug = true;
         //30 tps simulate
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {

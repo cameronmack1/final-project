@@ -30,6 +30,9 @@ public class GameHandler {
     private ArrayList<ServerPlayer> players = new ArrayList<>();
     private ArrayList<Projectile> projectiles = new ArrayList<>();
     public boolean isHost;
+    public boolean inDebug = false;
+
+    private boolean imDead = false;
 
     private double tileHeight;
     private double tileWidth;
@@ -82,8 +85,33 @@ public class GameHandler {
     }
 
     public void initServer(LobbyPlayer[] lpArray) {
+        int count = 0;
         for (LobbyPlayer lp : lpArray) {
-            players.add(new ServerPlayer(0, 0, lp.getID()));
+            count++;
+            int x = 50;
+            int y = 50;
+            switch (count) {
+                case 0 -> {
+                    x = 50;
+                    y = 50;
+                }
+
+                case 1 -> {
+                    x = 50;
+                    y = 1080 - 50;
+                }
+
+                case 2 -> {
+                    x = 1920 - 50;
+                    y = 1080 - 50;
+                }
+
+                case 3 -> {
+                    x = 1920 - 50;
+                    y = 50;
+                }
+            }
+            players.add(new ServerPlayer(x, y, lp.getID()));
         }
     }
 
@@ -93,7 +121,13 @@ public class GameHandler {
         for (Projectile projectile : projectiles) {
             projectile.move(this);
         }
-        //move players and check shooting for each player
+        //remove dead players
+        for (int i = players.size() - 1; i >= 0; i--) {
+            if (players.get(i).getIsDead()) {
+                players.remove(i);
+            }
+        }
+        //move players and check shooting and collision for each player
         for (ServerPlayer player : players) {
             player.setCooldown(player.getCooldown() - 1);
 
@@ -103,8 +137,13 @@ public class GameHandler {
                 projectiles.add(new NormalProjectile(player.getX(), player.getY(), player.getAngle(), player.getVel(), player.getID()));
                 player.setCooldown(Projectile.COOLDOWN);
             }
+            for (Projectile proj : projectiles) {
+                if (checkCollision(player, proj.getX(), proj.getY())) {
+                    player.kill();
+                    System.out.println("hit");
+                }
+            }
         }
-        //check collision
 
         //create snapshot and convert it to base64
         Snapshot ss = new Snapshot(players.toArray(Player[]::new), projectiles.toArray(Projectile[]::new), System.currentTimeMillis());
@@ -118,33 +157,62 @@ public class GameHandler {
     }
 
     public void localTick() {
-        keys = gc.kb.getKeys();
-        //move projectile
-        for (Projectile proj : localProj) {
-            proj.move(this);
-        }
-        //lower projectile cooldowns
-        if (self.getCooldown() > 0) {
-            self.setCooldown(self.getCooldown() - 1);
-        }
-        //shoot projectile
-        if (keys[4] && self.getCooldown() <= 0) {
-            localProj.add(new NormalProjectile(self.getX(), self.getY(), self.getAngle(), self.getVel(), id));
-            self.setCooldown(Projectile.COOLDOWN);
-        }
-        //move self
-        self.setKeys(keys);
-        self.move(keys, this);
-        ClientPlayer[] pArr = new ClientPlayer[]{new ClientPlayer(self)};
-        gc.addLocalSnapshot(new Snapshot(pArr, localProj.toArray(Projectile[]::new), System.currentTimeMillis()));
+        if (!imDead) {
+            keys = gc.kb.getKeys();
+            //move projectile
+            for (Projectile proj : localProj) {
+                proj.move(this);
+            }
+            //lower projectile cooldowns
+            if (self.getCooldown() > 0) {
+                self.setCooldown(self.getCooldown() - 1);
+            }
+            //shoot projectile
+            if (keys[4] && self.getCooldown() <= 0) {
+                localProj.add(new NormalProjectile(self.getX(), self.getY(), self.getAngle(), self.getVel(), id));
+                self.setCooldown(Projectile.COOLDOWN);
+            }
+            //move self
+            self.setKeys(keys);
+            self.move(keys, this);
+            ClientPlayer[] pArr = new ClientPlayer[]{new ClientPlayer(self)};
+            gc.addLocalSnapshot(new Snapshot(pArr, localProj.toArray(Projectile[]::new), System.currentTimeMillis()));
 
-        if (!isHost) {
-            //gf.sendKeys(keys);
+            //send keys
+            if (!isHost) {
+                gf.sendKeys(keys);
+            } else if (!inDebug) {
+                this.players.get(0).setKeys(keys);
+            }
         }
     }
 
     public boolean[][] getMap() {
         return map;
+    }
+
+    public ServerPlayer[] getPlayers() {
+        return players.toArray(ServerPlayer[]::new);
+    }
+
+    /**
+     * a method to check the collision of projectiles with players
+     *
+     * @param p the player to check collision with
+     * @param x the x coordinate of the point
+     * @param y the y coordinate of the point
+     * @return true if they are colliding
+     */
+    public static boolean checkCollision(Player p, double x, double y) {
+        //subtract players position from the point then rotate based on players angle
+        double a = -p.getAngle();
+        double tx = x - p.getX();
+        double ty = x - p.getY();
+        double nx = (tx * Math.cos(a) - ty * Math.sin(a));
+        double ny = (tx * Math.sin(a) + ty * Math.cos(a));
+
+        //return true if it is inside the players bounds
+        return (nx < 20 && nx > -35 && ny < 10 && ny > -10);
     }
 
     /**
@@ -176,7 +244,7 @@ public class GameHandler {
         if (gridY >= map.length || gridX >= map[0].length) {
             return true;
         }
-        
+
         //return if the grid position is a wall or not
         return map[gridY][gridX];
     }
