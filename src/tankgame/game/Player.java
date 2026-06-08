@@ -15,6 +15,7 @@ public abstract class Player {
     public static final double BRAKING_POWER = 0.25;
     public static final double ACCELERATION = 0.5;
     public static final double TURN_SPEED = 1.0 / 67.0;
+    public static final double WALL_THRESHOLD = 0.3;
 
     public Player(double x, double y) {
         this.x = x;
@@ -150,6 +151,12 @@ public abstract class Player {
         //move in x direction if all points are able to
         if (!(gh.checkPos(dx1a + dxa, dy1a) || gh.checkPos(dx2a + dxa, dy2a) || gh.checkPos(dx3a + dxa, dy3a) || gh.checkPos(dx4a + dxa, dy4a) || gh.checkPos(dx5a + dxa, dy5a) || gh.checkPos(dx6a + dxa, dy6a))) {
             x += dxa;
+            dx1a += dxa;
+            dx2a += dxa;
+            dx3a += dxa;
+            dx4a += dxa;
+            dx5a += dxa;
+            dx6a += dxa;
             angle += da / 2;
             mx = true;
         }
@@ -163,10 +170,29 @@ public abstract class Player {
         //move in x direction if all points are able to
         if (!(mx || gh.checkPos(dx1 + dx, dy1) || gh.checkPos(dx2 + dx, dy2) || gh.checkPos(dx3 + dx, dy3) || gh.checkPos(dx4 + dx, dy4) || gh.checkPos(dx5 + dx, dy5) || gh.checkPos(dx6 + dx, dy6))) {
             x += dx;
+            dx1 += dx;
+            dx2 += dx;
+            dx3 += dx;
+            dx4 += dx;
+            dx5 += dx;
+            dx6 += dx;
+            mx = true;
         }
         //move in y direction if possible
         if (!(my || gh.checkPos(dx1, dy1 + dy) || gh.checkPos(dx2, dy2 + dy) || gh.checkPos(dx3, dy3 + dy) || gh.checkPos(dx4, dy4 + dy) || gh.checkPos(dx5, dy5 + dy) || gh.checkPos(dx6, dy6 + dy))) {
             y += dy;
+            my = true;
+        }
+
+        //if hitting wall and almost perpendicular, lower velocity
+        //horizontal wall
+        if (mx && !my && Math.abs(dx) < WALL_THRESHOLD * velocity) {
+            velocity *= 0.2;
+        }
+        
+        //vertical wall
+        if (my && !mx && Math.abs(dy) < WALL_THRESHOLD * velocity) {
+            velocity *= 0.2;
         }
     }
 }

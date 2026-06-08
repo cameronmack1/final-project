@@ -55,17 +55,17 @@ public abstract class Projectile {
         double dx = Math.cos(angle) * velocity;
 
         //check collision after moving in x direction, then move
-        if (gh.checkPos(x + dx, y)) {
+        if (gh.checkPos(x + dx, y) || gh.checkPos(x + dx / 2, y)) {
             dx = -dx;
         }
         x += dx;
-        
+
         //check collision after moving in y direction, then move
-        if (gh.checkPos(x, y + dy)) {
+        if (gh.checkPos(x, y + dy) || gh.checkPos(x, y + dy / 2)) {
             dy = -dy;
         }
         y += dy;
-        
+
         //set angle (will be the same if no collision)
         this.angle = Math.atan2(dy, dx);
     }
