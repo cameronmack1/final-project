@@ -44,7 +44,7 @@ public class ClientLobbyMenu extends JPanel {
         if (uname.contains("sahur")) {
             playSound("src/sounds/sahur.wav");
         } else if (uname.contains("tung")) {
-            playSound("src/sounds/tiki.wav");
+            playSound("src/sounds/sahur.wav");
         } else if (RNG == 67) {
             playSound("src/sounds/sahur.wav");
         } else if (RNG == 41 || RNG == 61) {
