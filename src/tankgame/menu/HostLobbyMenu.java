@@ -13,7 +13,6 @@ import java.util.UUID;
 import java.util.ArrayList;
 import javax.sound.sampled.*;           // imports sounds
 
-
 /**
  * shoutout @wwavely
  *
@@ -29,24 +28,28 @@ public class HostLobbyMenu extends JPanel {
     private int h;
     private JLabel[] playerLabels;
     private Font f;
-    private int RNG;
-
+    private  int RNG = (int)(Math.random() * 100);
 
     public HostLobbyMenu(GameFrame gf) {
-           if (RNG == 67) {
-            playSound("src/sounds/sahur.wav");
-        } else if (RNG == 41 || RNG == 61){
-             playSound("src/sounds/tiki.wav");
-        } else{
-             playSound("src/sounds/lobby.wav");
-        }
-
+     
 
         //initialize
         setLayout(null);
         this.gf = gf;
+         String uname = gf.getUsername().toLowerCase();
         w = gf.getWidth();
         h = gf.getHeight();
+           if (uname.contains("sahur")) {
+            playSound("src/sounds/sahur.wav");
+        } else if (uname.contains("tung")) {
+            playSound("src/sounds/tiki.wav");
+        } else if (RNG == 67) {
+            playSound("src/sounds/sahur.wav");
+        } else if (RNG == 41 || RNG == 61) {
+            playSound("src/sounds/tiki.wav");
+        } else {
+            playSound("src/sounds/lobby.wav");
+        }
 
         //font
         f = new Font("Comic Sans", Font.PLAIN, h / 18);
@@ -116,6 +119,7 @@ public class HostLobbyMenu extends JPanel {
             System.out.println(e.getMessage());
         }
     }
+
     public void removePlayer(UUID id) {
         for (int i = 0; i < playerList.size(); i++) {
             if (id.equals(playerList.get(i).getID())) {

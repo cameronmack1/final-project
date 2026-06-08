@@ -143,12 +143,15 @@ public class MainMenu extends JPanel {
         String name = username.getText().trim();
 
         if (name.isEmpty() || name.equalsIgnoreCase("Username")) {
-            JOptionPane.showMessageDialog(this, "Please enter a valid username yo", "yo", JOptionPane.WARNING_MESSAGE
-            );
-            return;
+            int rand = (int) (Math.random() * 90) + 10; // 10-99
+            name = "FartSmella" + rand;
+        } else if (name.toLowerCase().startsWith("fartsmella")) {
+            int rand = (int) (Math.random() * 90) + 10;
+            name = "SmartFella" + rand;
         }
-        enterName.setVisible(false); // hide error
+
+        username.setText(name);
+        enterName.setVisible(false);
         gf.setUsername(name);
     }
-
 }
