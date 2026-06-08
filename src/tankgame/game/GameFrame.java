@@ -367,6 +367,7 @@ public class GameFrame extends JFrame {
     }
 
     public void startDebug() {
+        this.username = mm.getUsername();
         remove(mm);
         initLocal(10);
         gc.inDebug = true;
@@ -396,6 +397,10 @@ public class GameFrame extends JFrame {
         this.username = "";
     }
 
+    public String getUsername(){
+        return this.username;
+    }
+    
     public void setUsername(String name) {
         this.username = name;
     }

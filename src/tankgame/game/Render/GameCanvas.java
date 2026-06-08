@@ -197,33 +197,35 @@ public final class GameCanvas extends Canvas {
 
                 //draw points on tank corners (60x80)
                 //display hitbox code
-                /*double xl = lerp(x2, x1, time);
-                double yl = lerp(y2, y1, time);
-                double al = lerp(a2, a1, time);
-                double dx1 = (20 * Math.cos(al)) - (10 * Math.sin(al)) + xl;
-                double dy1 = (20 * Math.sin(al)) + (10 * Math.cos(al)) + yl;
-                
-                double dx2 = (-35 * Math.cos(al)) - (10 * Math.sin(al)) + xl;
-                double dy2 = (-35 * Math.sin(al)) + (10 * Math.cos(al)) + yl;
-                
-                double dx3 = (20 * Math.cos(al)) - (-10 * Math.sin(al)) + xl;
-                double dy3 = (20 * Math.sin(al)) + (-10 * Math.cos(al)) + yl;
-                
-                double dx4 = (-35 * Math.cos(al)) - (-10 * Math.sin(al)) + xl;
-                double dy4 = (-35 * Math.sin(al)) + (-10 * Math.cos(al)) + yl;
-                
-                double dx5 = (20 * Math.cos(al)) + xl;
-                double dy5 = (20 * Math.sin(al)) + yl;
-                
-                double dx6 = (-35 * Math.cos(al)) + xl;
-                double dy6 = (-35 * Math.sin(al)) + yl;
-                g2d.setColor(Color.WHITE);
-                g2d.draw(new java.awt.geom.Ellipse2D.Double(dx1, dy1, 5, 5));
-                g2d.draw(new java.awt.geom.Ellipse2D.Double(dx2, dy2, 5, 5));
-                g2d.draw(new java.awt.geom.Ellipse2D.Double(dx3, dy3, 5, 5));
-                g2d.draw(new java.awt.geom.Ellipse2D.Double(dx4, dy4, 5, 5));
-                g2d.draw(new java.awt.geom.Ellipse2D.Double(dx5, dy5, 5, 5));
-                g2d.draw(new java.awt.geom.Ellipse2D.Double(dx6, dy6, 5, 5));*/
+                if ("debug".equals(gf.getUsername())) {
+                    double xl = lerp(x2, x1, time);
+                    double yl = lerp(y2, y1, time);
+                    double al = lerp(a2, a1, time);
+                    double dx1 = (20 * Math.cos(al)) - (10 * Math.sin(al)) + xl;
+                    double dy1 = (20 * Math.sin(al)) + (10 * Math.cos(al)) + yl;
+
+                    double dx2 = (-35 * Math.cos(al)) - (10 * Math.sin(al)) + xl;
+                    double dy2 = (-35 * Math.sin(al)) + (10 * Math.cos(al)) + yl;
+
+                    double dx3 = (20 * Math.cos(al)) - (-10 * Math.sin(al)) + xl;
+                    double dy3 = (20 * Math.sin(al)) + (-10 * Math.cos(al)) + yl;
+
+                    double dx4 = (-35 * Math.cos(al)) - (-10 * Math.sin(al)) + xl;
+                    double dy4 = (-35 * Math.sin(al)) + (-10 * Math.cos(al)) + yl;
+
+                    double dx5 = (20 * Math.cos(al)) + xl;
+                    double dy5 = (20 * Math.sin(al)) + yl;
+
+                    double dx6 = (-35 * Math.cos(al)) + xl;
+                    double dy6 = (-35 * Math.sin(al)) + yl;
+                    g2d.setColor(Color.WHITE);
+                    g2d.draw(new java.awt.geom.Ellipse2D.Double(dx1, dy1, 5, 5));
+                    g2d.draw(new java.awt.geom.Ellipse2D.Double(dx2, dy2, 5, 5));
+                    g2d.draw(new java.awt.geom.Ellipse2D.Double(dx3, dy3, 5, 5));
+                    g2d.draw(new java.awt.geom.Ellipse2D.Double(dx4, dy4, 5, 5));
+                    g2d.draw(new java.awt.geom.Ellipse2D.Double(dx5, dy5, 5, 5));
+                    g2d.draw(new java.awt.geom.Ellipse2D.Double(dx6, dy6, 5, 5));
+                }
             }
         }
         Projectile[] projArray1 = s1.getProjectileArray();
