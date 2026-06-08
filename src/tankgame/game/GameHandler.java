@@ -259,6 +259,10 @@ public class GameHandler {
         return map[gridY][gridX];
     }
 
+    public int getServerTick(){
+        return this.serverTick;
+    }
+    
     /**
      * converts an object into a base64 encoded serialized string
      *

@@ -164,6 +164,8 @@ public class GameFrame extends JFrame {
                             keys[i] = '1' == message.charAt(i);
                         }
                         int sentTick = Integer.parseInt(message.substring(6));
+                        System.out.println("server received tick: " + sentTick);
+                        System.out.println("servers actual tick: " + gh.getServerTick());
                         gh.getPlayer(messageUUID).setKeys(keys, sentTick);
                     }
                 }

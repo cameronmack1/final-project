@@ -48,7 +48,13 @@ public abstract class Player implements Serializable {
 
     public boolean[] getKeys(int tick) {
         try {
-            Boolean[] old = inputMap.get(tick);
+            Boolean[] old = new Boolean[5];
+            for (int i = 0; i <= 10; i++) {
+                 old = inputMap.get(tick - i);
+                if (old != null) {
+                    break;
+                }
+            }
             boolean[] inp = new boolean[old.length];
             for (int i = 0; i < inp.length; i++) {
                 inp[i] = old[i];
