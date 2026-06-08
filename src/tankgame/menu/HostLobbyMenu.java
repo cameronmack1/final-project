@@ -95,6 +95,10 @@ public class HostLobbyMenu extends JPanel {
         gf.startDebug();
     }
 
+    public LobbyPlayer[] getPlayerList(){
+        return playerList.toArray(LobbyPlayer[]::new);
+    }
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

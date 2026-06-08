@@ -49,6 +49,7 @@ public final class GameCanvas extends Canvas {
     BufferedImage tank;
     BufferedImage bullet;
     BufferedImage debug;
+    BufferedImage bgImage;
     public boolean inDebug = false;
     private final UUID id;
 
@@ -105,6 +106,7 @@ public final class GameCanvas extends Canvas {
             tank = resizeImage(60, 80, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "tank.png")));
             bullet = resizeImage(20, 20, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "bullet.png")));
             debug = resizeImage(1920, 1080, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "whoisthat.jpg")));
+            bgImage = resizeImage(2880, 1556, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "background.jpg")));
         } catch (IOException e) {
             System.out.println("error loading file");
         } catch (NullPointerException e) {
