@@ -155,7 +155,6 @@ public class ClientHandler {
             //reset timer has nothing
             //inputs has 5 1s or 0s that represent inputs   
             while ((message = in.readLine()) != null) {
-                System.out.println("received: " + message);
                 recieveQueue.add(message);
                 notifyListeners();
             }

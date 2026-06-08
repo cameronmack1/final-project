@@ -42,7 +42,6 @@ public class TCPHandler {
                 //create input stream (recieving) and add action listener
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 while ((message = in.readLine()) != null) {
-                    System.out.println("recieved: " + message);
                     recieveQueue.add(message);
                     notifyListeners();
                 }
@@ -71,7 +70,6 @@ public class TCPHandler {
      */
     public void send(String message) {
         out.println(message);
-        System.out.println("sent message tcph: " + message);
     }
 
     public void close() throws IOException {

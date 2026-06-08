@@ -18,6 +18,7 @@ import tankgame.server.ClientHandler;
 import tankgame.server.LobbyPlayer;
 import tankgame.server.ClientObj;
 import tankgame.server.GameInitializePacket;
+import tankgame.server.ServerPlayer;
 
 import java.net.BindException;
 import java.net.SocketException;
@@ -192,7 +193,18 @@ public class GameFrame extends JFrame {
     public void initClient(GameInitializePacket gp) {
         gameStarted = true;
         remove(clm);
-        initLocal(gp.getSeed());
+        initLocal(gp);
+        
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.scheduleAtFixedRate(() -> {
+            //tick
+            try {
+                //local prediction
+                gh.localTick();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, 0, 1000 / 30, TimeUnit.MILLISECONDS);
     }
 
     public void initServer() {
@@ -284,7 +296,6 @@ public class GameFrame extends JFrame {
                 case 0 -> {
                     this.id = UUID.fromString(message);
                     th.send("0:" + this.id + ":" + this.username);
-                    System.out.println("0:" + this.id + ":" + this.username);
                 }
                 //just connected, message will have arraylist of players
                 case 1 -> {
@@ -321,7 +332,18 @@ public class GameFrame extends JFrame {
                 //tick
                 case 3 -> {
                     try {
-                        gc.addServerSnapshot((Snapshot) GameHandler.deserialize(message));
+                        //load new snapshot
+                        Snapshot newSnapshot = (Snapshot) GameHandler.deserialize(message);
+                        //check if youre dead in the snapshot
+                        for (Player player : newSnapshot.getPlayerArray()) {
+                            if (player instanceof ServerPlayer) {
+                                ServerPlayer sp = (ServerPlayer) player;
+                                if(sp.getID().equals(id)&&sp.getIsDead()){
+                                    gh.self.kill();
+                                }
+                            }
+                        }
+                        gc.addServerSnapshot(newSnapshot);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -352,6 +374,40 @@ public class GameFrame extends JFrame {
         });
     }
 
+    public void initLocal(GameInitializePacket packet) {
+        isHost = false;
+        gh = new GameHandler(this, isHost);
+        gc = new GameCanvas(this, gh, id);
+        gh.setCanvas(gc);
+        gh.setID(id);
+        boolean[][] map = new MapGenerate().generate(packet.getSeed());
+        gh.setMap(map);
+        gc.setMap(map);
+        add(gc);
+        gc.initBuffer();
+        int x = 50;
+        int y = 50;
+        for (ServerPlayer sp : packet.getPlayers()) {
+            if (sp.getID().equals(id)) {
+                x = (int) sp.getX();
+                y = (int) sp.getY();
+            }
+        }
+        gh.initLocal(x, y);
+        pack();
+
+        //144 fps render
+        ScheduledExecutorService renderScheduler = Executors.newSingleThreadScheduledExecutor();
+        renderScheduler.scheduleAtFixedRate(() -> {
+            try {
+                gc.renderLoop();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, 0, 1000 / 144, TimeUnit.MILLISECONDS);
+
+    }
+
     public void initLocal(long seed) {
         gh = new GameHandler(this, isHost);
         gc = new GameCanvas(this, gh, id);
@@ -362,7 +418,7 @@ public class GameFrame extends JFrame {
         gc.setMap(map);
         add(gc);
         gc.initBuffer();
-        gh.initLocal();
+        gh.initLocal(50, 50);
         pack();
 
         //144 fps render

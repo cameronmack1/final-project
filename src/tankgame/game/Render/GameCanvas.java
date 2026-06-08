@@ -47,6 +47,7 @@ public final class GameCanvas extends Canvas {
     private int height;
     Graphics2D g2d;
     BufferedImage tank;
+    BufferedImage selftank;
     BufferedImage bullet;
     BufferedImage debug;
     BufferedImage bgImage;
@@ -104,9 +105,10 @@ public final class GameCanvas extends Canvas {
         //load images
         try {
             tank = resizeImage(60, 80, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "tank.png")));
+            selftank = resizeImage(60, 80, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "selftank.png")));
             bullet = resizeImage(20, 20, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "bullet.png")));
             debug = resizeImage(1920, 1080, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "whoisthat.jpg")));
-            bgImage = resizeImage(2880, 1556, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "background.jpg")));
+            bgImage = resizeImage(1920, 1080, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "background.PNG")));
         } catch (IOException e) {
             System.out.println("error loading file");
         } catch (NullPointerException e) {
@@ -168,7 +170,7 @@ public final class GameCanvas extends Canvas {
         }
     }
 
-    public void render(Snapshot s1, Snapshot s2, double time) {
+    public void render(Snapshot s1, Snapshot s2, double time, boolean isLocal) {
         //drawImageAtRot(tank, x,y,angle+Math.PI/2);
         //s1 is new, s2 is old
         double x1;
@@ -184,72 +186,83 @@ public final class GameCanvas extends Canvas {
             boolean isSelf = false;
             if (playerArray1[i] instanceof ServerPlayer) {
                 ServerPlayer sp = (ServerPlayer) playerArray1[i];
-                if (!sp.getID().equals(id)) {
+                if (sp.getID().equals(id)) {
                     isSelf = true;
                 }
             }
-            if (!isSelf) {
-                x1 = playerArray1[i].getX();
-                x2 = playerArray2[i].getX();
-                y1 = playerArray1[i].getY();
-                y2 = playerArray2[i].getY();
-                a1 = playerArray1[i].getAngle();
-                a2 = playerArray2[i].getAngle();
-                drawImageAtRot(tank, lerp(x2, x1, time), lerp(y2, y1, time), lerp(a2, a1, time) + Math.PI / 2);
+            if (!playerArray2[i].getIsDead()) {
+                if (!isSelf) {
+                    x1 = playerArray1[i].getX();
+                    x2 = playerArray2[i].getX();
+                    y1 = playerArray1[i].getY();
+                    y2 = playerArray2[i].getY();
+                    a1 = playerArray1[i].getAngle();
+                    a2 = playerArray2[i].getAngle();
+                    if (isLocal) {
+                        drawImageAtRot(selftank, lerp(x2, x1, time), lerp(y2, y1, time), lerp(a2, a1, time) + Math.PI / 2);
+                    } else {
+                        drawImageAtRot(tank, lerp(x2, x1, time), lerp(y2, y1, time), lerp(a2, a1, time) + Math.PI / 2);
+                    }
 
-                //draw points on tank corners (60x80)
-                //display hitbox code
-                if ("debug".equals(gf.getUsername())) {
-                    double xl = lerp(x2, x1, time);
-                    double yl = lerp(y2, y1, time);
-                    double al = lerp(a2, a1, time);
-                    double dx1 = (20 * Math.cos(al)) - (10 * Math.sin(al)) + xl;
-                    double dy1 = (20 * Math.sin(al)) + (10 * Math.cos(al)) + yl;
+                    //draw points on tank corners (60x80)
+                    //display hitbox code
+                    if ("debug".equals(gf.getUsername())) {
+                        double xl = lerp(x2, x1, time);
+                        double yl = lerp(y2, y1, time);
+                        double al = lerp(a2, a1, time);
+                        double dx1 = (20 * Math.cos(al)) - (10 * Math.sin(al)) + xl;
+                        double dy1 = (20 * Math.sin(al)) + (10 * Math.cos(al)) + yl;
 
-                    double dx2 = (-35 * Math.cos(al)) - (10 * Math.sin(al)) + xl;
-                    double dy2 = (-35 * Math.sin(al)) + (10 * Math.cos(al)) + yl;
+                        double dx2 = (-35 * Math.cos(al)) - (10 * Math.sin(al)) + xl;
+                        double dy2 = (-35 * Math.sin(al)) + (10 * Math.cos(al)) + yl;
 
-                    double dx3 = (20 * Math.cos(al)) - (-10 * Math.sin(al)) + xl;
-                    double dy3 = (20 * Math.sin(al)) + (-10 * Math.cos(al)) + yl;
+                        double dx3 = (20 * Math.cos(al)) - (-10 * Math.sin(al)) + xl;
+                        double dy3 = (20 * Math.sin(al)) + (-10 * Math.cos(al)) + yl;
 
-                    double dx4 = (-35 * Math.cos(al)) - (-10 * Math.sin(al)) + xl;
-                    double dy4 = (-35 * Math.sin(al)) + (-10 * Math.cos(al)) + yl;
+                        double dx4 = (-35 * Math.cos(al)) - (-10 * Math.sin(al)) + xl;
+                        double dy4 = (-35 * Math.sin(al)) + (-10 * Math.cos(al)) + yl;
 
-                    double dx5 = (20 * Math.cos(al)) + xl;
-                    double dy5 = (20 * Math.sin(al)) + yl;
+                        double dx5 = (20 * Math.cos(al)) + xl;
+                        double dy5 = (20 * Math.sin(al)) + yl;
 
-                    double dx6 = (-35 * Math.cos(al)) + xl;
-                    double dy6 = (-35 * Math.sin(al)) + yl;
-                    g2d.setColor(Color.WHITE);
-                    g2d.draw(new java.awt.geom.Ellipse2D.Double(dx1, dy1, 5, 5));
-                    g2d.draw(new java.awt.geom.Ellipse2D.Double(dx2, dy2, 5, 5));
-                    g2d.draw(new java.awt.geom.Ellipse2D.Double(dx3, dy3, 5, 5));
-                    g2d.draw(new java.awt.geom.Ellipse2D.Double(dx4, dy4, 5, 5));
-                    g2d.draw(new java.awt.geom.Ellipse2D.Double(dx5, dy5, 5, 5));
-                    g2d.draw(new java.awt.geom.Ellipse2D.Double(dx6, dy6, 5, 5));
+                        double dx6 = (-35 * Math.cos(al)) + xl;
+                        double dy6 = (-35 * Math.sin(al)) + yl;
+                        g2d.setColor(Color.WHITE);
+                        g2d.draw(new java.awt.geom.Ellipse2D.Double(dx1, dy1, 5, 5));
+                        g2d.draw(new java.awt.geom.Ellipse2D.Double(dx2, dy2, 5, 5));
+                        g2d.draw(new java.awt.geom.Ellipse2D.Double(dx3, dy3, 5, 5));
+                        g2d.draw(new java.awt.geom.Ellipse2D.Double(dx4, dy4, 5, 5));
+                        g2d.draw(new java.awt.geom.Ellipse2D.Double(dx5, dy5, 5, 5));
+                        g2d.draw(new java.awt.geom.Ellipse2D.Double(dx6, dy6, 5, 5));
+                    }
                 }
             }
         }
         Projectile[] projArray1 = s1.getProjectileArray();
         Projectile[] projArray2 = s2.getProjectileArray();
-        for (int i = 0;
-                i < s2.getProjectileArray().length; i++) {
-            if (projArray2[i].getIsNew()) {
-                drawImageAtRot(bullet, projArray2[i].getX(), projArray2[i].getY(), projArray2[i].getAngle());
-            } else {
-                x1 = projArray1[i].getX();
-                x2 = projArray2[i].getX();
-                y1 = projArray1[i].getY();
-                y2 = projArray2[i].getY();
-                a1 = projArray1[i].getAngle();
-                a2 = projArray2[i].getAngle();
-                drawImageAtRot(bullet, lerp(x2, x1, time), lerp(y2, y1, time), lerp(a2, a1, time));
-                
-                if ("debug".equals(gf.getUsername())) {
-                    double xl = lerp(x2, x1, time);
-                    double yl = lerp(y2, y1, time);
-                    g2d.setColor(Color.WHITE);
-                    g2d.draw(new java.awt.geom.Ellipse2D.Double(xl, yl, 5, 5));
+        for (int i = 0; i < s2.getProjectileArray().length; i++) {
+            boolean isSelf = false;
+            if (!isLocal && id.equals(projArray2[i].getOwner())) {
+                isSelf = true;
+            }
+            if (!isSelf) {
+                if (projArray2[i].getIsNew()) {
+                    drawImageAtRot(bullet, projArray2[i].getX(), projArray2[i].getY(), projArray2[i].getAngle());
+                } else {
+                    x1 = projArray1[i].getX();
+                    x2 = projArray2[i].getX();
+                    y1 = projArray1[i].getY();
+                    y2 = projArray2[i].getY();
+                    a1 = projArray1[i].getAngle();
+                    a2 = projArray2[i].getAngle();
+                    drawImageAtRot(bullet, lerp(x2, x1, time), lerp(y2, y1, time), lerp(a2, a1, time));
+
+                    if ("debug".equals(gf.getUsername())) {
+                        double xl = lerp(x2, x1, time);
+                        double yl = lerp(y2, y1, time);
+                        g2d.setColor(Color.WHITE);
+                        g2d.draw(new java.awt.geom.Ellipse2D.Double(xl, yl, 5, 5));
+                    }
                 }
             }
         }
@@ -264,6 +277,8 @@ public final class GameCanvas extends Canvas {
         g2d.fillRect(0, 0, 1920, 1080);
         if (inDebug) {
             g2d.drawImage(debug, 0, 0, null);
+        } else {
+            g2d.drawImage(bgImage, 0, 0, null);
         }
         renderMap();
         if (local) {
@@ -272,7 +287,28 @@ public final class GameCanvas extends Canvas {
             long t3 = System.currentTimeMillis() - 33;
             double time = (double) (t3 - t2) / (double) (t1 - t2);
             time = Math.max(0.0, Math.min(1.0, time));
-            render(localSnapshots.get(0), localSnapshots.get(1), time);
+            render(localSnapshots.get(0), localSnapshots.get(1), time, true);
+        }
+
+        //render server snapshots in past (100ms in past)
+        if (serverSnapshots.size() > 1) {
+            long renderTime = System.currentTimeMillis() - 133;
+            int snapshot1 = -1;
+            for (int i = 0; i < serverSnapshots.size() - 1; i++) {
+                if (serverSnapshots.get(i).getTime() < renderTime) {
+                    snapshot1 = i;
+                    break;
+                }
+            }
+            if (snapshot1 <= 0) {
+                render(serverSnapshots.get(serverSnapshots.size() - 1), serverSnapshots.get(serverSnapshots.size() - 1), 0, false);
+            } else {
+                long t1 = serverSnapshots.get(snapshot1 - 1).getTime();
+                long t2 = serverSnapshots.get(snapshot1).getTime();
+                double time = (double) (renderTime - t2) / (double) (t1 - t2);
+                time = Math.max(0.0, Math.min(1.0, time));
+                render(serverSnapshots.get(snapshot1 - 1), serverSnapshots.get(snapshot1), time, false);
+            }
         }
         Graphics graphics = buffer.getDrawGraphics();
         graphics.drawImage(img.getScaledInstance(width, height, Image.SCALE_DEFAULT), 0, 0, null);

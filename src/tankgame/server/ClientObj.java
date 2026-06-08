@@ -44,7 +44,6 @@ public class ClientObj {
 
     public void send(String message) {//sends a message to the client
         output.println(message);
-        System.out.println("sent message: " + message);
     }
 
     public void close() throws IOException {//closes the socket
