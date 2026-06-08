@@ -30,7 +30,7 @@ public class ClientLobbyMenu extends JPanel {
     private int w;
     private int h;
     private Font f;
-    private int RNG;
+    private int RNG = (int) (Math.random() * 100);
 
     public ClientLobbyMenu(GameFrame gf) {
         //initialize
@@ -38,13 +38,19 @@ public class ClientLobbyMenu extends JPanel {
         this.gf = gf;
         w = gf.getWidth();
         h = gf.getHeight();
-
-           if (RNG == 67) {
+        String uname = gf.getUsername().toLowerCase();
+        w = gf.getWidth();
+        h = gf.getHeight();
+        if (uname.contains("sahur")) {
             playSound("src/sounds/sahur.wav");
-        } else if (RNG == 41 || RNG == 61){
-             playSound("src/sounds/tiki.wav");
-        } else{
-             playSound("src/sounds/lobby.wav");
+        } else if (uname.contains("tung")) {
+            playSound("src/sounds/tiki.wav");
+        } else if (RNG == 67) {
+            playSound("src/sounds/sahur.wav");
+        } else if (RNG == 41 || RNG == 61) {
+            playSound("src/sounds/tiki.wav");
+        } else {
+            playSound("src/sounds/lobby.wav");
         }
 
         //font
@@ -59,7 +65,7 @@ public class ClientLobbyMenu extends JPanel {
             System.out.println("error file missing wtf did u do");
             e.printStackTrace();
         }
-        
+
         //buttons
         JButton leaveButton = new JButton("Leave Game");
         leaveButton.setBounds(0, 0, w / 5, h / 10);
@@ -90,7 +96,7 @@ public class ClientLobbyMenu extends JPanel {
     public void startDebug() {
         gf.startDebug();
     }
-    
+
     public void playSound(String filename) { //play sound effects
         try {
             File soundFile = new File(filename);
