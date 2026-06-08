@@ -8,11 +8,14 @@ import java.util.*;
  */
 public class MapGenerate {
 
-    private Random rand = new Random();
+    private final Random rand = new Random();
 
     public boolean[][] generate(long seed) {
-        int row = 17;//height
-        int col = 33;//width
+        int row = 9;//height
+        int col = 16;//width
+
+        row = row * 2 + 1;
+        col = col * 2 + 1;
         rand.setSeed(seed);
         //round row and column up to the nearest odd number if they are even
         boolean[][] maze = new boolean[row][col];
@@ -70,14 +73,17 @@ public class MapGenerate {
             compass[j] = temp;
         }
     }
-    
-    public static void printMaze(boolean[][] maze){
-        for(boolean[] row : maze){
-            for(boolean value : row){
-                if(value) System.out.print("#");
-                else System.out.print(" ");
+
+    public static void printMaze(boolean[][] maze) {
+        for (boolean[] row : maze) {
+            for (boolean value : row) {
+                if (value) {
+                    System.out.print("#");
+                } else {
+                    System.out.print(" ");
+                }
             }
-        System.out.println("");
+            System.out.println("");
         }
     }
 }

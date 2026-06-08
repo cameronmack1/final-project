@@ -369,7 +369,7 @@ public class GameFrame extends JFrame {
     public void startDebug() {
         this.username = mm.getUsername();
         remove(mm);
-        initLocal(10);
+        initLocal((long) (Math.random() * 10000));
         gc.inDebug = true;
         //30 tps simulate
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -397,10 +397,10 @@ public class GameFrame extends JFrame {
         this.username = "";
     }
 
-    public String getUsername(){
+    public String getUsername() {
         return this.username;
     }
-    
+
     public void setUsername(String name) {
         this.username = name;
     }

@@ -242,6 +242,13 @@ public final class GameCanvas extends Canvas {
                 a1 = projArray1[i].getAngle();
                 a2 = projArray2[i].getAngle();
                 drawImageAtRot(bullet, lerp(x2, x1, time), lerp(y2, y1, time), lerp(a2, a1, time));
+                
+                if ("debug".equals(gf.getUsername())) {
+                    double xl = lerp(x2, x1, time);
+                    double yl = lerp(y2, y1, time);
+                    g2d.setColor(Color.WHITE);
+                    g2d.draw(new java.awt.geom.Ellipse2D.Double(xl, yl, 5, 5));
+                }
             }
         }
     }

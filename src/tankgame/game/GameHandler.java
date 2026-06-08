@@ -172,6 +172,11 @@ public class GameHandler {
             curY += (gridY % 2 == 0) ? GameCanvas.WALL_SIZE : tileHeight;
         } while (curY <= y);
 
+        //return collision if out of bounds
+        if (gridY >= map.length || gridX >= map[0].length) {
+            return true;
+        }
+        
         //return if the grid position is a wall or not
         return map[gridY][gridX];
     }
