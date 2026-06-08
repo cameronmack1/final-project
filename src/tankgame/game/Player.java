@@ -2,11 +2,14 @@ package tankgame.game;
 
 import java.io.Serializable;
 
+import java.util.HashMap;
+
 /**
  *
  * @author Layne
  */
 public abstract class Player implements Serializable {
+
     private static final long serialVersionUID = 8008L;
 
     private boolean[] keys = new boolean[]{false, false, false, false, false};
@@ -20,6 +23,8 @@ public abstract class Player implements Serializable {
     public static final double TURN_SPEED = 1.0 / 67.0;
     public static final double WALL_THRESHOLD = 0.3;
     private boolean isDead = false;
+
+    private HashMap<Integer, Boolean[]> inputMap = new HashMap<>();
 
     public Player(double x, double y) {
         this.x = x;
@@ -41,12 +46,25 @@ public abstract class Player implements Serializable {
         return projCooldown;
     }
 
-    public boolean[] getKeys() {
-        return keys;
+    public boolean[] getKeys(int tick) {
+        try {
+            Boolean[] old = inputMap.get(tick);
+            boolean[] inp = new boolean[old.length];
+            for (int i = 0; i < inp.length; i++) {
+                inp[i] = old[i];
+            }
+            return inp;
+        } catch (NullPointerException e) {
+            return new boolean[5];
+        }
     }
 
-    public void setKeys(boolean[] keys) {
-        this.keys = keys;
+    public void setKeys(boolean[] keys, int tick) {
+        Boolean[] inp = new Boolean[keys.length];
+        for (int i = 0; i < inp.length; i++) {
+            inp[i] = keys[i];
+        }
+        inputMap.put(tick, inp);
     }
 
     public double getVel() {
@@ -64,12 +82,12 @@ public abstract class Player implements Serializable {
     public double getAngle() {
         return angle;
     }
-    
-    public void kill(){
+
+    public void kill() {
         this.isDead = true;
     }
-    
-    public boolean getIsDead(){
+
+    public boolean getIsDead() {
         return this.isDead;
     }
 
@@ -201,7 +219,7 @@ public abstract class Player implements Serializable {
         if (mx && !my && Math.abs(dx) < WALL_THRESHOLD * Math.abs(velocity)) {
             velocity *= 0.2;
         }
-        
+
         //vertical wall
         if (my && !mx && Math.abs(dy) < WALL_THRESHOLD * velocity) {
             velocity *= 0.2;

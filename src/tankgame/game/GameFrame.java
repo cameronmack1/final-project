@@ -163,7 +163,8 @@ public class GameFrame extends JFrame {
                         for (int i = 0; i < 5; i++) {
                             keys[i] = '1' == message.charAt(i);
                         }
-                        gh.getPlayer(messageUUID).setKeys(keys);
+                        int sentTick = Integer.parseInt(message.substring(6));
+                        gh.getPlayer(messageUUID).setKeys(keys, sentTick);
                     }
                 }
 
@@ -194,7 +195,7 @@ public class GameFrame extends JFrame {
         gameStarted = true;
         remove(clm);
         initLocal(gp);
-        
+
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
             //tick
@@ -338,7 +339,7 @@ public class GameFrame extends JFrame {
                         for (Player player : newSnapshot.getPlayerArray()) {
                             if (player instanceof ServerPlayer) {
                                 ServerPlayer sp = (ServerPlayer) player;
-                                if(sp.getID().equals(id)&&sp.getIsDead()){
+                                if (sp.getID().equals(id) && sp.getIsDead()) {
                                     gh.self.kill();
                                 }
                             }
@@ -433,13 +434,14 @@ public class GameFrame extends JFrame {
 
     }
 
-    public void sendKeys(boolean[] keys) {
+    public void sendKeys(boolean[] keys, int tick) {
         String message = "2:" + id;
         message = message + ":";
         //1s and 0s for true anid false
         for (int i = 0; i < 5; i++) {
             message = message + (keys[i] ? 1 : 0);
         }
+        message = message + ":" + tick;
         th.send(message);
     }
 

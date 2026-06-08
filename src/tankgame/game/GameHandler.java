@@ -31,8 +31,10 @@ public class GameHandler {
     private ArrayList<Projectile> projectiles = new ArrayList<>();
     public boolean isHost;
     public boolean inDebug = false;
-
-    private boolean imDead = false;
+    
+    private int serverTick;
+    
+    private int localTick;
 
     private double tileHeight;
     private double tileWidth;
@@ -82,6 +84,7 @@ public class GameHandler {
         gc.addLocalSnapshot(defaultSnapshot);
         gc.addLocalSnapshot(defaultSnapshot);
         gc.initLocal();
+        localTick = 10;
     }
 
     public void initServer(LobbyPlayer[] lpArray) {
@@ -123,16 +126,17 @@ public class GameHandler {
         }
         //move players and check shooting and collision for each player
         for (ServerPlayer player : players) {
+            boolean[] keys = player.getKeys(serverTick);
             player.setCooldown(player.getCooldown() - 1);
 
-            player.move(player.getKeys(), this);
+            player.move(keys, this);
             //player shooting
-            if (player.getKeys()[4] && player.getCooldown() <= 0) {
+            if (player.getKeys(serverTick)[4] && player.getCooldown() <= 0) {
                 projectiles.add(new NormalProjectile(player.getX(), player.getY(), player.getAngle(), player.getVel(), player.getID()));
                 player.setCooldown(Projectile.COOLDOWN);
             }
             //check if player is being hit by projectile and kill if they are
-            for (int i = 0; i < projectiles.size(); i++) {
+            for (int i = 0; i<projectiles.size();i++) {
                 Projectile proj = projectiles.get(i);
                 if (checkCollision(player, proj.getX(), proj.getY())) {
                     player.kill();
@@ -154,6 +158,7 @@ public class GameHandler {
             e.printStackTrace();
         }
         data = "3:" + data;
+        serverTick++;
         return data;
     }
 
@@ -170,25 +175,26 @@ public class GameHandler {
             if (self.getCooldown() > 0) {
                 self.setCooldown(self.getCooldown() - 1);
             }
+            //move self
+            self.setKeys(keys, localTick);
+            self.move(keys, this);
             //shoot projectile
             if (keys[4] && self.getCooldown() <= 0) {
                 localProj.add(new NormalProjectile(self.getX(), self.getY(), self.getAngle(), self.getVel(), id));
                 self.setCooldown(Projectile.COOLDOWN);
             }
-            //move self
-            self.setKeys(keys);
-            self.move(keys, this);
 
             //send keys
             if (!isHost) {
-                gf.sendKeys(keys);
+                gf.sendKeys(keys, localTick);
             } else if (!inDebug) {
-                this.players.get(0).setKeys(keys);
+                this.players.get(0).setKeys(keys, localTick);
             }
         }
-
+        
         ClientPlayer[] pArr = new ClientPlayer[]{self};
         gc.addLocalSnapshot(new Snapshot(pArr, localProj.toArray(Projectile[]::new), System.currentTimeMillis()));
+        localTick++;
     }
 
     public boolean[][] getMap() {
