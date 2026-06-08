@@ -56,6 +56,8 @@ public class GameFrame extends JFrame {
 
     private int w;
     private int h;
+    
+    private int readyPlayers = 0;
 
     public GameFrame() {
         //initialize the JFrame
@@ -169,6 +171,14 @@ public class GameFrame extends JFrame {
                         gh.getPlayer(messageUUID).setKeys(keys, sentTick);
                     }
                 }
+                
+                //players responding after getting ready
+                case 8 -> {
+                    readyPlayers++;
+                    if(readyPlayers >= lobbyPlayers.size()){
+                        initServer();
+                    }
+                }
 
                 //player leave lobby
                 case 9 -> {
@@ -195,8 +205,8 @@ public class GameFrame extends JFrame {
 
     public void initClient(GameInitializePacket gp) {
         gameStarted = true;
-        remove(clm);
         initLocal(gp);
+        gh.setLocalTick((int) (System.currentTimeMillis() / 33 - gp.getTime() / 33) + 10);
 
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
@@ -209,9 +219,8 @@ public class GameFrame extends JFrame {
             }
         }, 0, 1000 / 30, TimeUnit.MILLISECONDS);
     }
-
-    public void initServer() {
-        long seed = (long) (Math.random() * 1000000);
+    
+    public void halfInitServer(){
         //close sockets
         udpListener.close();
         try {
@@ -220,13 +229,17 @@ public class GameFrame extends JFrame {
             //idk why this can throw
             e.printStackTrace();
         }
+    }
+
+    public void initServer() {
+        long seed = (long) (Math.random() * 1000000);
         gameStarted = true;
         initLocal(seed);
         gh.initServer(lobbyPlayers.toArray(LobbyPlayer[]::new));
         remove(hlm);
 
         //send init packet
-        GameInitializePacket startPacket = new GameInitializePacket(gh.getPlayers(), seed);
+        GameInitializePacket startPacket = new GameInitializePacket(gh.getPlayers(), seed, System.currentTimeMillis());
         try {
             String message = "4:" + GameHandler.serialize(startPacket);
             ch.broadcast(message);
@@ -367,6 +380,13 @@ public class GameFrame extends JFrame {
                         e.printStackTrace();
                     }
                 }
+                
+                //get ready for init
+                case 8 -> {
+                    halfInitLocal();
+                    String nmessage = "8:"+id;
+                    th.send(nmessage);
+                }
 
                 //player leave
                 case 9 -> {
@@ -376,13 +396,18 @@ public class GameFrame extends JFrame {
             }
         });
     }
-
-    public void initLocal(GameInitializePacket packet) {
+    
+    public void halfInitLocal(){
         isHost = false;
+        remove(clm);
         gh = new GameHandler(this, isHost);
         gc = new GameCanvas(this, gh, id);
         gh.setCanvas(gc);
         gh.setID(id);
+    }
+
+    public void initLocal(GameInitializePacket packet) {
+        halfInitLocal();
         boolean[][] map = new MapGenerate().generate(packet.getSeed());
         gh.setMap(map);
         gc.setMap(map);

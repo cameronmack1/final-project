@@ -84,7 +84,6 @@ public class GameHandler {
         gc.addLocalSnapshot(defaultSnapshot);
         gc.addLocalSnapshot(defaultSnapshot);
         gc.initLocal();
-        localTick = 10;
     }
 
     public void initServer(LobbyPlayer[] lpArray) {
@@ -199,6 +198,10 @@ public class GameHandler {
 
     public boolean[][] getMap() {
         return map;
+    }
+    
+    public void setLocalTick(int newTick){
+        localTick = newTick;
     }
 
     public ServerPlayer[] getPlayers() {
