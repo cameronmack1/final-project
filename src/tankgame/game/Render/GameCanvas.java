@@ -106,11 +106,11 @@ public final class GameCanvas extends Canvas {
 
         //load images
         try {
-            tank = resizeImage(60, 80, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "tank.png")));
-            selftank = resizeImage(60, 80, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "selftank.png")));
-            bullet = resizeImage(20, 20, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "bullet.png")));
-            debug = resizeImage(1920, 1080, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "whoisthat.jpg")));
-            bgImage = resizeImage(1920, 1080, ImageIO.read(new File("src" + File.separator + "images" + File.separator + "background.PNG")));
+            tank = resizeImage(60, 80, ImageIO.read(ClassLoader.getSystemResource("images" + File.separator + "tank.png")));
+            selftank = resizeImage(60, 80, ImageIO.read(ClassLoader.getSystemResource("images" + File.separator + "selftank.png")));
+            bullet = resizeImage(20, 20, ImageIO.read(ClassLoader.getSystemResource("images" + File.separator + "bullet.png")));
+            debug = resizeImage(1920, 1080, ImageIO.read(ClassLoader.getSystemResource("images" + File.separator + "whoisthat.jpg")));
+            bgImage = resizeImage(1920, 1080, ImageIO.read(ClassLoader.getSystemResource("images" + File.separator + "background.PNG")));
         } catch (IOException e) {
             System.out.println("error loading file");
         } catch (NullPointerException e) {
@@ -186,7 +186,7 @@ public final class GameCanvas extends Canvas {
         for (int i = 0; i < playerArray1.length; i++) {
             //check if it is a server player, and if it is then check the id against self id
             boolean isSelf = false;
-            if (playerArray1[i] instanceof ServerPlayer&&!gf.getUsername().contains("debug")) {
+            if (playerArray1[i] instanceof ServerPlayer && !gf.getUsername().contains("debug")) {
                 ServerPlayer sp = (ServerPlayer) playerArray1[i];
                 if (sp.getID().equals(id)) {
                     isSelf = true;
@@ -209,7 +209,7 @@ public final class GameCanvas extends Canvas {
 
                     //draw points on tank corners (60x80)
                     //display hitbox code
-                    if (!gf.getUsername().contains("debug")) {
+                    if (gf.getUsername().contains("debug")) {
                         double xl = lerp(x2, x1, time);
                         double yl = lerp(y2, y1, time);
                         double al = lerp(a2, a1, time);
@@ -245,7 +245,7 @@ public final class GameCanvas extends Canvas {
         Projectile[] projArray2 = s2.getProjectileArray();
         for (int i = 0; i < s2.getProjectileArray().length; i++) {
             boolean isSelf = false;
-            if (!isLocal && id.equals(projArray2[i].getOwner())&&!gf.getUsername().contains("debug")) {
+            if (!isLocal && id.equals(projArray2[i].getOwner()) && !gf.getUsername().contains("debug")) {
                 isSelf = true;
             }
             //isSelf = false;
@@ -261,7 +261,7 @@ public final class GameCanvas extends Canvas {
                     a2 = projArray2[i].getAngle();
                     drawImageAtRot(bullet, lerp(x2, x1, time), lerp(y2, y1, time), lerp(a2, a1, time));
 
-                    if (!gf.getUsername().contains("debug")) {
+                    if (gf.getUsername().contains("debug")) {
                         double xl = lerp(x2, x1, time);
                         double yl = lerp(y2, y1, time);
                         g2d.setColor(Color.WHITE);
@@ -314,7 +314,7 @@ public final class GameCanvas extends Canvas {
                 render(serverSnapshots.get(snapshot1 - 1), serverSnapshots.get(snapshot1), time, false);
             }
         }
-                //pause menu overlay made by koorosh the goat
+        //pause menu overlay made by koorosh the goat
         if (kb.isPaused()) {
             g2d.setColor(new Color(0, 0, 0, 150));
             g2d.fillRect(0, 0, 1920, 1080);

@@ -35,9 +35,9 @@ public class GameOverMenu extends JPanel {
         Font f = new Font("Comic Sans", Font.PLAIN, h / 18);
 
         try {
-            bg = ImageIO.read(new File("src" + File.separator + "images" + File.separator + "tankGameVictory.jpg")).getScaledInstance(w, h, Image.SCALE_DEFAULT);
-            tank = ImageIO.read(new File("src" + File.separator + "images" + File.separator + "tank.png")).getScaledInstance(w / 7, 2*h / 5, Image.SCALE_DEFAULT);
-            selftank = ImageIO.read(new File("src" + File.separator + "images" + File.separator + "selftank.png")).getScaledInstance(w / 7, 2*h / 5, Image.SCALE_DEFAULT);
+            bg = ImageIO.read(ClassLoader.getSystemResource("images" + File.separator + "tankGameVictory.jpg")).getScaledInstance(w, h, Image.SCALE_DEFAULT);
+            tank = ImageIO.read(ClassLoader.getSystemResource("images" + File.separator + "tank.png")).getScaledInstance(w / 7, 2*h / 5, Image.SCALE_DEFAULT);
+            selftank = ImageIO.read(ClassLoader.getSystemResource("images" + File.separator + "selftank.png")).getScaledInstance(w / 7, 2*h / 5, Image.SCALE_DEFAULT);
         } catch (IOException e) {
             System.out.println("error loading file");
         } catch (NullPointerException e) {

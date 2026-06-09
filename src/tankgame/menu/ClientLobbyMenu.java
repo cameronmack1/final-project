@@ -58,7 +58,7 @@ public class ClientLobbyMenu extends JPanel {
 
         //load images
         try {
-            bg = ImageIO.read(new File("src" + File.separator + "images" + File.separator + "LobbyMenuForest.png")).getScaledInstance(w, h, Image.SCALE_DEFAULT);
+            bg = ImageIO.read(ClassLoader.getSystemResource("images" + File.separator + "LobbyMenuForest.png")).getScaledInstance(w, h, Image.SCALE_DEFAULT);
         } catch (IOException e) {
             System.out.println("error loading file");
         } catch (NullPointerException e) {
