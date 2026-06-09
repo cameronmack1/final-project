@@ -3,7 +3,6 @@ package tankgame.server;
 import tankgame.game.Player;
 
 import java.util.UUID;
-import java.io.Serializable;
 
 /**
  *
@@ -12,10 +11,16 @@ import java.io.Serializable;
 public class ServerPlayer extends Player {
     
     private final UUID id;
+    private final String name;
 
-    public ServerPlayer(double x, double y, UUID id) {
+    public ServerPlayer(double x, double y, UUID id, String name) {
         super(x, y);
         this.id = id;
+        this.name = name;
+    }
+    
+    public String getName(){
+        return this.name;
     }
     
     public UUID getID(){

@@ -149,12 +149,12 @@ public class GameHandler {
             int remainingPlayers = 0;
             String winnerName = "";
             for (int i = 0; i < players.size(); i++) {
-                if(!players.get(i).getIsDead()){
+                if (!players.get(i).getIsDead()) {
                     remainingPlayers++;
                     winnerName = players.get(i).getName();
                 }
             }
-            if(remainingPlayers == 1){
+            if (remainingPlayers == 1) {
                 String message = "7:" + winnerName;
                 return message;
             }
