@@ -205,16 +205,16 @@ public class GameFrame extends JFrame {
     }
 
     public void quitToMenu() {
-        //kill the game loops
-        scheduler.shutdownNow();
         //only one of th/ch exists so one of these throws, ignore it (same as createGameOver does)
         try {
             th.send("9:" + id);
             th.close();
         } catch (Exception e) {
+            ch.broadcast("7:host has left the game");
             ch.close();
-            ch.broadcast("8:host has left the game");
         }
+        //kill the game loops
+        scheduler.shutdownNow();
         remove(gc);
         mm = new MainMenu(this, w, h);
         add(mm);

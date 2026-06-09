@@ -21,6 +21,7 @@ public class GameOverMenu extends JPanel {
 
     Image bg;
     Image tank;
+    Image selftank;
     private int w;
     private int h;
 
@@ -36,6 +37,7 @@ public class GameOverMenu extends JPanel {
         try {
             bg = ImageIO.read(new File("src" + File.separator + "images" + File.separator + "mainMenu.png")).getScaledInstance(w, h, Image.SCALE_DEFAULT);
             tank = ImageIO.read(new File("src" + File.separator + "images" + File.separator + "tank.png")).getScaledInstance(w / 7, 2*h / 5, Image.SCALE_DEFAULT);
+            selftank = ImageIO.read(new File("src" + File.separator + "images" + File.separator + "selftank.png")).getScaledInstance(w / 7, 2*h / 5, Image.SCALE_DEFAULT);
         } catch (IOException e) {
             System.out.println("error loading file");
         } catch (NullPointerException e) {
@@ -44,6 +46,9 @@ public class GameOverMenu extends JPanel {
         }
 
         //buttons n labels
+        if(winnerName.equals(gf.getUsername())){
+            tank = selftank;
+        }
         JLabel nameLabel = new JLabel(winnerName+" has won the game!");
         nameLabel.setForeground(Color.BLACK);
         nameLabel.setBounds(w / 2 - w / 6, h / 3, w, h / 5);
