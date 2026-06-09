@@ -1,12 +1,9 @@
 package tankgame.menu;
 
-import tankgame.client.UDPScanner;
-import tankgame.client.ServerObject;
 import javax.swing.JPanel;
 import java.awt.Image;
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import tankgame.game.GameFrame;
@@ -39,8 +36,7 @@ public class MainMenu extends JPanel {
 
         //load images
         try {
-            bg =ImageIO.read(ClassLoader.getSystemResource("images" + File.separator + "mainMenu.png")).getScaledInstance(w, h, Image.SCALE_DEFAULT);
-
+            bg = ImageIO.read(ClassLoader.getSystemResource("images/mainMenu.png")).getScaledInstance(w, h, Image.SCALE_DEFAULT);
         } catch (IOException e) {
             System.out.println("error loading file");
         } catch (NullPointerException e) {

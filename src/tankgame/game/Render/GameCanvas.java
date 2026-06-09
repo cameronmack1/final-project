@@ -106,11 +106,11 @@ public final class GameCanvas extends Canvas {
 
         //load images
         try {
-            tank = resizeImage(60, 80, ImageIO.read(ClassLoader.getSystemResource("images" + File.separator + "tank.png")));
-            selftank = resizeImage(60, 80, ImageIO.read(ClassLoader.getSystemResource("images" + File.separator + "selftank.png")));
-            bullet = resizeImage(20, 20, ImageIO.read(ClassLoader.getSystemResource("images" + File.separator + "bullet.png")));
-            debug = resizeImage(1920, 1080, ImageIO.read(ClassLoader.getSystemResource("images" + File.separator + "whoisthat.jpg")));
-            bgImage = resizeImage(1920, 1080, ImageIO.read(ClassLoader.getSystemResource("images" + File.separator + "background.PNG")));
+            tank = resizeImage(60, 80, ImageIO.read(ClassLoader.getSystemResource("images/tank.png")));
+            selftank = resizeImage(60, 80, ImageIO.read(ClassLoader.getSystemResource("images/selftank.png")));
+            bullet = resizeImage(20, 20, ImageIO.read(ClassLoader.getSystemResource("images/bullet.png")));
+            debug = resizeImage(1920, 1080, ImageIO.read(ClassLoader.getSystemResource("images/whoisthat.jpg")));
+            bgImage = resizeImage(1920, 1080, ImageIO.read(ClassLoader.getSystemResource("images/background.PNG")));
         } catch (IOException e) {
             System.out.println("error loading file");
         } catch (NullPointerException e) {

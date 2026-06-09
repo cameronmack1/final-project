@@ -41,7 +41,7 @@ public class FindLobby extends JPanel {
          add(refresh);
          refresh.setVisible(true);
         try {
-            tuffBG =ImageIO.read(ClassLoader.getSystemResource("images" + File.separator + "TuffTuffTuffBackground.png")).getScaledInstance(w, h, Image.SCALE_DEFAULT);
+            tuffBG =ImageIO.read(ClassLoader.getSystemResource("images/TuffTuffTuffBackground.png")).getScaledInstance(w, h, Image.SCALE_DEFAULT);
 
         } catch (IOException e) {
             System.out.println("error loading file");
