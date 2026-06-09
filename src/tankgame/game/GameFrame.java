@@ -169,8 +169,6 @@ public class GameFrame extends JFrame {
                             keys[i] = '1' == message.charAt(i);
                         }
                         int sentTick = Integer.parseInt(message.substring(6));
-                        System.out.println("server received tick: " + sentTick);
-                        System.out.println("servers actual tick: " + gh.getServerTick());
                         gh.getPlayer(messageUUID).setKeys(keys, sentTick);
                     }
                 }
@@ -214,10 +212,8 @@ public class GameFrame extends JFrame {
             th.send("9:" + id);
             th.close();
         } catch (Exception e) {
-        }
-        try {
             ch.close();
-        } catch (Exception e) {
+            ch.broadcast("8:host has left the game");
         }
         remove(gc);
         mm = new MainMenu(this, w, h);
@@ -547,9 +543,8 @@ public class GameFrame extends JFrame {
         }
         try {
             th.close();
-            ch.close();
         } catch (Exception e) {
-            //will always throw exception cuz only one of th or ch exist
+            ch.close();
         }
         remove(gc);
         gom = new GameOverMenu(this, winnerName);
