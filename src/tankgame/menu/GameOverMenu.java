@@ -30,8 +30,6 @@ public class GameOverMenu extends JPanel {
         w = gf.getWidth();
         h = gf.getHeight();
 
-        System.out.println(w + " " + h);
-
         //font
         Font f = new Font("Comic Sans", Font.PLAIN, h / 18);
 
