@@ -19,6 +19,7 @@ import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.awt.RenderingHints;
+import java.awt.Font;
 
 import java.io.File;
 
@@ -53,6 +54,7 @@ public final class GameCanvas extends Canvas {
     BufferedImage bgImage;
     public boolean inDebug = false;
     private final UUID id;
+    private boolean quitting = false;
 
     public static final int WALL_SIZE = 10;
 
@@ -247,7 +249,7 @@ public final class GameCanvas extends Canvas {
                 isSelf = true;
             }
             //isSelf = false;
-            if (!isSelf&&!projArray2[i].getIsDead()) {
+            if (!isSelf && !projArray2[i].getIsDead()) {
                 if (projArray2[i].getIsNew()) {
                     drawImageAtRot(bullet, projArray2[i].getX(), projArray2[i].getY(), projArray2[i].getAngle());
                 } else {
@@ -311,6 +313,29 @@ public final class GameCanvas extends Canvas {
                 time = Math.max(0.0, Math.min(1.0, time));
                 render(serverSnapshots.get(snapshot1 - 1), serverSnapshots.get(snapshot1), time, false);
             }
+        }
+                //pause menu overlay made by koorosh the goat
+        if (kb.isPaused()) {
+            g2d.setColor(new Color(0, 0, 0, 150));
+            g2d.fillRect(0, 0, 1920, 1080);
+            g2d.setColor(Color.WHITE);
+            g2d.setFont(new Font("Comic Sans", Font.BOLD, 60));
+            g2d.drawString("PAUSED", 870, 450);
+            g2d.setFont(new Font("Comic Sans", Font.PLAIN, 30));
+            g2d.drawString("ESC - resume", 870, 540);
+            g2d.drawString("Q - quit", 870, 590);
+        }
+
+        //dead players spectate
+        if (gh.isSelfDead()) {
+            g2d.setColor(Color.WHITE);
+            g2d.setFont(new Font("Comic Sans", Font.PLAIN, 40));
+            g2d.drawString("you are dead - now spectating", 700, 100);
+        }
+
+        if (kb.getiQUIT() && !quitting) {
+            quitting = true;
+            gf.quitToMenu();
         }
         Graphics graphics = buffer.getDrawGraphics();
         graphics.drawImage(img.getScaledInstance(width, height, Image.SCALE_DEFAULT), 0, 0, null);

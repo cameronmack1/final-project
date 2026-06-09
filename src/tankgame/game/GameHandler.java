@@ -77,7 +77,11 @@ public class GameHandler {
         }
         return null;
     }
+ //for spectator screen
+    public boolean isSelfDead(){
 
+   return self != null && self.getIsDead();
+}
     public void initLocal(int x, int y) {
         self = new ClientPlayer(x, y);
         Snapshot defaultSnapshot = new Snapshot(new ClientPlayer[]{self}, localProj.toArray(Projectile[]::new), System.currentTimeMillis());
@@ -176,6 +180,10 @@ public class GameHandler {
     public void localTick() {
         //get keys pressed and move projectiles
         keys = gc.kb.getKeys();
+        //if paused, ignore ALL buttons so you cant move
+        if (gc.kb.isPaused()) {
+            keys = new boolean[]{false, false, false, false, false};
+        }
         //move projectile
         for (Projectile proj : localProj) {
             proj.move(this);

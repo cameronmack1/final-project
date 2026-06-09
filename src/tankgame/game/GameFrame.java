@@ -206,6 +206,25 @@ public class GameFrame extends JFrame {
         }
     }
 
+    public void quitToMenu() {
+        //kill the game loops
+        scheduler.shutdownNow();
+        //only one of th/ch exists so one of these throws, ignore it (same as createGameOver does)
+        try {
+            th.send("9:" + id);
+            th.close();
+        } catch (Exception e) {
+        }
+        try {
+            ch.close();
+        } catch (Exception e) {
+        }
+        remove(gc);
+        mm = new MainMenu(this, w, h);
+        add(mm);
+        setVisible(true);
+    }
+
     public void initClient(GameInitializePacket gp) {
         gameStarted = true;
         initLocal(gp);
