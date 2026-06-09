@@ -121,7 +121,11 @@ public class GameFrame extends JFrame {
         //add action listener for when a message is recieved
         ch.addActionListener(al -> {
             String message = ch.recieveQueue.poll();
-            if(message.length()<=0){
+            try {
+                if (message.length() <= 0) {
+                    return;
+                }
+            } catch (Exception e) {
                 return;
             }
             UUID messageUUID;
