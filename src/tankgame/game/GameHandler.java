@@ -31,9 +31,9 @@ public class GameHandler {
     private ArrayList<Projectile> projectiles = new ArrayList<>();
     public boolean isHost;
     public boolean inDebug = false;
-    
+
     private int serverTick;
-    
+
     private int localTick;
 
     private double tileHeight;
@@ -113,7 +113,7 @@ public class GameHandler {
                 }
             }
             count++;
-            players.add(new ServerPlayer(x, y, lp.getID()));
+            players.add(new ServerPlayer(x, y, lp.getID(), lp.getName()));
         }
     }
 
@@ -135,7 +135,7 @@ public class GameHandler {
                 player.setCooldown(Projectile.COOLDOWN);
             }
             //check if player is being hit by projectile and kill if they are
-            for (int i = 0; i<projectiles.size();i++) {
+            for (int i = 0; i < projectiles.size(); i++) {
                 Projectile proj = projectiles.get(i);
                 if (checkCollision(player, proj.getX(), proj.getY())) {
                     player.kill();
@@ -145,6 +145,18 @@ public class GameHandler {
                         localProj.get(i).kill();
                     }
                 }
+            }
+            int remainingPlayers = 0;
+            String winnerName = "";
+            for (int i = 0; i < players.size(); i++) {
+                if(players.get(i).getIsDead()){
+                    remainingPlayers++;
+                    winnerName = players.get(i).getName();
+                }
+            }
+            if(remainingPlayers == 1){
+                String message = "7:" + winnerName;
+                return message;
             }
         }
 
@@ -190,7 +202,7 @@ public class GameHandler {
                 this.players.get(0).setKeys(keys, localTick);
             }
         }
-        
+
         ClientPlayer[] pArr = new ClientPlayer[]{self};
         gc.addLocalSnapshot(new Snapshot(pArr, localProj.toArray(Projectile[]::new), System.currentTimeMillis()));
         localTick++;
@@ -199,8 +211,8 @@ public class GameHandler {
     public boolean[][] getMap() {
         return map;
     }
-    
-    public void setLocalTick(int newTick){
+
+    public void setLocalTick(int newTick) {
         localTick = newTick;
     }
 
@@ -262,10 +274,10 @@ public class GameHandler {
         return map[gridY][gridX];
     }
 
-    public int getServerTick(){
+    public int getServerTick() {
         return this.serverTick;
     }
-    
+
     /**
      * converts an object into a base64 encoded serialized string
      *

@@ -13,7 +13,7 @@ public abstract class Projectile implements Serializable {
     private static final long serialVersionUID = 8008135L;
 
     public static final int COOLDOWN = 30;
-    public static final int DEFAULT_SPEED = 10;
+    public static final double DEFAULT_SPEED = 7.5;
     protected boolean isNew = true;
     protected boolean isDead = false;
     protected double x;
@@ -26,7 +26,7 @@ public abstract class Projectile implements Serializable {
         this.x = x + Math.cos(angle) * 25;
         this.y = y + Math.sin(angle) * 25;
         this.angle = angle;
-        this.velocity = velocity / 2 + DEFAULT_SPEED;
+        this.velocity = velocity / 10 + DEFAULT_SPEED;
         this.owner = owner;
     }
 

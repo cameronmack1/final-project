@@ -42,6 +42,7 @@ public class GameFrame extends JFrame {
     private MainMenu mm;
     private HostLobbyMenu hlm;
     private ClientLobbyMenu clm;
+    private GameOverMenu gom;
     private UDPListener udpListener;
     private ClientHandler ch;
     private TCPHandler th;
@@ -53,10 +54,11 @@ public class GameFrame extends JFrame {
     private boolean isHost = false;
     private UUID id;
     private String username;
+    ScheduledExecutorService scheduler;
 
     private int w;
     private int h;
-    
+
     private int readyPlayers = 0;
 
     public GameFrame() {
@@ -77,6 +79,7 @@ public class GameFrame extends JFrame {
 
     //starts the server
     public void initServerLobby() {
+        scheduler = Executors.newScheduledThreadPool(2);
         //create lobby menu panel and remove main menu
         this.id = UUID.randomUUID();
         isHost = true;
@@ -171,11 +174,11 @@ public class GameFrame extends JFrame {
                         gh.getPlayer(messageUUID).setKeys(keys, sentTick);
                     }
                 }
-                
+
                 //players responding after getting ready
                 case 8 -> {
                     readyPlayers++;
-                    if(readyPlayers >= lobbyPlayers.size()){
+                    if (readyPlayers >= lobbyPlayers.size()) {
                         initServer();
                     }
                 }
@@ -208,7 +211,6 @@ public class GameFrame extends JFrame {
         initLocal(gp);
         gh.setLocalTick((int) (System.currentTimeMillis() / 33 - gp.getTime() / 33) + 10);
 
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
             //tick
             try {
@@ -219,8 +221,8 @@ public class GameFrame extends JFrame {
             }
         }, 0, 1000 / 30, TimeUnit.MILLISECONDS);
     }
-    
-    public void halfInitServer(){
+
+    public void halfInitServer() {
         //close sockets
         udpListener.close();
         try {
@@ -249,7 +251,6 @@ public class GameFrame extends JFrame {
 
         //start loops
         //30 tps simulate
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
             //check timeout and kick player if last message time is > 10 seconds
             for (ClientObj co : ch.getClients()) {
@@ -264,6 +265,10 @@ public class GameFrame extends JFrame {
                 gh.localTick();
                 String message = gh.serverTick();
                 ch.broadcast(message);
+                if (message.charAt(0) == '7') {
+                    createGameOver(message.substring(2));
+                    System.out.println("game over");
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -286,6 +291,7 @@ public class GameFrame extends JFrame {
     }
 
     public void joinServer(ServerObject so) {
+        scheduler = Executors.newScheduledThreadPool(2);
         remove(fl);
         clm = new ClientLobbyMenu(this);
         add(clm);
@@ -380,11 +386,11 @@ public class GameFrame extends JFrame {
                         e.printStackTrace();
                     }
                 }
-                
+
                 //get ready for init
                 case 8 -> {
                     halfInitLocal();
-                    String nmessage = "8:"+id;
+                    String nmessage = "8:" + id;
                     th.send(nmessage);
                 }
 
@@ -393,11 +399,16 @@ public class GameFrame extends JFrame {
                     UUID newID = UUID.fromString(message.substring(0, 36));
                     clm.removePlayer(newID);
                 }
+
+                //game over
+                case 7 -> {
+                    createGameOver(message);
+                }
             }
         });
     }
-    
-    public void halfInitLocal(){
+
+    public void halfInitLocal() {
         isHost = false;
         remove(clm);
         gh = new GameHandler(this, isHost);
@@ -425,8 +436,7 @@ public class GameFrame extends JFrame {
         pack();
 
         //144 fps render
-        ScheduledExecutorService renderScheduler = Executors.newSingleThreadScheduledExecutor();
-        renderScheduler.scheduleAtFixedRate(() -> {
+        scheduler.scheduleAtFixedRate(() -> {
             try {
                 gc.renderLoop();
             } catch (Exception e) {
@@ -450,8 +460,7 @@ public class GameFrame extends JFrame {
         pack();
 
         //144 fps render
-        ScheduledExecutorService renderScheduler = Executors.newSingleThreadScheduledExecutor();
-        renderScheduler.scheduleAtFixedRate(() -> {
+        scheduler.scheduleAtFixedRate(() -> {
             try {
                 gc.renderLoop();
             } catch (Exception e) {
@@ -473,6 +482,7 @@ public class GameFrame extends JFrame {
     }
 
     public void startDebug() {
+        scheduler = Executors.newScheduledThreadPool(2);
         this.username = mm.getUsername();
         remove(mm);
         this.isHost = true;
@@ -503,6 +513,36 @@ public class GameFrame extends JFrame {
         add(mm);
         setVisible(true);
         this.username = "";
+    }
+
+    public void createGameOver(String winnerName) {
+        try {
+            //wait a second to terminate
+            if (!scheduler.awaitTermination(100, TimeUnit.MILLISECONDS)) {
+                //force kill if it didnt shut down
+                scheduler.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            //force shutdown if interrupted
+            scheduler.shutdownNow();
+        }
+        try {
+            th.close();
+            ch.close();
+        } catch (Exception e) {
+            //will always throw exception cuz only one of th or ch exist
+        }
+        remove(gc);
+        gom = new GameOverMenu(this, winnerName);
+        add(gom);
+        setVisible(true);
+    }
+
+    public void exitToMenu() {
+        mm = new MainMenu(this, w, h);
+        remove(gom);
+        add(mm);
+        setVisible(true);
     }
 
     public String getUsername() {
