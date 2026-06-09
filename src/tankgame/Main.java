@@ -2,8 +2,6 @@ package tankgame;
 
 import tankgame.game.GameFrame;
 
-import tankgame.game.Render.GameCanvas;
-
 /**
  *
  * @author Cameron

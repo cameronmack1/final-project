@@ -15,6 +15,7 @@ import tankgame.game.GameFrame;
 import tankgame.server.LobbyPlayer;
 import java.awt.Color;
 import javax.sound.sampled.*;           // imports sounds
+import java.io.InputStream;
 
 /**
  *
@@ -99,8 +100,8 @@ public class ClientLobbyMenu extends JPanel {
 
     public void playSound(String filename) { //play sound effects
         try {
-            File soundFile = new File(filename);
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
+            InputStream audioSrc = getClass().getResourceAsStream(filename);
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioSrc);
             AudioFormat format = audioStream.getFormat();
             DataLine.Info info = new DataLine.Info(Clip.class, format);
             Clip clip = (Clip) AudioSystem.getLine(info);

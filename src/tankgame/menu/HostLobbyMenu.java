@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import javax.imageio.ImageIO;
 import tankgame.game.GameFrame;
 import tankgame.server.LobbyPlayer;
@@ -112,8 +113,8 @@ public class HostLobbyMenu extends JPanel {
 
     public void playSound(String filename) { //play sound effects
         try {
-            File soundFile = new File(filename);
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
+            InputStream audioSrc = getClass().getResourceAsStream(filename);
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioSrc);
             AudioFormat format = audioStream.getFormat();
             DataLine.Info info = new DataLine.Info(Clip.class, format);
             Clip clip = (Clip) AudioSystem.getLine(info);
