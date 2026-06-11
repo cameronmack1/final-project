@@ -3,7 +3,6 @@ package tankgame.menu;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -43,15 +42,15 @@ public class ClientLobbyMenu extends JPanel {
         w = gf.getWidth();
         h = gf.getHeight();
         if (uname.contains("sahur")) {
-            playSound("src/sounds/sahur.wav");
+            playSound("sounds/sahur.wav");
         } else if (uname.contains("tung")) {
-            playSound("src/sounds/sahur.wav");
+            playSound("sounds/sahur.wav");
         } else if (RNG == 67) {
-            playSound("src/sounds/sahur.wav");
+            playSound("sounds/sahur.wav");
         } else if (RNG == 41 || RNG == 61) {
-            playSound("src/sounds/tiki.wav");
+            playSound("sounds/tiki.wav");
         } else {
-            playSound("src/sounds/lobby.wav");
+            playSound("`sounds/lobby.wav");
         }
 
         //font

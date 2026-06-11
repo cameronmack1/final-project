@@ -41,15 +41,15 @@ public class HostLobbyMenu extends JPanel {
         w = gf.getWidth();
         h = gf.getHeight();
            if (uname.contains("sahur")) {
-            playSound("src/sounds/sahur.wav");
+            playSound("sounds/sahur.wav");
         } else if (uname.contains("tung")) {
-            playSound("src/sounds/sahur.wav");
+            playSound("sounds/sahur.wav");
         } else if (RNG == 67) {
-            playSound("src/sounds/sahur.wav");
+            playSound("sounds/sahur.wav");
         } else if (RNG == 41 || RNG == 61) {
-            playSound("src/sounds/tiki.wav");
+            playSound("sounds/tiki.wav");
         } else {
-            playSound("src/sounds/lobby.wav");
+            playSound("sounds/lobby.wav");
         }
 
         //font

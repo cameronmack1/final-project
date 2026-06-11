@@ -121,13 +121,6 @@ public class GameFrame extends JFrame {
         //add action listener for when a message is recieved
         ch.addActionListener(al -> {
             String message = ch.recieveQueue.poll();
-            try {
-                if (message.length() <= 0) {
-                    return;
-                }
-            } catch (Exception e) {
-                return;
-            }
             UUID messageUUID;
             //get type
             int type = Character.getNumericValue(message.charAt(0));
@@ -176,8 +169,15 @@ public class GameFrame extends JFrame {
                             keys[i] = '1' == message.charAt(i);
                         }
                         int sentTick = Integer.parseInt(message.substring(6));
+                        //System.out.println("player is " + (gh.getServerTick() - sentTick) + " off");
                         gh.getPlayer(messageUUID).setKeys(keys, sentTick);
                     }
+                }
+
+                //new message
+                case 5 -> {
+                    sendMessage(message, messageUUID);
+                    addMessage(message, gh.getPlayer(id).getName());
                 }
 
                 //players responding after getting ready
@@ -275,11 +275,11 @@ public class GameFrame extends JFrame {
         //30 tps simulate
         scheduler.scheduleAtFixedRate(() -> {
             //check timeout and kick player if last message time is > 10 seconds
-            for (ClientObj co : ch.getClients()) {
+            /*for (ClientObj co : ch.getClients()) {
                 if (co.getLastMessageTime() - System.currentTimeMillis() > 10_000) {
                     ch.removeClient(co.id);
                 }
-            }
+            }*/
 
             //tick
             try {
@@ -407,6 +407,13 @@ public class GameFrame extends JFrame {
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     }
+                }
+
+                //new message
+                case 5 -> {
+                    int split = message.indexOf(":");
+                    String name = message.substring(0, split);
+                    addMessage(name, message.substring(split + 1));
                 }
 
                 //get ready for init
@@ -572,5 +579,27 @@ public class GameFrame extends JFrame {
 
     public void setUsername(String name) {
         this.username = name;
+    }
+
+    public void sendMessage(String message) {
+        try {
+            th.send("5" + id.toString() + ":" + message);
+        } catch (Exception e) {
+            //th doesnt exist (host)
+        }
+    }
+
+    public void sendMessage(String message, UUID id) {
+        try {
+            ch.broadcast("5:" + gh.getPlayer(id).getName() + ":" + message);
+        } catch (Exception e) {
+            //ch doesnt exist (client)
+        }
+    }
+
+    public void addMessage(String username, String message) {
+        if (username.equals(this.username)) {
+            //username code here
+        }
     }
 }
