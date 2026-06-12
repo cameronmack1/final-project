@@ -151,6 +151,11 @@ public final class GameCanvas extends Canvas {
         //val 1 is old, val2 is new
         return (val2 - val1) * alpha + val1;
     }
+    public ArrayList<String> chatMessages = new ArrayList<>();
+
+    public void addChatMessage(String line) {
+        chatMessages.add(line);
+    }
 
     public void renderMap() {
         //render shi
@@ -328,7 +333,7 @@ public final class GameCanvas extends Canvas {
 
         //dead players spectate
         if (gh.isSelfDead()) {
-            g2d.setColor(Color.WHITE);
+            g2d.setColor(Color.RED);
             g2d.setFont(new Font("Comic Sans", Font.PLAIN, 40));
             g2d.drawString("you are dead - now spectating", 700, 100);
         }
@@ -337,6 +342,24 @@ public final class GameCanvas extends Canvas {
             quitting = true;
             gf.quitToMenu();
         }
+                //chat history
+        g2d.setFont(new Font("Arial", Font.PLAIN, 24));
+        int shown = Math.min(8, chatMessages.size());
+        for (int i = 0; i < shown; i++) {
+            g2d.setColor(Color.WHITE);
+            g2d.drawString(chatMessages.get(chatMessages.size() - shown + i), 30, 870 + i * 28);
+        }
+// currently typing
+        if (kb.isChatOpen()) {
+            g2d.setColor(Color.YELLOW);
+            g2d.drawString("> " + kb.getChatText(), 30, 870 + shown * 28);
+        }
+//send message
+        String toSend = kb.pollOutgoing();
+        if (toSend != null && !toSend.isEmpty()) {
+            gf.sendMessage(toSend);
+        }
+    
         Graphics graphics = buffer.getDrawGraphics();
         graphics.drawImage(img.getScaledInstance(width, height, Image.SCALE_DEFAULT), 0, 0, null);
         g2d.dispose();

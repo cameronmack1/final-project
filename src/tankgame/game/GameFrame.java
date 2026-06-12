@@ -600,6 +600,7 @@ public class GameFrame extends JFrame {
     public void addMessage(String username, String message) {
         if (username.equals(this.username)) {
             //username code here
+          gc.addChatMessage(username + ": " + message);
+}
         }
     }
-}
